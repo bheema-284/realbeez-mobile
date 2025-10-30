@@ -751,21 +751,6 @@ class _HomeScreenState extends State<HomeScreen> {
             height: isSmallScreen ? 170 : 190,
             child: Row(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(left: isSmallScreen ? 8.0 : 12.0),
-                  child: Container(
-                    width: isSmallScreen ? 60 : 80,
-                    height: isSmallScreen ? 60 : 80,
-                    margin: EdgeInsets.only(right: isSmallScreen ? 8 : 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/special_offers.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
