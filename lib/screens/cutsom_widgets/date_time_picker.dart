@@ -400,6 +400,7 @@ class _SchedulePickerState extends State<SchedulePicker> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: AppColors.beeYellow.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.beeYellow),

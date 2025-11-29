@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:real_beez/screens/api/profile_service.dart';
 import 'package:real_beez/screens/models/profile_model.dart';
@@ -74,12 +75,12 @@ class _MyBioScreenState extends State<MyBioScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching profiles: $e');
       setState(() {
         _isLoading = false;
       });
       
       // Show error message but continue with default data
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load profile data: $e'),
@@ -128,7 +129,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
       }
       return dateString;
     } catch (e) {
-      print('Error formatting date: $e');
       return dateString;
     }
   }
@@ -140,7 +140,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
       final date = DateFormat('dd MMM yyyy').parse(displayDate);
       return DateFormat('yyyy-MM-dd').format(date);
     } catch (e) {
-      print('Error formatting date for API: $e');
       return displayDate;
     }
   }
@@ -279,6 +278,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
         // Refresh profile data
         await _fetchProfiles();
         
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result["message"] ?? 'Profile saved successfully!'),
@@ -295,6 +295,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
           _isAddressEditable = false;
         });
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result["message"] ?? 'Failed to save profile'),
@@ -304,7 +305,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
         );
       }
     } catch (e) {
-      print('Error in saveProfile: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error saving profile: $e'),
@@ -440,6 +441,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
+                        // ignore: deprecated_member_use
                         border: Border.all(color: Colors.black.withOpacity(0.6)),
                       ),
                       child: const Icon(Icons.edit,

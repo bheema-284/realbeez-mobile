@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
 class ExploreSection extends StatelessWidget {
-  const ExploreSection({Key? key}) : super(key: key);
+  const ExploreSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ExploreSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -38,7 +38,7 @@ class ExploreSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -102,12 +102,13 @@ class ExploreSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                BoxShadow(
+                // ignore: deprecated_member_use
   color: Colors.black.withOpacity(0.08),
   blurRadius: 12,
   offset: const Offset(0, 4),
 )
-
               ],
+              // ignore: deprecated_member_use
               border: Border.all(color: Colors.grey.withOpacity(0.28)),
             ),
             child: Stack(

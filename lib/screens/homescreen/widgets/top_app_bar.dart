@@ -8,13 +8,13 @@ class TopAppBar extends StatelessWidget {
   final VoidCallback onNotificationsTap;
 
   const TopAppBar({
-    Key? key,
+    super.key,
     required this.shouldUseWhiteIcons,
     required this.isSmallScreen,
     required this.onProfileTap,
     required this.onWishlistTap,
     required this.onNotificationsTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

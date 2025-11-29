@@ -109,7 +109,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     darkGray,
                   ),
                 )
-                .toList(),
+                ,
 
             const SizedBox(height: 30),
 
@@ -301,6 +301,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
         leading: CircleAvatar(
+          // ignore: deprecated_member_use
           backgroundColor: honeyYellow.withOpacity(0.2),
           child: Icon(icon, color: honeyYellow),
         ),
@@ -317,7 +318,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
-          // TODO: Add tutorial navigation here
+          
         },
       ),
     );

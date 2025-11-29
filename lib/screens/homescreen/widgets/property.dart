@@ -45,10 +45,10 @@ class _PropertyCardState extends State<PropertyCard> {
   late PageController _pageController;
   int _currentPage = 0;
   Timer? _carouselTimer;
-  Map<int, VideoPlayerController?> _videoControllers = {};
-  Map<int, ChewieController?> _chewieControllers = {};
+  final Map<int, VideoPlayerController?> _videoControllers = {};
+  final Map<int, ChewieController?> _chewieControllers = {};
   bool _isVideoPlaying = false;
-  bool _isWishlisted = false; // ✅ For toggling heart icon
+  bool _isWishlisted = false;
 
   @override
   void initState() {
@@ -69,8 +69,7 @@ class _PropertyCardState extends State<PropertyCard> {
       final videoUrl = item['video'];
       try {
         debugPrint('🎥 Initializing video at index $i: $videoUrl');
-
-        // ✅ Initialize with timeout protection (10 seconds)
+        // ignore: deprecated_member_use
         final videoController = VideoPlayerController.network(videoUrl);
         await videoController.initialize().timeout(
           const Duration(seconds: 10),
@@ -315,7 +314,9 @@ class _PropertyCardState extends State<PropertyCard> {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
+                          // ignore: deprecated_member_use
                           AppColors.beeYellow.withOpacity(0.95),
+                          // ignore: deprecated_member_use
                           AppColors.beeYellow.withOpacity(0.8),
                           Colors.transparent,
                         ],
@@ -323,6 +324,7 @@ class _PropertyCardState extends State<PropertyCard> {
                       ),
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.08),
                           blurRadius: ScreenUtilHelper.getSafeRadius(3),
                           offset: const Offset(0, 1),
@@ -500,6 +502,7 @@ class _PropertyCardState extends State<PropertyCard> {
           ),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.08),
               blurRadius: ScreenUtilHelper.getSafeRadius(6),
               offset: const Offset(0, 1),

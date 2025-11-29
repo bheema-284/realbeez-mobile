@@ -342,6 +342,7 @@ class _ImageSwitchingHexagonLayoutState extends State<ImageSwitchingHexagonLayou
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
@@ -470,7 +471,7 @@ class _CircularRotationHexagonLayoutState extends State<CircularRotationHexagonL
   Widget _buildHexagon(String imagePath, double size) {
     return ClipPath(
       clipper: VerticalHexagonClipper(),
-      child: Container(
+      child: SizedBox(
         width: size,
         height: size,
         child: Image.asset(

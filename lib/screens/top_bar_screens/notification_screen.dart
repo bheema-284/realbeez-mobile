@@ -230,7 +230,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: Theme(
         data: Theme.of(context).copyWith(
           scrollbarTheme: ScrollbarThemeData(
-            thumbColor: MaterialStateProperty.all(AppColors.beeYellow),
+            thumbColor: WidgetStateProperty.all(AppColors.beeYellow),
           ),
         ),
         child: Column(
@@ -621,6 +621,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
@@ -632,6 +633,7 @@ class NotificationDetailScreen extends StatelessWidget {
                   // Icon and Title
                   CircleAvatar(
                     radius: 30,
+                    // ignore: deprecated_member_use
                     backgroundColor: _getNotificationColor(notification['type']).withOpacity(0.1),
                     child: Icon(
                       _getNotificationIcon(notification['type']),
@@ -669,6 +671,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),

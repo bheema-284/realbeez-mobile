@@ -4,7 +4,7 @@ import 'package:real_beez/screens/homescreen/widgets/property.dart';
  
 
 class FeaturedSitesSection extends StatelessWidget {
-  const FeaturedSitesSection({Key? key}) : super(key: key);
+  const FeaturedSitesSection({super.key});
 
   @override
   Widget build(BuildContext context) {

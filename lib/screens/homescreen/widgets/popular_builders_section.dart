@@ -7,12 +7,13 @@ class PopularBuildersSection extends StatefulWidget {
   final ValueChanged<int> onBuilderCardTap;
 
   const PopularBuildersSection({
-    Key? key,
+    super.key,
     required this.selectedBuilderIndex,
     required this.onBuilderCardTap,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _PopularBuildersSectionState createState() => _PopularBuildersSectionState();
 }
 
@@ -30,7 +31,7 @@ class _PopularBuildersSectionState extends State<PopularBuildersSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -54,7 +55,7 @@ class _PopularBuildersSectionState extends State<PopularBuildersSection> {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -71,7 +72,7 @@ class _PopularBuildersSectionState extends State<PopularBuildersSection> {
             ],
           ),
           SizedBox(height: 4),
-          Container(
+          SizedBox(
             height: isSmallScreen ? 100 : 110,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -83,7 +84,7 @@ class _PopularBuildersSectionState extends State<PopularBuildersSection> {
             ),
           ),
           SizedBox(height: 12),
-          Container(
+          SizedBox(
             height: isSmallScreen ? 100 : 110,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -113,6 +114,7 @@ class _PopularBuildersSectionState extends State<PopularBuildersSection> {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.1),
               blurRadius: 4,
               offset: Offset(0, 2),

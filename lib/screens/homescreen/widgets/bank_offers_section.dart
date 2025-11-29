@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
 class BankOffersSection extends StatelessWidget {
-  const BankOffersSection({Key? key}) : super(key: key);
+  const BankOffersSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class BankOffersSection extends StatelessWidget {
            Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -38,7 +38,7 @@ class BankOffersSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -99,9 +99,11 @@ class BankOffersSection extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
+          // ignore: deprecated_member_use
           border: Border.all(color: Colors.grey.withOpacity(0.2)),
            boxShadow: [
                BoxShadow(
+                // ignore: deprecated_member_use
   color: Colors.black.withOpacity(0.08),
   blurRadius: 12,
   offset: const Offset(0, 4),

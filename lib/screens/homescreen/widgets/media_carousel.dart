@@ -9,12 +9,13 @@ class PropertyMediaCarousel extends StatefulWidget {
   final double height;
 
   const PropertyMediaCarousel({
-    Key? key,
+    super.key,
     required this.mediaItems,
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _PropertyMediaCarouselState createState() => _PropertyMediaCarouselState();
 }
 

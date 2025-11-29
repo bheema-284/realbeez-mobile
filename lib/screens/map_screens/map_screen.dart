@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:geolocator/geolocator.dart';
@@ -40,6 +39,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
   int _activePage = 0;
 
   // Google Map controller and state
+  // ignore: deprecated_member_use
   MaplibreMapController? _mapController;
   final List<Symbol> _symbols = <Symbol>[];
   static final LatLng _defaultCenter = LatLng(17.4474, 78.3919); // Madhapur
@@ -179,6 +179,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     }
   }
 
+  // ignore: deprecated_member_use
   void _onMapCreated(MaplibreMapController controller) async {
     _mapController = controller;
     _renderMarkers();
@@ -227,6 +228,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: Colors.white.withOpacity(0.06),
               borderRadius: BorderRadius.circular(24),
             ),
@@ -262,8 +264,10 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       {'label': 'Villas', 'icon': null},
     ];
 
-    Color _chipColor(String label, bool selected) {
+    Color chipColor(String label, bool selected) {
+      // ignore: deprecated_member_use
       if (label == 'Filter') return selected ? const Color(0xFFFFD98B) : Colors.white.withOpacity(0.06);
+      // ignore: deprecated_member_use
       return selected ? const Color(0xFFFFD98B) : Colors.white.withOpacity(0.06);
     }
 
@@ -290,8 +294,9 @@ class _RealEstateHomeState extends State<RealEstateHome> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: _chipColor(label, selected),
+                  color: chipColor(label, selected),
                   borderRadius: BorderRadius.circular(24),
+                  // ignore: deprecated_member_use
                   border: Border.all(color: Colors.white.withOpacity(0.12)),
                 ),
                 child: Row(
@@ -324,9 +329,9 @@ class _RealEstateHomeState extends State<RealEstateHome> {
  void _openFilterBottomSheet() async {
   // Create separate sets for each section
   final Map<String, Set<String>> sectionSelections = {
-    'Top Picks': Set<String>(),
-    'Trending': Set<String>(),
-    'Deals': Set<String>(),
+    'Top Picks': <String>{},
+    'Trending': <String>{},
+    'Deals': <String>{},
   };
 
   await showModalBottomSheet(
@@ -377,6 +382,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
+                                // ignore: deprecated_member_use
                                 side: BorderSide(color: Colors.white.withOpacity(0.3)),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -488,6 +494,7 @@ Widget _filterSection(String title, Set<String> sectionFilters, void Function() 
       children: [
         Text(
           title, 
+          // ignore: deprecated_member_use
           style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
@@ -540,6 +547,7 @@ Widget _filterChip(String label, bool selected, {required VoidCallback onTap}) {
       child: Stack(
         children: [
           Positioned.fill(
+            // ignore: deprecated_member_use
             child: MaplibreMap(
               initialCameraPosition: CameraPosition(target: _defaultCenter, zoom: _defaultZoom),
               onMapCreated: _onMapCreated,
@@ -554,7 +562,7 @@ Widget _filterChip(String label, bool selected, {required VoidCallback onTap}) {
             ),
           ),
 
-          // Top-left faded tag like screenshot
+         // ignore: deprecated_member_use
           Positioned(top: 22, left: 16, child: Text('PHASE 2', style: TextStyle(color: Colors.white.withOpacity(0.08), fontSize: 12, letterSpacing: 1.2))),
         ],
       ),
@@ -634,10 +642,8 @@ Widget _filterChip(String label, bool selected, {required VoidCallback onTap}) {
                 padding: EdgeInsets.fromLTRB(14, 0, 14, 4),
                 child: Text('80 Lakhs - 1 Crs', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.black87)),
               ),
-
-              // property image - Maximum height
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 190, // Maximum image height
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(14), bottomRight: Radius.circular(14)),

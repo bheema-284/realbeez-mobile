@@ -10,6 +10,8 @@ class MyApp extends StatelessWidget {
   static const Color navDark = Color(0xFF2F2F2F); // bottom nav bg
   static const Color titleColor = Color(0xFF2B2B2B);
 
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
 }
 
 class PropertyServicesScreen extends StatelessWidget {
-  const PropertyServicesScreen({Key? key}) : super(key: key);
+  const PropertyServicesScreen({super.key});
 
   static const double sideRailWidth = 84.0;
 
@@ -232,7 +234,7 @@ class PropertyServicesScreen extends StatelessWidget {
 }
 
 class _SearchBar extends StatelessWidget {
-  const _SearchBar({Key? key}) : super(key: key);
+  const _SearchBar();
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +276,7 @@ class _SearchBar extends StatelessWidget {
 
 
 class _VideoCard extends StatelessWidget {
-  const _VideoCard({Key? key}) : super(key: key);
+  const _VideoCard();
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +313,7 @@ class _VideoCard extends StatelessWidget {
 }
 
 class _FormSection extends StatelessWidget {
-  _FormSection({Key? key}) : super(key: key);
+  _FormSection();
 
   final List<String> labels = [
     'Rental Application Form',

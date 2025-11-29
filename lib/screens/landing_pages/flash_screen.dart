@@ -105,6 +105,7 @@ class _FlashScreenState extends State<FlashScreen> with SingleTickerProviderStat
                 backgrounds[index],
                 fit: BoxFit.cover,
               ),
+              // ignore: deprecated_member_use
               Container(color: Colors.black.withOpacity(0.3)),
              SafeArea(
   child: Padding(

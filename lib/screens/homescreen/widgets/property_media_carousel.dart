@@ -9,20 +9,21 @@ class PropertyMediaCarousel extends StatefulWidget {
   final double height;
 
   const PropertyMediaCarousel({
-    Key? key,
+    super.key,
     required this.mediaItems,
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _PropertyMediaCarouselState createState() => _PropertyMediaCarouselState();
 }
 
 class _PropertyMediaCarouselState extends State<PropertyMediaCarousel> {
   int _currentIndex = 0;
   late PageController _pageController;
-  Map<int, VideoPlayerController> _videoControllers = {};
-  Map<int, ChewieController> _chewieControllers = {};
+  final Map<int, VideoPlayerController> _videoControllers = {};
+  final Map<int, ChewieController> _chewieControllers = {};
   Timer? _autoPlayTimer;
   bool _isVideoPlaying = false;
 

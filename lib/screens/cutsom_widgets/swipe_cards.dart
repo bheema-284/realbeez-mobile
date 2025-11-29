@@ -236,6 +236,7 @@ class PropertyCard extends StatelessWidget {
         borderRadius: borderRadius,
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 6.0,
             offset: const Offset(0, 4),
@@ -327,6 +328,7 @@ class PropertyCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
+                              // ignore: deprecated_member_use
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),

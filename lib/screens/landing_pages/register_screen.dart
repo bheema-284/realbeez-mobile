@@ -55,23 +55,19 @@ class _RegisterNumberScreenState extends State<RegisterNumberScreen> {
       builder: (_) =>
           const Center(child: CircularProgressIndicator(color: Colors.white)),
     );
-
-    // 🔥 CALL BACKEND LOGIN API
     final response = await AuthService.login(phone);
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context); // close loader
 
     if (response["success"]) {
-      print("✔ USER ID: ${response['userId']}");
-      print("✔ ACCESS TOKEN: ${response['accessToken']}");
-      print("✔ REFRESH TOKEN: ${response['refreshToken']}");
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response["message"] ?? "Login successful")),
       );
-
-      // 🔥 STILL GO TO OTP SCREEN (UI only)
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (_) => OtpVerificationPage(
@@ -81,6 +77,7 @@ class _RegisterNumberScreenState extends State<RegisterNumberScreen> {
         ),
       );
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response["message"] ?? "Login failed")),
       );

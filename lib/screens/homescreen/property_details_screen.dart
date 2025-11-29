@@ -17,6 +17,7 @@ const Color kImageError = Color(0xFFF0F0F0);
 const double kMinTap = 44.0;
 
 BoxShadow kCardShadow = BoxShadow(
+  // ignore: deprecated_member_use
   color: Colors.black.withOpacity(0.08),
   blurRadius: 12,
   offset: Offset(0, 6),
@@ -25,7 +26,7 @@ BoxShadow kCardShadow = BoxShadow(
 class PropertyDetailScreen extends StatefulWidget {
   final String propertyId;
 
-  const PropertyDetailScreen({Key? key, required this.propertyId}) : super(key: key);
+  const PropertyDetailScreen({super.key, required this.propertyId});
 
   @override
   State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
@@ -35,7 +36,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   bool _isDescriptionExpanded = false;
   bool _isBookmarked = false;
   bool _showAmenities = false;
-  Set<int> _selectedAmenities = {};
+  final Set<int> _selectedAmenities = {};
   
   // Carousel state
   final PageController _imagePageController = PageController();
@@ -317,7 +318,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Container(
+                  child: SizedBox(
                     height: 320,
                     child: _HeroImageSection(
                       isBookmarked: _isBookmarked,
@@ -389,14 +390,13 @@ class _HeroImageSection extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
 
   const _HeroImageSection({
-    Key? key,
     required this.isBookmarked,
     required this.onBookmarkTap,
     required this.onShareTap,
     required this.pageController,
     required this.currentIndex,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -449,6 +449,7 @@ class _HeroImageSection extends StatelessWidget {
               _CircleIconButton(
                 icon: Icons.arrow_back,
                 onTap: () => Navigator.of(context).maybePop(),
+                // ignore: deprecated_member_use
                 background: Colors.black.withOpacity(0.35),
                 iconColor: Colors.white,
                 size: 42,
@@ -497,6 +498,7 @@ class _CircleIconButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(size / 2),
+        // ignore: deprecated_member_use
         splashColor: kGold.withOpacity(0.1),
         child: Container(
           width: size,
@@ -525,11 +527,14 @@ class _SmallPillIcon extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
+        // ignore: deprecated_member_use
         splashColor: kGold.withOpacity(0.1),
+        // ignore: deprecated_member_use
         child: Container(
           padding: EdgeInsets.all(8),
           constraints: BoxConstraints(minWidth: 40, minHeight: 40),
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.28),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -553,7 +558,6 @@ class _PropertyInfoCard extends StatelessWidget {
   final VoidCallback onBookVisitTap;
 
   const _PropertyInfoCard({
-    Key? key,
     required this.propertyData,
     required this.isDescriptionExpanded,
     required this.showAmenities,
@@ -564,7 +568,7 @@ class _PropertyInfoCard extends StatelessWidget {
     required this.onDirectionTap,
     required this.onCallTap,
     required this.onBookVisitTap,
-  }) : super(key: key);
+  });
 
   String get _description => isDescriptionExpanded
       ? propertyData['description']
@@ -595,6 +599,7 @@ class _PropertyInfoCard extends StatelessWidget {
         topLeft: Radius.circular(24),
         topRight: Radius.circular(24),
       ),
+      // ignore: deprecated_member_use
       shadowColor: Colors.black.withOpacity(0.15),
       child: Container(
         decoration: BoxDecoration(
@@ -864,7 +869,7 @@ class _PropertyInfoCard extends StatelessWidget {
 }
 
 class PhotosVideosCarouselWithDots extends StatefulWidget {
-  const PhotosVideosCarouselWithDots({Key? key}) : super(key: key);
+  const PhotosVideosCarouselWithDots({super.key});
 
   @override
   State<PhotosVideosCarouselWithDots> createState() => _PhotosVideosCarouselWithDotsState();
@@ -923,6 +928,7 @@ class _PhotosVideosCarouselWithDotsState extends State<PhotosVideosCarouselWithD
   }
 
   void _initializeVideoController(int index) {
+    // ignore: deprecated_member_use
     _videoControllers[index] = VideoPlayerController.network(_mediaItems[index]['url']!)
       ..initialize().then((_) {
         if (mounted) {
@@ -994,7 +1000,7 @@ class _PhotosVideosCarouselWithDotsState extends State<PhotosVideosCarouselWithD
     return Column(
       children: [
         // Horizontal scrollable carousel
-        Container(
+        SizedBox(
           height: itemHeight,
           child: ListView.separated(
             controller: _scrollController,
@@ -1006,7 +1012,7 @@ class _PhotosVideosCarouselWithDotsState extends State<PhotosVideosCarouselWithD
               final item = _mediaItems[index];
               final isVideo = item['type'] == 'video';
               
-              return Container(
+              return SizedBox(
                 width: itemWidth,
                 height: itemHeight,
                 child: Card(
@@ -1521,7 +1527,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _FloorPlansCarousel extends StatelessWidget {
-  const _FloorPlansCarousel({Key? key}) : super(key: key);
+  const _FloorPlansCarousel();
 
   @override
   Widget build(BuildContext context) {
@@ -1566,7 +1572,7 @@ class _FloorPlansCarousel extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = floorPlans[index];
           
-          return Container(
+          return SizedBox(
             width: itemWidth,
             height: itemHeight,
             child: Card(
@@ -1654,6 +1660,7 @@ class _TestimonialSectionState extends State<TestimonialSection> {
     
     // Initialize video controllers
     for (int i = 0; i < testimonials.length; i++) {
+      // ignore: deprecated_member_use
       final controller = VideoPlayerController.network(testimonials[i].videoAsset);
       _controllers.add(controller);
       
@@ -1762,6 +1769,7 @@ class _TestimonialSectionState extends State<TestimonialSection> {
               width: 35,
               height: 35,
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: Colors.white.withOpacity(0.9),
                 shape: BoxShape.circle,
               ),
@@ -1797,6 +1805,7 @@ class _TestimonialSectionState extends State<TestimonialSection> {
                           ),
                           boxShadow: [
                             BoxShadow(
+                              // ignore: deprecated_member_use
                               color: Colors.black.withOpacity(0.15),
                               offset: const Offset(0, 2),
                               blurRadius: 4,

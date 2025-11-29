@@ -70,7 +70,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       body: Theme(
         data: Theme.of(context).copyWith(
           scrollbarTheme: ScrollbarThemeData(
-            thumbColor: MaterialStateProperty.all(scrollbarColor),
+            thumbColor: WidgetStateProperty.all(scrollbarColor),
           ),
         ),
         child: _wishlist.isEmpty

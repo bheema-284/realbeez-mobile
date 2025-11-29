@@ -17,7 +17,7 @@ class OtherTabsContent extends StatefulWidget {
   final ValueChanged<int> onRecommendedPageChanged;
 
   const OtherTabsContent({
-    Key? key,
+    super.key,
     required this.selectedBuilderIndex,
     required this.currentRecommendedPage,
     required this.recommendedSites,
@@ -25,9 +25,10 @@ class OtherTabsContent extends StatefulWidget {
     required this.popularBuilders,
     required this.onBuilderCardTap,
     required this.onRecommendedPageChanged,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _OtherTabsContentState createState() => _OtherTabsContentState();
 }
 
@@ -98,7 +99,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
            Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -122,7 +123,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -163,6 +164,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.08),
                         blurRadius: 12,
                         spreadRadius: 1,
@@ -213,7 +215,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
               Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -237,7 +239,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -288,9 +290,11 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
+        // ignore: deprecated_member_use
         border: Border.all(color: Colors.grey.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),

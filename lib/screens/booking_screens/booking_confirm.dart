@@ -69,11 +69,10 @@ class _BookingConfirmationScreenState
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching bookings: $e');
       setState(() {
         _isLoading = false;
       });
-      // Show error message
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load booking details: $e'),
@@ -250,6 +249,7 @@ class _BookingConfirmationScreenState
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
+                                  // ignore: deprecated_member_use
                                   color: Colors.black.withOpacity(0.1),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
@@ -292,6 +292,7 @@ class _BookingConfirmationScreenState
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
+                                // ignore: deprecated_member_use
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
@@ -397,6 +398,7 @@ class _BookingConfirmationScreenState
                                                       // Refresh bookings
                                                       _fetchBookings();
                                                     } else {
+                                                      // ignore: use_build_context_synchronously
                                                       ScaffoldMessenger.of(context).showSnackBar(
                                                         SnackBar(
                                                           content: Text(result["message"]),
@@ -560,6 +562,7 @@ class _BookingConfirmationScreenState
                     side: BorderSide(color: AppColors.beeYellow), // Yellow border
                   ),
                   elevation: 2,
+                  // ignore: deprecated_member_use
                   shadowColor: Colors.black.withOpacity(0.1),
                 ),
                 onPressed: () {
@@ -581,6 +584,7 @@ class _BookingConfirmationScreenState
                           // Refresh bookings
                           _fetchBookings();
                         } else {
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(result["message"]),
@@ -614,6 +618,7 @@ class _BookingConfirmationScreenState
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 2,
+                  // ignore: deprecated_member_use
                   shadowColor: Colors.black.withOpacity(0.2),
                 ),
                 onPressed: () {
@@ -764,10 +769,12 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
         // Blurred Background
         BackdropFilter(
           filter: ColorFilter.mode(
+            // ignore: deprecated_member_use
             Colors.black.withOpacity(0.5),
             BlendMode.darken,
           ),
           child: Container(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.3),
             width: double.infinity,
             height: double.infinity,
@@ -913,6 +920,7 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.12),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
@@ -963,8 +971,10 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
                       children: [
                         Radio<String>(
                           value: reason,
+                          // ignore: deprecated_member_use
                           groupValue: _selectedReason,
                           activeColor: AppColors.beeYellow,
+                          // ignore: deprecated_member_use
                           onChanged: (value) {
                             setState(() {
                               _selectedReason = value;
@@ -1049,6 +1059,7 @@ class _ReschedulePopupState extends State<ReschedulePopup> {
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.12),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
@@ -1099,8 +1110,10 @@ class _ReschedulePopupState extends State<ReschedulePopup> {
                       children: [
                         Radio<String>(
                           value: reason,
+                          // ignore: deprecated_member_use
                           groupValue: _selectedReason,
                           activeColor: AppColors.beeYellow,
+                          // ignore: deprecated_member_use
                           onChanged: (value) {
                             setState(() {
                               _selectedReason = value;
@@ -1165,8 +1178,8 @@ class RescheduleUI extends StatefulWidget {
 
 class _RescheduleUIState extends State<RescheduleUI> {
   int _selectedDate = 8; // Default selected date
-  String _selectedMonth = "Oct";
-  int _selectedYear = 2025;
+  final String _selectedMonth = "Oct";
+  final int _selectedYear = 2025;
   String? _selectedTimeSlot;
 
   bool _isDateDisabled(int day) {
@@ -1354,6 +1367,7 @@ class _RescheduleUIState extends State<RescheduleUI> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: AppColors.beeYellow.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.beeYellow),

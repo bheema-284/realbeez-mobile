@@ -27,8 +27,11 @@ void main() {
   )); 
 } 
 
-class HomeScreen extends StatefulWidget { 
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+ 
   @override 
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState(); 
 } 
 
@@ -481,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           right: 0, 
           child: Opacity( 
             opacity: waveOpacity, 
-            child: Container( 
+            child: SizedBox( 
               height: screenHeight * 0.58, 
               child: CustomPaint( 
                 size: Size(screenWidth, screenHeight * 0.40), 
@@ -745,7 +748,7 @@ Widget _buildScrollableContent() {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     width: isSmallScreen ? 48 : 52,
                     height: isSmallScreen ? 48 : 52,
                     child: Image.asset(
@@ -769,7 +772,7 @@ Widget _buildScrollableContent() {
                     ),
                   ),
                   SizedBox(width: isSmallScreen ? 10 : 14),
-                  Container(
+                  SizedBox(
                     width: isSmallScreen ? 48 : 52,
                     height: isSmallScreen ? 48 : 52,
                     child: Image.asset(
@@ -819,9 +822,11 @@ Widget _buildScrollableContent() {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
+        // ignore: deprecated_member_use
         border: Border.all(color: Colors.grey.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
@@ -1188,6 +1193,7 @@ class TopGradientWavePainter extends CustomPainter {
     final gradient = LinearGradient(
       colors: startColor != null && endColor != null
           ? [startColor!, endColor!]
+          // ignore: deprecated_member_use
           : [Color(0xFFE8ECFC), color!.withOpacity(0.8)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,

@@ -45,18 +45,17 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
     // 🔥 Call common login API (backend treats Aadhaar as "mobile")
     final response = await AuthService.login(aadhaar);
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context); // close loader
 
     if (response["success"]) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response["message"] ?? "Login successful")),
       );
 
-      // TODO: Navigate inside app after login
-      // Example:
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response["message"] ?? "Login failed")),
       );

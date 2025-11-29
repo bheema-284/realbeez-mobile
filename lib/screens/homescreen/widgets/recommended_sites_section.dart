@@ -7,13 +7,14 @@ class RecommendedSitesSection extends StatefulWidget {
   final ValueChanged<int> onPageChanged;
 
   const RecommendedSitesSection({
-    Key? key,
+    super.key,
     required this.currentRecommendedPage,
     required this.recommendedSites,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _RecommendedSitesSectionState createState() => _RecommendedSitesSectionState();
 }
 
@@ -36,7 +37,7 @@ class _RecommendedSitesSectionState extends State<RecommendedSitesSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -60,7 +61,7 @@ class _RecommendedSitesSectionState extends State<RecommendedSitesSection> {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -111,6 +112,7 @@ class _RecommendedSitesSectionState extends State<RecommendedSitesSection> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -156,6 +158,7 @@ class _RecommendedSitesSectionState extends State<RecommendedSitesSection> {
   Widget _buildSaleBadge(String saleText) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: Colors.white.withOpacity(0.9),
           borderRadius: BorderRadius.circular(30),
         ),

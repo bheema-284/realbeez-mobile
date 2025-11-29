@@ -6,11 +6,10 @@ class BannerSection extends StatelessWidget {
   final Color color;
 
   const BannerSection(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.subtitle,
-      required this.color})
-      : super(key: key);
+      required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +43,7 @@ class BannerSection extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),

@@ -17,6 +17,7 @@ class ProfileSettingsScreen extends StatelessWidget {
   static const Color chevronColor = Color(0xFFACB3B7);
   static const Color dividerColor = Color(0xFFF1F1EF);
 
+  // ignore: library_private_types_in_public_api
   final List<_SettingItem> settingsItems = const [
     _SettingItem(label: 'Booking Details', icon: Icons.calendar_today, key: Key('booking')),
     _SettingItem(label: 'My Bio', icon: Icons.badge, key: Key('bio')),
@@ -152,6 +153,7 @@ class ProfileSettingsScreen extends StatelessWidget {
                     }
                   },
                   borderRadius: BorderRadius.circular(8),
+                  // ignore: deprecated_member_use
                   splashColor: AppColors.beeYellow.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -181,7 +183,7 @@ class ProfileSettingsScreen extends StatelessWidget {
                   const Divider(color: dividerColor, height: 0.8),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );

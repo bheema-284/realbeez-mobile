@@ -29,7 +29,6 @@ class CabService {
     String newTime,
   ) async {
     try {
-      print('Rescheduling booking: $bookingId, $newDate, $newTime, $reason');
       
       final response = await http.put(
         Uri.parse("$baseUrl/cab_services/$bookingId/reschedule"),
@@ -40,11 +39,6 @@ class CabService {
           "new_booking_time": newTime,
         }),
       );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      // Handle empty response
       if (response.body.isEmpty) {
         return {
           "success": true,
@@ -66,7 +60,6 @@ class CabService {
         "message": data["message"] ?? "Reschedule failed",
       };
     } catch (e) {
-      print('Error in rescheduleBooking: $e');
       return {
         "success": false,
         "message": "Network error: $e",
@@ -79,7 +72,6 @@ class CabService {
     String reason,
   ) async {
     try {
-      print('Cancelling booking: $bookingId, $reason');
       
       final response = await http.put(
         Uri.parse("$baseUrl/cab_services/$bookingId/cancel"),
@@ -89,8 +81,6 @@ class CabService {
         }),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       // Handle empty response
       if (response.body.isEmpty) {
@@ -114,7 +104,6 @@ class CabService {
         "message": data["message"] ?? "Cancellation failed",
       };
     } catch (e) {
-      print('Error in cancelBooking: $e');
       return {
         "success": false,
         "message": "Network error: $e",

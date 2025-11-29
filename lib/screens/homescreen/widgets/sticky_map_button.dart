@@ -4,7 +4,7 @@ import 'package:real_beez/screens/map_screens/map_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
 class StickyMapButton extends StatelessWidget {
-  const StickyMapButton({Key? key}) : super(key: key);
+  const StickyMapButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +23,7 @@ class StickyMapButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.2),
             blurRadius: 6,
             offset: const Offset(0, 3),

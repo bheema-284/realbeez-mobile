@@ -15,7 +15,7 @@ class CustomTabBar extends StatefulWidget {
   final double capsuleCenterX;
 
   const CustomTabBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.tabs,
     required this.tabKeys,
@@ -26,9 +26,10 @@ class CustomTabBar extends StatefulWidget {
     required this.onTabSelected,
     required this.capsuleWidth,
     required this.capsuleCenterX,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _CustomTabBarState createState() => _CustomTabBarState();
 }
 

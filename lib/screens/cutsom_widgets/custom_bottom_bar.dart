@@ -35,6 +35,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
         ),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
@@ -127,7 +128,7 @@ class _BottomBarItemState extends State<_BottomBarItem>
         splashColor: Colors.transparent,
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
         borderRadius: BorderRadius.zero,
         child: Container(
           padding: EdgeInsets.zero,

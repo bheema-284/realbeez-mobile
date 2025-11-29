@@ -6,9 +6,10 @@ import 'package:real_beez/utils/app_colors.dart';
 
 class AnimatedWishlistButton extends StatefulWidget {
   final Property property;
-  const AnimatedWishlistButton({required this.property});
+  const AnimatedWishlistButton({super.key, required this.property});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AnimatedWishlistButtonState createState() => _AnimatedWishlistButtonState();
 }
 

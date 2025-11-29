@@ -105,9 +105,8 @@ class AiAssistantController extends ChangeNotifier {
 
 class AiAssistantScreen extends StatefulWidget {
   final AiAssistantController controller;
-  AiAssistantScreen({Key? key, AiAssistantController? controller})
-      : controller = controller ?? _DefaultController().controller,
-        super(key: key);
+  AiAssistantScreen({super.key, AiAssistantController? controller})
+      : controller = controller ?? _DefaultController().controller;
   @override
   State<AiAssistantScreen> createState() => _AiAssistantScreenState();
 }
@@ -243,7 +242,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
-  const ChatBubble({Key? key, required this.message}) : super(key: key);
+  const ChatBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +251,7 @@ class ChatBubble extends StatelessWidget {
     final alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final bgColor = isUser
         ? theme.colorScheme.primaryContainer
-        : theme.colorScheme.surfaceVariant;
+        : theme.colorScheme.surfaceContainerHighest;
     final textColor = isUser
         ? theme.colorScheme.onPrimaryContainer
         : theme.colorScheme.onSurfaceVariant;
@@ -292,8 +291,7 @@ class InputComposer extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onSend;
-  const InputComposer({Key? key, required this.controller, required this.focusNode, required this.onSend})
-      : super(key: key);
+  const InputComposer({super.key, required this.controller, required this.focusNode, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +328,7 @@ class InputComposer extends StatelessWidget {
 }
 
 class TypingIndicator extends StatefulWidget {
-  const TypingIndicator({Key? key}) : super(key: key);
+  const TypingIndicator({super.key});
   @override
   State<TypingIndicator> createState() => _TypingIndicatorState();
 }
@@ -375,7 +373,7 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
 }
 
 class ClearConfirmationDialog extends StatelessWidget {
-  const ClearConfirmationDialog({Key? key}) : super(key: key);
+  const ClearConfirmationDialog({super.key});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -400,7 +398,7 @@ void main() {
 }
 
 class AiAssistantApp extends StatelessWidget {
-  const AiAssistantApp({Key? key}) : super(key: key);
+  const AiAssistantApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -20,9 +20,13 @@ class CapsuleWaveLinePainter extends CustomPainter {
     // Create a shader for fading effect at the ends
     final gradient = LinearGradient(
       colors: [
+        // ignore: deprecated_member_use
         Colors.black.withOpacity(0.0),
+        // ignore: deprecated_member_use
         Colors.black.withOpacity(0.60),
+        // ignore: deprecated_member_use
         Colors.black.withOpacity(0.60),
+        // ignore: deprecated_member_use
         Colors.black.withOpacity(0.0),
       ],
       stops: const [0.0, 0.1, 0.9, 1.0],

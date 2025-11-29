@@ -27,7 +27,6 @@ class ProfileService {
     Map<String, dynamic> profileData,
   ) async {
     try {
-      print('Updating profile: $profileId with data: $profileData');
       
       final response = await http.put(
         Uri.parse("$baseUrl/profile/$profileId"),
@@ -35,8 +34,6 @@ class ProfileService {
         body: jsonEncode(profileData),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       // Handle empty response
       if (response.body.isEmpty) {
@@ -77,7 +74,6 @@ class ProfileService {
         }
       }
     } catch (e) {
-      print('Error in updateProfile: $e');
       return {
         "success": false,
         "message": "Network error: $e",
@@ -96,8 +92,6 @@ class ProfileService {
         body: jsonEncode(profileData),
       );
 
-      print('Create profile response: ${response.statusCode}');
-      print('Create profile body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {

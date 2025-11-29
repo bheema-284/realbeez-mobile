@@ -6,9 +6,9 @@ class MustVisitSection extends StatelessWidget {
   final List<Map<String, String>> trendingApartments;
 
   const MustVisitSection({
-    Key? key,
+    super.key,
     required this.trendingApartments,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class MustVisitSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -44,7 +44,7 @@ class MustVisitSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: isSmallScreen ? 10 : 14),
-              Container(
+              SizedBox(
                 width: isSmallScreen ? 48 : 52,
                 height: isSmallScreen ? 48 : 52,
                 child: Image.asset(
@@ -101,6 +101,7 @@ class MustVisitSection extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
@@ -129,6 +130,7 @@ class MustVisitSection extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
+                      // ignore: deprecated_member_use
                       Colors.black.withOpacity(0.6),
                     ],
                   ),

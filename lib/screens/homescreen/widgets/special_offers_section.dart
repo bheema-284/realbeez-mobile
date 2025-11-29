@@ -7,12 +7,13 @@ class SpecialOffersSection extends StatefulWidget {
   final ValueChanged<int> onPageChanged;
 
   const SpecialOffersSection({
-    Key? key,
+    super.key,
     required this.currentSpecialOfferPage,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _SpecialOffersSectionState createState() => _SpecialOffersSectionState();
 }
 
@@ -83,6 +84,7 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 5,
             spreadRadius: 1,
