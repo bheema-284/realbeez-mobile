@@ -165,8 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }); 
     _startSpecialOffersAutoPlay(); 
     _startRecommendedSitesAutoPlay();
-    
-    // Simulate loading data
+
     _simulateDataLoading();
   } 
 
