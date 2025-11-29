@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:real_beez/screens/landing_pages/onboarding_screen.dart';
-import 'package:real_beez/screens/homescreen/booking_screens/bookings_screen.dart';
+import 'package:real_beez/screens/booking_screens/bookings_screen.dart';
 import 'package:real_beez/screens/premium_screens/premium_plan.dart';
 import 'package:real_beez/screens/profile_screens/about.dart';
 import 'package:real_beez/screens/profile_screens/help.dart';
@@ -18,17 +18,9 @@ class ProfileSettingsScreen extends StatelessWidget {
   static const Color dividerColor = Color(0xFFF1F1EF);
 
   final List<_SettingItem> settingsItems = const [
-    _SettingItem(
-      label: 'Booking Details',
-      icon: Icons.calendar_today,
-      key: Key('booking'),
-    ),
+    _SettingItem(label: 'Booking Details', icon: Icons.calendar_today, key: Key('booking')),
     _SettingItem(label: 'My Bio', icon: Icons.badge, key: Key('bio')),
-    _SettingItem(
-      label: 'Premium Plan Details',
-      icon: Icons.stars,
-      key: Key('premium'),
-    ),
+    _SettingItem(label: 'Premium Plan Details', icon: Icons.stars, key: Key('premium')),
     _SettingItem(label: 'Privacy', icon: Icons.lock, key: Key('privacy')),
     _SettingItem(label: 'Help', icon: Icons.help_outline, key: Key('help')),
     _SettingItem(label: 'About', icon: Icons.info_outline, key: Key('about')),
@@ -109,11 +101,7 @@ class ProfileSettingsScreen extends StatelessWidget {
         SizedBox(height: 10),
         Text(
           'Someone',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ],
     );
@@ -138,14 +126,8 @@ class ProfileSettingsScreen extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 12),
-            child: Text(
-              'Settings',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-            ),
+            child: Text('Settings',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
           ),
           ...settingsItems.asMap().entries.map((entry) {
             int idx = entry.key;
@@ -156,47 +138,17 @@ class ProfileSettingsScreen extends StatelessWidget {
                   key: item.key,
                   onTap: () {
                     if (item.label == 'Booking Details') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BookingScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
                     } else if (item.label == 'My Bio') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyBioScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MyBioScreen()));
                     } else if (item.label == 'About') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AboutScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
                     } else if (item.label == 'Privacy') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PrivacyPolicyScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()));
                     } else if (item.label == 'Help') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HelpSupportScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportScreen()));
                     } else if (item.label == 'Premium Plan Details') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PremiumPlanScreen(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PremiumPlanScreen()));
                     }
                   },
                   borderRadius: BorderRadius.circular(8),
@@ -208,28 +160,19 @@ class ProfileSettingsScreen extends StatelessWidget {
                         Container(
                           width: 36,
                           height: 36,
-                          decoration: const BoxDecoration(
-                            color: AppColors.beeYellow,
-                            shape: BoxShape.circle,
-                          ),
+                          decoration:
+                              const BoxDecoration(color: AppColors.beeYellow, shape: BoxShape.circle),
                           child: Icon(item.icon, color: Colors.white, size: 18),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
-                          child: Text(
-                            item.label,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
+                          child: Text(item.label,
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black)),
                         ),
-                        const Icon(
-                          Icons.chevron_right,
-                          color: chevronColor,
-                          size: 18,
-                        ),
+                        const Icon(Icons.chevron_right, color: chevronColor, size: 18),
                       ],
                     ),
                   ),
@@ -253,15 +196,13 @@ class ProfileSettingsScreen extends StatelessWidget {
         onPressed: () => _logout(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.beeYellow,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
         child: const Text(
           'Logout',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
     );
@@ -272,9 +213,5 @@ class _SettingItem {
   final String label;
   final IconData icon;
   final Key key;
-  const _SettingItem({
-    required this.label,
-    required this.icon,
-    required this.key,
-  });
+  const _SettingItem({required this.label, required this.icon, required this.key});
 }

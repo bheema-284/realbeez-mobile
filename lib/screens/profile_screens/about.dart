@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
+
+void main() {
+  runApp(MaterialApp(
+    home: AboutScreen(),
+    debugShowCheckedModeBanner: false,
+  ));
+}
+
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    
     const Color darkGray = Color(0xFF333333);
     const TextStyle headerStyle = TextStyle(
       color: darkGray,
@@ -32,11 +41,14 @@ class AboutScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "About Real Beez",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Color(0xFFFAF2DD),
-
+    
         iconTheme: const IconThemeData(color: darkGray),
       ),
       body: SingleChildScrollView(
@@ -56,7 +68,7 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Header
-            const Text("About Real Beez", style: headerStyle),
+            const Text("About Real Beez", style: headerStyle, ),
             const SizedBox(height: 10),
 
             // Mission Statement
@@ -73,6 +85,7 @@ class AboutScreen extends StatelessWidget {
               child: Text(
                 "Our Values",
                 style: headerStyle.copyWith(fontSize: 22),
+                
               ),
             ),
             const SizedBox(height: 15),
@@ -110,10 +123,8 @@ class AboutScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 24,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -121,11 +132,8 @@ class AboutScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: AppColors.beeYellow,
-                          size: 22,
-                        ),
+                        Icon(Icons.location_on_outlined,
+                            color: AppColors.beeYellow, size: 22),
                         const SizedBox(width: 8),
                         const Expanded(
                           child: Text(
@@ -138,11 +146,8 @@ class AboutScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(
-                          Icons.email_outlined,
-                          color: AppColors.beeYellow,
-                          size: 22,
-                        ),
+                        Icon(Icons.email_outlined,
+                            color: AppColors.beeYellow, size: 22),
                         const SizedBox(width: 8),
                         const Text(
                           "support@realbeez.com",
@@ -153,13 +158,13 @@ class AboutScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(
-                          Icons.phone_outlined,
-                          color: AppColors.beeYellow,
-                          size: 22,
-                        ),
+                        Icon(Icons.phone_outlined,
+                            color:AppColors.beeYellow, size: 22),
                         const SizedBox(width: 8),
-                        const Text("+91 98765 43210", style: cardDescStyle),
+                        const Text(
+                          "+91 98765 43210",
+                          style: cardDescStyle,
+                        ),
                       ],
                     ),
                   ],

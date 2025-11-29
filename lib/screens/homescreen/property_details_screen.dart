@@ -23,7 +23,9 @@ BoxShadow kCardShadow = BoxShadow(
 );
 
 class PropertyDetailScreen extends StatefulWidget {
-  const PropertyDetailScreen({Key? key}) : super(key: key);
+  final String propertyId;
+
+  const PropertyDetailScreen({Key? key, required this.propertyId}) : super(key: key);
 
   @override
   State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
@@ -34,16 +36,94 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   bool _isBookmarked = false;
   bool _showAmenities = false;
   Set<int> _selectedAmenities = {};
-
+  
   // Carousel state
   final PageController _imagePageController = PageController();
   int _currentImageIndex = 0;
   Timer? _carouselTimer;
 
+  // Property data based on ID
+  Map<String, dynamic> get _propertyData {
+    final properties = {
+      'prop_001': {
+        'title': 'Sky View Villas',
+        'location': 'Jubilee Hills, Hyderabad',
+        'priceRange': '3.5 Cr – 5.2 Cr',
+        'description': 'Experience luxury living in these spacious villas, designed with modern architecture, elegant interiors, and private green spaces. Each villa offers a perfect blend of comfort and sophistication, ideal for families seeking a serene lifestyle. These villas feature premium amenities including a swimming pool, gymnasium, children\'s play area, and 24/7 security. The location provides easy access to schools, hospitals, shopping centers, and major business districts.',
+        'reraId': 'P02200000380',
+        'address': 'Jubilee Hills, Hyderabad, Telangana, India, 500085',
+        'phone': '+91 98765 43210',
+      },
+      'prop_002': {
+        'title': 'Urban Sky Apartments',
+        'location': 'Financial District, Hyderabad',
+        'priceRange': '2.8 Cr – 4.2 Cr',
+        'description': 'Modern apartments with premium amenities in the heart of the financial district. These apartments feature state-of-the-art facilities including a rooftop garden, fitness center, and smart home automation. Perfect for professionals seeking luxury and convenience with stunning city views and easy access to corporate offices and entertainment hubs.',
+        'reraId': 'P02200000381',
+        'address': 'Financial District, Hyderabad, Telangana, India, 500032',
+        'phone': '+91 98765 43211',
+      },
+      'prop_003': {
+        'title': 'Prestige High Fields',
+        'location': 'Gachibowli, Hyderabad',
+        'priceRange': '1.8 Cr – 2.5 Cr',
+        'description': 'Under construction property with great potential for investment and future living. Located in the rapidly developing Gachibowli area, these properties offer modern amenities and strategic location advantages. The project includes recreational facilities, commercial spaces, and excellent connectivity to IT hubs and educational institutions.',
+        'reraId': 'P02200000382',
+        'address': 'Gachibowli, Hyderabad, Telangana, India, 500032',
+        'phone': '+91 98765 43212',
+      },
+      'prop_004': {
+        'title': 'Green Valley Community',
+        'location': 'Hitech City, Hyderabad',
+        'priceRange': '2.2 Cr – 3.8 Cr',
+        'description': 'A peaceful community living experience in the bustling Hitech City area. These properties offer the perfect balance between urban convenience and natural surroundings. The community features landscaped gardens, walking tracks, community centers, and excellent security systems for a comfortable family lifestyle.',
+        'reraId': 'P02200000383',
+        'address': 'Hitech City, Hyderabad, Telangana, India, 500081',
+        'phone': '+91 98765 43213',
+      },
+      'prop_005': {
+        'title': 'Elite Penthouse Residences',
+        'location': 'Banjara Hills, Hyderabad',
+        'priceRange': '4.5 Cr – 6.8 Cr',
+        'description': 'Ultra-luxury penthouse residences offering panoramic city views and exclusive amenities. These penthouses feature private terraces, Jacuzzis, premium finishes, and personalized services. Located in the most prestigious neighborhood, they offer privacy, security, and unmatched luxury for discerning buyers.',
+        'reraId': 'P02200000384',
+        'address': 'Banjara Hills, Hyderabad, Telangana, India, 500034',
+        'phone': '+91 98765 43214',
+      },
+      'prop_006': {
+        'title': 'Royal Garden Estates',
+        'location': 'Kokapet, Hyderabad',
+        'priceRange': '1.5 Cr – 2.2 Cr',
+        'description': 'Gated community living with extensive green spaces and family-friendly amenities. These estates offer spacious homes with modern designs, community parks, sports facilities, and shopping areas within the complex. Perfect for families looking for a secure and vibrant community environment.',
+        'reraId': 'P02200000385',
+        'address': 'Kokapet, Hyderabad, Telangana, India, 500075',
+        'phone': '+91 98765 43215',
+      },
+      'prop_007': {
+        'title': 'Tech Park Commercial',
+        'location': 'Raidurg, Hyderabad',
+        'priceRange': '8.5 Cr – 12 Cr',
+        'description': 'Premium commercial spaces in the heart of the technology corridor. These commercial properties offer excellent visibility, modern infrastructure, and strategic location advantages for businesses. Features include ample parking, high-speed elevators, modern security systems, and flexible office layouts suitable for various business needs.',
+        'reraId': 'P02200000386',
+        'address': 'Raidurg, Hyderabad, Telangana, India, 500032',
+        'phone': '+91 98765 43216',
+      },
+    };
+
+    return properties[widget.propertyId] ?? {
+      'title': 'Ankura Villas',
+      'location': 'Gachibowli',
+      'priceRange': '80 Lakhs - 1 Cr',
+      'description': 'Experience luxury living in these spacious villas, designed with modern architecture, elegant interiors, and private green spaces. Each villa offers a perfect blend of comfort and sophistication, ideal for families seeking a serene lifestyle. These villas feature premium amenities including a swimming pool, gymnasium, children\'s play area, and 24/7 security. The location provides easy access to schools, hospitals, shopping centers, and major business districts.',
+      'reraId': 'P02200000380',
+      'address': 'Kphb, Hyderabad, Telangana, India, 500055',
+      'phone': '+91 98765 43210',
+    };
+  }
+
   @override
   void initState() {
     super.initState();
-    // Start auto-sliding carousel
     _startCarouselTimer();
   }
 
@@ -57,7 +137,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   void _startCarouselTimer() {
     _carouselTimer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (_imagePageController.hasClients) {
-        final nextIndex = (_currentImageIndex + 1) % 5; // assuming 5 images
+        final nextIndex = (_currentImageIndex + 1) % 5;
         _imagePageController.animateToPage(
           nextIndex,
           duration: Duration(milliseconds: 500),
@@ -89,7 +169,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Share Property'),
-          content: Text('Share this property with others'),
+          content: Text('Share ${_propertyData['title']} with others'),
           actions: [
             TextButton(
               onPressed: () {
@@ -140,15 +220,15 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   void _shareViaWhatsApp(BuildContext context) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Opening WhatsApp...')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Opening WhatsApp...')),
+    );
   }
 
   void _shareViaEmail(BuildContext context) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Opening Email...')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Opening Email...')),
+    );
   }
 
   void _copyToClipboard(BuildContext context) {
@@ -168,9 +248,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
   void _openDirections(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening directions to Ankura Villas, Gachibowli...'),
-      ),
+      SnackBar(content: Text('Opening directions to ${_propertyData['title']}, ${_propertyData['location']}...')),
     );
   }
 
@@ -180,7 +258,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Call Property Agent'),
-          content: Text('Would you like to call the property agent?'),
+          content: Text('Would you like to call the property agent for ${_propertyData['title']}?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -190,7 +268,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Calling +91 98765 43210...')),
+                  SnackBar(content: Text('Calling ${_propertyData['phone']}...')),
                 );
               },
               child: Text('Call'),
@@ -207,7 +285,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Book a Visit'),
-          content: Text('Schedule a visit to Ankura Villas, Gachibowli'),
+          content: Text('Schedule a visit to ${_propertyData['title']}, ${_propertyData['location']}'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -217,11 +295,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Visit request submitted! We\'ll contact you soon.',
-                    ),
-                  ),
+                  SnackBar(content: Text('Visit request submitted! We\'ll contact you soon.')),
                 );
               },
               child: Text('Book Visit'),
@@ -240,13 +314,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         top: false,
         child: Stack(
           children: [
-            // Main scrollable content
             CustomScrollView(
               slivers: [
-                // Hero image section
                 SliverToBoxAdapter(
                   child: Container(
-                    height: 280,
+                    height: 320,
                     child: _HeroImageSection(
                       isBookmarked: _isBookmarked,
                       onBookmarkTap: () {
@@ -264,30 +336,42 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     ),
                   ),
                 ),
-
-                // Property Info Card as a sliver
+                
+                // Add empty space for the overlapping card
                 SliverToBoxAdapter(
-                  child: _PropertyInfoCard(
-                    isDescriptionExpanded: _isDescriptionExpanded,
-                    showAmenities: _showAmenities,
-                    selectedAmenities: _selectedAmenities,
-                    onReadMoreTap: () {
-                      setState(() {
-                        _isDescriptionExpanded = !_isDescriptionExpanded;
-                      });
-                    },
-                    onAmenitiesToggle: () {
-                      setState(() {
-                        _showAmenities = !_showAmenities;
-                      });
-                    },
-                    onAmenityTap: _toggleAmenitySelection,
-                    onDirectionTap: () => _openDirections(context),
-                    onCallTap: () => _makeCall(context),
-                    onBookVisitTap: () => _bookVisit(context),
-                  ),
+                  child: SizedBox(height: 280), // This creates space for the overlapping card
                 ),
               ],
+            ),
+            
+            // Positioned Property Info Card that overlaps the image
+            Positioned(
+              top: 280, // Position from top to overlap the image carousel
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SingleChildScrollView( // Make the card scrollable
+                child: _PropertyInfoCard(
+                  propertyData: _propertyData,
+                  isDescriptionExpanded: _isDescriptionExpanded,
+                  showAmenities: _showAmenities,
+                  selectedAmenities: _selectedAmenities,
+                  onReadMoreTap: () {
+                    setState(() {
+                      _isDescriptionExpanded = !_isDescriptionExpanded;
+                    });
+                  },
+                  onAmenitiesToggle: () {
+                    setState(() {
+                      _showAmenities = !_showAmenities;
+                    });
+                  },
+                  onAmenityTap: _toggleAmenitySelection,
+                  onDirectionTap: () => _openDirections(context),
+                  onCallTap: () => _makeCall(context),
+                  onBookVisitTap: () => _bookVisit(context),
+                ),
+              ),
             ),
           ],
         ),
@@ -296,9 +380,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 }
 
-// -----------------------
-// Hero Image Section with Carousel
-// -----------------------
 class _HeroImageSection extends StatelessWidget {
   final bool isBookmarked;
   final VoidCallback onBookmarkTap;
@@ -322,33 +403,31 @@ class _HeroImageSection extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Image Carousel
+        // Main image carousel
         PageView.builder(
           controller: pageController,
           onPageChanged: onPageChanged,
-          itemCount: 5, // 5 sample images
+          itemCount: 5,
           itemBuilder: (context, index) {
             return Image.asset(
-              index % 2 == 0
-                  ? 'assets/images/swipe1.png'
-                  : 'assets/images/swipe.png',
+              index % 2 == 0 ? 'assets/images/swipe1.png' : 'assets/images/swipe.png',
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(color: kImageError),
             );
           },
         ),
 
-        // Carousel indicator dots - Positioned higher up
+        // Bottom indicators - positioned at the very bottom of the container
         Positioned(
-          bottom: 40, // Moved up from 20 to 40
+          bottom: 70, // Positioned higher to be visible above the overlapping card
           left: 0,
           right: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(5, (index) {
               return Container(
-                width: 8,
-                height: 8,
+                width: 6,
+                height: 6,
                 margin: EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -359,7 +438,7 @@ class _HeroImageSection extends StatelessWidget {
           ),
         ),
 
-        // translucent appbar + icons
+        // Top action buttons
         Positioned(
           left: 12,
           right: 12,
@@ -377,14 +456,17 @@ class _HeroImageSection extends StatelessWidget {
 
               Row(
                 children: [
-                  _SmallPillIcon(icon: Icons.share, onTap: onShareTap),
+                  _SmallPillIcon(
+                    icon: Icons.share,
+                    onTap: onShareTap,
+                  ),
                   SizedBox(width: 8),
                   _SmallPillIcon(
                     icon: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                     onTap: onBookmarkTap,
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
@@ -393,7 +475,6 @@ class _HeroImageSection extends StatelessWidget {
   }
 }
 
-// Circle icon used for back & other main icons
 class _CircleIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -420,7 +501,10 @@ class _CircleIconButton extends StatelessWidget {
         child: Container(
           width: size,
           height: size,
-          decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: background,
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, color: iconColor, size: 26),
         ),
       ),
@@ -428,7 +512,6 @@ class _CircleIconButton extends StatelessWidget {
   }
 }
 
-// small pill buttons on top right of image
 class _SmallPillIcon extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -457,10 +540,8 @@ class _SmallPillIcon extends StatelessWidget {
   }
 }
 
-// -----------------------
-// Property Info Card (now scrollable as part of main content)
-// -----------------------
 class _PropertyInfoCard extends StatelessWidget {
+  final Map<String, dynamic> propertyData;
   final bool isDescriptionExpanded;
   final bool showAmenities;
   final Set<int> selectedAmenities;
@@ -473,6 +554,7 @@ class _PropertyInfoCard extends StatelessWidget {
 
   const _PropertyInfoCard({
     Key? key,
+    required this.propertyData,
     required this.isDescriptionExpanded,
     required this.showAmenities,
     required this.selectedAmenities,
@@ -484,12 +566,12 @@ class _PropertyInfoCard extends StatelessWidget {
     required this.onBookVisitTap,
   }) : super(key: key);
 
-  // Short and full description
   String get _description => isDescriptionExpanded
-      ? 'Experience luxury living in these spacious villas, designed with modern architecture, elegant interiors, and private green spaces. Each villa offers a perfect blend of comfort and sophistication, ideal for families seeking a serene lifestyle. These villas feature premium amenities including a swimming pool, gymnasium, children\'s play area, and 24/7 security. The location provides easy access to schools, hospitals, shopping centers, and major business districts.'
-      : 'Experience luxury living in these spacious villas, designed with modern architecture, elegant interiors, and private green spaces. Each villa offers a perfect blend of comfort and sophistication, ideal for families seeking a serene lifestyle.';
+      ? propertyData['description']
+      : propertyData['description'].length > 200
+          ? '${propertyData['description'].substring(0, 200)}...'
+          : propertyData['description'];
 
-  // All amenities asset paths
   List<String> get _amenitiesAssets => [
     'assets/icons/amenities.png',
     'assets/icons/amenities1.png',
@@ -525,18 +607,11 @@ class _PropertyInfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Main content
             Padding(
-              padding: const EdgeInsets.only(
-                top: 40,
-                left: 20,
-                right: 20,
-                bottom: 20,
-              ),
+              padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title and Location with Download Button in same row
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -544,9 +619,8 @@ class _PropertyInfoCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Title
                             Text(
-                              'Ankura Villas',
+                              propertyData['title'],
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -556,7 +630,6 @@ class _PropertyInfoCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
-                            // Location
                             Row(
                               children: [
                                 Icon(
@@ -567,7 +640,7 @@ class _PropertyInfoCard extends StatelessWidget {
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
-                                    'Gachibowli',
+                                    propertyData['location'],
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -581,16 +654,13 @@ class _PropertyInfoCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 12),
-                      // Download Brochure Button - Now in same row as location
                       SizedBox(
                         height: 35,
                         child: ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.beeYellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             elevation: 0,
                             padding: EdgeInsets.symmetric(horizontal: 12),
                           ),
@@ -606,20 +676,22 @@ class _PropertyInfoCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
+                  
                   SizedBox(height: 12),
-
-                  // Price Range Section
+                  
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Price Range start from',
-                        style: TextStyle(fontSize: 12, color: kSubtitleGray),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: kSubtitleGray,
+                        ),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        '80 Lakhs - 1 Cr',
+                        propertyData['priceRange'],
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -628,17 +700,12 @@ class _PropertyInfoCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
+                  
                   SizedBox(height: 16),
 
-                  // Description + Read More
                   Text(
                     _description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: kDescGray,
-                      height: 1.4,
-                    ),
+                    style: TextStyle(fontSize: 14, color: kDescGray, height: 1.4),
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -649,20 +716,13 @@ class _PropertyInfoCard extends StatelessWidget {
                         minimumSize: Size(44, 24),
                       ),
                       child: Text(
-                        isDescriptionExpanded
-                            ? 'Read Less....'
-                            : 'Read More....',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.beeYellow,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        isDescriptionExpanded ? 'Read Less....' : 'Read More....',
+                        style: TextStyle(fontSize: 14, color: AppColors.beeYellow, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
-                  SizedBox(height: 12),
+                
 
-                  // Our Amenities Section with Toggle
                   _AmenitiesSectionWithToggle(
                     showAmenities: showAmenities,
                     onToggle: onAmenitiesToggle,
@@ -671,150 +731,131 @@ class _PropertyInfoCard extends StatelessWidget {
                     onAmenityTap: onAmenityTap,
                   ),
 
-                  SizedBox(height: 24),
-
-                  // Address Section
+                  SizedBox(height: 8),
+                  
                   _SectionTitle('Address'),
                   SizedBox(height: 16),
-                  _AddressSection(),
+                  _AddressSection(address: propertyData['address']),
 
                   SizedBox(height: 24),
-
-                  // RERA ID Section
+                  
                   _SectionTitle('RERA ID'),
                   SizedBox(height: 16),
-                  _ReraSection(),
+                  _ReraSection(reraId: propertyData['reraId']),
 
                   SizedBox(height: 24),
-
-                  // About Building Section
+                  
                   _SectionTitle('About Building'),
                   SizedBox(height: 16),
                   _AboutBuildingSection(),
 
-                  // Divider between sections
-                  SizedBox(height: 24),
-                  Divider(color: Colors.grey[300], height: 1),
+               
                   SizedBox(height: 24),
 
-                  // More Photos and Videos Section
                   _SectionTitle('More Photos and Videos'),
                   SizedBox(height: 12),
-                  _PhotosCarousel(),
+                  PhotosVideosCarouselWithDots(),
 
-                  // Divider between sections
                   SizedBox(height: 24),
-                  Divider(color: Colors.grey[300], height: 1),
+              _SectionTitle('Floor Plans and Broucher'),
+                  SizedBox(height: 12),
+                  _FloorPlansCarousel(),
+
                   SizedBox(height: 24),
 
-                  // What Our Client's Say Section
                   _SectionTitle('What Our Client\'s Say!'),
                   TestimonialSection(),
 
-                  // Bottom spacing before action buttons
                   SizedBox(height: 20),
                 ],
               ),
             ),
+           Container(
+  width: double.infinity,
+  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    border: Border(
+      top: BorderSide(color: Colors.grey[300]!, width: 1),
+    ),
+  ),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      SizedBox(
+        height: 48,
+        width: 48,
+        child: ElevatedButton(
+          onPressed: onDirectionTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.beeYellow,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            elevation: 0,
+            padding: EdgeInsets.zero,
+          ),
+          child: const Icon(
+            Icons.navigation,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+      ),
+      SizedBox(width: 20),
+      SizedBox(
+        height: 48,
+        width: 48,
+        child: ElevatedButton(
+          onPressed: onCallTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.beeYellow,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            elevation: 0,
+            padding: EdgeInsets.zero,
+          ),
+          child: const Icon(
+            Icons.call,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+      ),
 
-            // Action Buttons Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!, width: 1),
-                ),
+    SizedBox(width: 20),
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: SizedBox(
+            height: 48,
+            width: 100,
+            child: OutlinedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapScreen()),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                backgroundColor: AppColors.beeYellow,
+                side: const BorderSide(color: Color(0xFFE6E0D6)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Navigation Button
-                  SizedBox(
-                    height: 48,
-                    width: 48,
-                    child: ElevatedButton(
-                      onPressed: onDirectionTap,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.beeYellow,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                      ),
-                      child: const Icon(
-                        Icons.navigation,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  // Call Button (no space between)
-                  SizedBox(
-                    height: 48,
-                    width: 48,
-                    child: ElevatedButton(
-                      onPressed: onCallTap,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.beeYellow,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                      ),
-                      child: const Icon(
-                        Icons.call,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 8,
-                      ), // slight gap after icons
-                      child: SizedBox(
-                        height: 48,
-                        width: 100,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const MapScreen(),
-                              ),
-                            );
-                          },
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: AppColors.beeYellow,
-                            side: const BorderSide(color: Color(0xFFE6E0D6)),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(
-                            'Book a Visit',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 18,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: const Text(
+                'Book a Visit',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 18,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
           ],
         ),
       ),
@@ -822,7 +863,239 @@ class _PropertyInfoCard extends StatelessWidget {
   }
 }
 
-// NEW: Amenities Section with Toggle
+class PhotosVideosCarouselWithDots extends StatefulWidget {
+  const PhotosVideosCarouselWithDots({Key? key}) : super(key: key);
+
+  @override
+  State<PhotosVideosCarouselWithDots> createState() => _PhotosVideosCarouselWithDotsState();
+}
+
+class _PhotosVideosCarouselWithDotsState extends State<PhotosVideosCarouselWithDots> {
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+
+  final List<Map<String, String>> _mediaItems = [
+    {
+      'type': 'image',
+      'url': 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop',
+    },
+    {
+      'type': 'video',
+      'url': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    },
+    {
+      'type': 'image',
+      'url': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop',
+    },
+    {
+      'type': 'image',
+      'url': 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop',
+    },
+    {
+      'type': 'video',
+      'url': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    },
+    {
+      'type': 'image',
+      'url': 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400&h=300&fit=crop',
+    },
+  ];
+
+  // Track video controllers
+  late List<VideoPlayerController?> _videoControllers;
+  late List<bool> _isVideoInitialized;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    
+    // Initialize video controllers
+    _videoControllers = List.generate(_mediaItems.length, (index) => null);
+    _isVideoInitialized = List.filled(_mediaItems.length, false);
+    
+    // Pre-initialize video controllers for video items
+    for (int i = 0; i < _mediaItems.length; i++) {
+      if (_mediaItems[i]['type'] == 'video') {
+        _initializeVideoController(i);
+      }
+    }
+  }
+
+  void _initializeVideoController(int index) {
+    _videoControllers[index] = VideoPlayerController.network(_mediaItems[index]['url']!)
+      ..initialize().then((_) {
+        if (mounted) {
+          setState(() {
+            _isVideoInitialized[index] = true;
+          });
+          _videoControllers[index]!.setLooping(true);
+          // Auto-play if this is the current page
+          if (index == _currentPage) {
+            _videoControllers[index]!.play();
+          }
+        }
+      });
+  }
+
+  void _onScroll() {
+    final scrollPosition = _scrollController.position;
+    final pageWidth = MediaQuery.of(context).size.width * 0.8;
+    final newPage = (scrollPosition.pixels / pageWidth).round();
+    
+    if (newPage != _currentPage) {
+      // Pause videos that are no longer in view
+      _pauseAllVideos();
+      
+      setState(() {
+        _currentPage = newPage;
+      });
+      
+      // Play the new current video if it's a video
+      _playCurrentVideo();
+    }
+  }
+
+  void _pauseAllVideos() {
+    for (int i = 0; i < _videoControllers.length; i++) {
+      if (_videoControllers[i] != null && 
+          _isVideoInitialized[i] && 
+          _videoControllers[i]!.value.isPlaying) {
+        _videoControllers[i]!.pause();
+      }
+    }
+  }
+
+  void _playCurrentVideo() {
+    if (_currentPage < _mediaItems.length && 
+        _mediaItems[_currentPage]['type'] == 'video' &&
+        _videoControllers[_currentPage] != null &&
+        _isVideoInitialized[_currentPage] &&
+        !_videoControllers[_currentPage]!.value.isPlaying) {
+      _videoControllers[_currentPage]!.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    for (var controller in _videoControllers) {
+      controller?.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final itemWidth = screenWidth * 0.8;
+    final itemHeight = itemWidth * 0.8;
+
+    return Column(
+      children: [
+        // Horizontal scrollable carousel
+        Container(
+          height: itemHeight,
+          child: ListView.separated(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            itemCount: _mediaItems.length,
+            separatorBuilder: (context, index) => SizedBox(width: 12),
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            itemBuilder: (context, index) {
+              final item = _mediaItems[index];
+              final isVideo = item['type'] == 'video';
+              
+              return Container(
+                width: itemWidth,
+                height: itemHeight,
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: isVideo
+                        ? _VideoPlayerItem(
+                            videoController: _videoControllers[index],
+                            isInitialized: _isVideoInitialized[index],
+                          )
+                        : Image.network(
+                            item['url']!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: kImageError,
+                            ),
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        
+        SizedBox(height: 12),
+        
+        // Dots indicator
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_mediaItems.length, (index) {
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              width: _currentPage == index ? 8 : 6,
+              height: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(4),
+                color: _currentPage == index ? AppColors.beeYellow : Colors.grey[400],
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+}
+
+class _VideoPlayerItem extends StatelessWidget {
+  final VideoPlayerController? videoController;
+  final bool isInitialized;
+
+  const _VideoPlayerItem({
+    required this.videoController,
+    required this.isInitialized,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isInitialized || videoController == null) {
+      return Container(
+        color: Colors.black12,
+        child: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.beeYellow),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: videoController!.value.size.width,
+          height: videoController!.value.size.height,
+          child: VideoPlayer(videoController!),
+        ),
+      ),
+    );
+  }
+}
+
 class _AmenitiesSectionWithToggle extends StatelessWidget {
   final bool showAmenities;
   final VoidCallback onToggle;
@@ -843,7 +1116,6 @@ class _AmenitiesSectionWithToggle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section header with toggle button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -866,8 +1138,7 @@ class _AmenitiesSectionWithToggle extends StatelessWidget {
             ),
           ],
         ),
-
-        // Amenities Grid (only shown when expanded)
+        
         if (showAmenities) ...[
           _AmenitiesGrid(
             amenitiesAssets: amenitiesAssets,
@@ -905,7 +1176,6 @@ class _AmenitiesGrid extends StatelessWidget {
       ),
       itemCount: amenitiesAssets.length,
       itemBuilder: (context, index) {
-        // Add null safety check
         if (index >= amenitiesAssets.length) {
           return Container(
             width: 36,
@@ -919,7 +1189,7 @@ class _AmenitiesGrid extends StatelessWidget {
 
         final isSelected = selectedAmenities.contains(index);
         final assetPath = amenitiesAssets[index];
-
+        
         return GestureDetector(
           onTap: () => onAmenityTap(index),
           child: Container(
@@ -956,27 +1226,23 @@ class _AmenitiesGrid extends StatelessWidget {
   }
 }
 
-// NEW: Address Section - UPDATED with asset icons
 class _AddressSection extends StatelessWidget {
+  final String address;
+
+  const _AddressSection({required this.address});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // First row: Asia with location icon from assets
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/icons/globe.png', // Your location icon asset path
-              width: 20,
-              height: 20,
+            Icon(
+              Icons.public,
               color: AppColors.beeYellow,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.location_on_outlined,
-                color: AppColors.beeYellow,
-                size: 20,
-              ),
+              size: 20,
             ),
             SizedBox(width: 12),
             Text(
@@ -989,29 +1255,25 @@ class _AddressSection extends StatelessWidget {
             ),
           ],
         ),
-
+        
         SizedBox(height: 12),
-
-        // Second row: Address details with location icon from assets
+        
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/icons/location.png', // Your location icon asset path
-              width: 20,
-              height: 20,
+            Icon(
+              Icons.location_on_outlined,
               color: AppColors.beeYellow,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.location_on_outlined,
-                color: AppColors.beeYellow,
-                size: 20,
-              ),
+              size: 20,
             ),
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Kphb, Hyderabad, Telangana, India, 500055',
-                style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                address,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF666666),
+                ),
               ),
             ),
           ],
@@ -1021,8 +1283,11 @@ class _AddressSection extends StatelessWidget {
   }
 }
 
-// NEW: RERA ID Section - UPDATED
 class _ReraSection extends StatelessWidget {
+  final String reraId;
+
+  const _ReraSection({required this.reraId});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1035,14 +1300,18 @@ class _ReraSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.verified_outlined, color: AppColors.beeYellow, size: 20),
+          Icon(
+            Icons.verified_outlined,
+            color: AppColors.beeYellow,
+            size: 20,
+          ),
           SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'P02200000380',
+                  reraId,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1074,31 +1343,22 @@ class _ReraSection extends StatelessWidget {
   }
 }
 
-// NEW: About Building Section - UPDATED with separate icons for each item
 class _AboutBuildingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // First row: 2nd Block and 18 Floors
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // 2nd Block with its own icon
             Expanded(
               child: Row(
                 children: [
-                  Image.asset(
-                    'assets/icons/block_icon.png', // Icon for 2nd Block
-                    width: 20,
-                    height: 20,
+                  Icon(
+                    Icons.account_balance,
                     color: AppColors.beeYellow,
-                    errorBuilder: (_, __, ___) => Icon(
-                      Icons.account_balance,
-                      color: AppColors.beeYellow,
-                      size: 20,
-                    ),
+                    size: 20,
                   ),
                   SizedBox(width: 8),
                   Column(
@@ -1124,22 +1384,16 @@ class _AboutBuildingSection extends StatelessWidget {
                 ],
               ),
             ),
-
-            SizedBox(width: 16), // Space between items
-            // 18 Floors with its own icon
+            
+            SizedBox(width: 16),
+            
             Expanded(
               child: Row(
                 children: [
-                  Image.asset(
-                    'assets/icons/floors_icon.png', // Different icon for 18 Floors
-                    width: 20,
-                    height: 20,
+                  Icon(
+                    Icons.layers,
                     color: AppColors.beeYellow,
-                    errorBuilder: (_, __, ___) => Icon(
-                      Icons.layers,
-                      color: AppColors.beeYellow,
-                      size: 20,
-                    ),
+                    size: 20,
                   ),
                   SizedBox(width: 8),
                   Column(
@@ -1167,23 +1421,19 @@ class _AboutBuildingSection extends StatelessWidget {
             ),
           ],
         ),
-
-        SizedBox(height: 16), // Space between rows
-        // Second row: 5 units and 7th Floor (if they need separate icons)
+        
+        SizedBox(height: 16),
+        
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // If 5 units needs its own icon
             Expanded(
               child: Row(
                 children: [
-                  Image.asset(
-                    'assets/icons/units_icon.png', // Separate icon for units
-                    width: 20,
-                    height: 20,
+                  Icon(
+                    Icons.home,
                     color: AppColors.beeYellow,
-                    errorBuilder: (_, __, ___) =>
-                        Icon(Icons.home, color: AppColors.beeYellow, size: 20),
+                    size: 20,
                   ),
                   SizedBox(width: 8),
                   Column(
@@ -1209,23 +1459,16 @@ class _AboutBuildingSection extends StatelessWidget {
                 ],
               ),
             ),
-
+            
             SizedBox(width: 16),
-
-            // If 7th Floor needs its own icon
+            
             Expanded(
               child: Row(
                 children: [
-                  Image.asset(
-                    'assets/icons/current_floor_icon.png', // Separate icon for current floor
-                    width: 20,
-                    height: 20,
+                  Icon(
+                    Icons.arrow_upward,
                     color: AppColors.beeYellow,
-                    errorBuilder: (_, __, ___) => Icon(
-                      Icons.arrow_upward,
-                      color: AppColors.beeYellow,
-                      size: 20,
-                    ),
+                    size: 20,
                   ),
                   SizedBox(width: 8),
                   Column(
@@ -1258,39 +1501,6 @@ class _AboutBuildingSection extends StatelessWidget {
   }
 }
 
-// NEW: Building Info Item Widget
-// ignore: unused_element
-class _BuildingInfoItem extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _BuildingInfoItem({required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          subtitle,
-          style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
-        ),
-      ],
-    );
-  }
-}
-
-// -----------------------
-// Section Title
-// -----------------------
 class _SectionTitle extends StatelessWidget {
   final String text;
   const _SectionTitle(this.text);
@@ -1299,68 +1509,83 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0.0),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: Colors.black,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
         ),
       ),
     );
   }
 }
 
-// -----------------------
-// Photos Carousel (horizontal)
-// -----------------------
-class _PhotosCarousel extends StatelessWidget {
-  const _PhotosCarousel({Key? key}) : super(key: key);
+class _FloorPlansCarousel extends StatelessWidget {
+  const _FloorPlansCarousel({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(
-      6,
-      (i) =>
-          i % 2 == 0 ? 'assets/images/swipe1.png' : 'assets/images/swipe.png',
-    );
+    final floorPlans = [
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+      },
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1617104424035-1d5e204f2599?w=400&h=300&fit=crop',
+      },
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1617104424038-e04d5ef70b47?w=400&h=300&fit=crop',
+      },
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1617104424106-37c6fb006b79?w=400&h=300&fit=crop',
+      },
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1617104424035-1d5e204f2599?w=400&h=300&fit=crop',
+      },
+      {
+        'type': 'image',
+        'url': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+      },
+    ];
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final itemWidth = screenWidth * 0.8;
+    final itemHeight = itemWidth * 0.8;
+
     return SizedBox(
-      height: 110,
+      height: itemHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        separatorBuilder: (_, __) => SizedBox(width: 12),
-        padding: EdgeInsets.symmetric(horizontal: 2),
+        itemCount: floorPlans.length,
+        separatorBuilder: (_, __) => SizedBox(width: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          final url = items[index];
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Image.asset(
-                    url,
-                    fit: BoxFit.cover,
-                    width: 180,
-                    errorBuilder: (_, __, ___) => Container(color: kImageError),
+          final item = floorPlans[index];
+          
+          return Container(
+            width: itemWidth,
+            height: itemHeight,
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  item['url']!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: kImageError,
                   ),
                 ),
-                if (index == 1)
-                  Positioned(
-                    left: 8,
-                    top: 8,
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.45),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.play_arrow, color: Colors.white),
-                    ),
-                  ),
-              ],
+              ),
             ),
           );
         },
@@ -1399,76 +1624,102 @@ class _TestimonialSectionState extends State<TestimonialSection> {
       text:
           "Working with their team was a delight! They delivered beyond expectations and the quality is unmatched.",
       name: "Sophie",
-      profileAsset: "assets/profile1.jpg",
-      videoAsset: "assets/video1.mp4",
+      profileAsset: "assets/images/profile1.jpg",
+      videoAsset: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     ),
     Testimonial(
       text:
           "Excellent service, professional approach, and the outcome was simply stunning!",
       name: "Michael",
-      profileAsset: "assets/profile2.jpg",
-      videoAsset: "assets/video2.mp4",
+      profileAsset: "assets/images/profile2.jpg",
+      videoAsset: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     ),
     Testimonial(
       text:
           "They truly understood our vision and turned it into reality. Highly recommend their work!",
       name: "Ava",
-      profileAsset: "assets/profile3.jpg",
-      videoAsset: "assets/video3.mp4",
+      profileAsset: "assets/images/profile3.jpg",
+      videoAsset: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     ),
   ];
 
   late List<VideoPlayerController> _controllers;
+  late List<bool> _isVideoInitialized;
 
   @override
   void initState() {
     super.initState();
-    _controllers = testimonials
-        .map(
-          (t) =>
-              VideoPlayerController.asset(t.videoAsset)
-                ..initialize().then((_) => setState(() {})),
-        )
-        .toList();
+    _controllers = [];
+    _isVideoInitialized = List.filled(testimonials.length, false);
+    
+    // Initialize video controllers
+    for (int i = 0; i < testimonials.length; i++) {
+      final controller = VideoPlayerController.network(testimonials[i].videoAsset);
+      _controllers.add(controller);
+      
+      controller.initialize().then((_) {
+        if (mounted) {
+          setState(() {
+            _isVideoInitialized[i] = true;
+          });
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    for (var c in _controllers) {
-      c.dispose();
+    for (var controller in _controllers) {
+      controller.dispose();
     }
     super.dispose();
   }
 
   Widget _buildVideo(int index) {
-    final controller = _controllers[index];
-    if (controller.value.isInitialized) {
-      return FittedBox(
-        fit: BoxFit.cover,
-        child: SizedBox(
-          width: controller.value.size.width,
-          height: controller.value.size.height,
-          child: VideoPlayer(controller),
+  final controller = _controllers[index];
+  if (_isVideoInitialized[index]) {
+    return Stack(
+      children: [
+        SizedBox.expand(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size.width,
+              height: controller.value.size.height,
+              child: VideoPlayer(controller),
+            ),
+          ),
         ),
-      );
-    } else {
-      return Image.asset(testimonials[index].profileAsset, fit: BoxFit.cover);
-    }
+        Container(color: Colors.black26),
+      ],
+    );
+  } else {
+    return Container(
+      color: Colors.grey[300],
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.beeYellow),
+        ),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
-    final cardWidth = MediaQuery.of(context).size.width * 0.85;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.85;
     final leftWidth = cardWidth * 0.5;
     final rightWidth = cardWidth * 0.5;
+    final cardHeight = cardWidth * 0.7;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 20),
         SizedBox(
-          height: 260,
+          height: cardHeight,
           width: cardWidth,
           child: PageView.builder(
             controller: _pageController,
@@ -1482,65 +1733,62 @@ class _TestimonialSectionState extends State<TestimonialSection> {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  /// LEFT — Video (Full height)
-                  SizedBox(
-                    width: leftWidth,
-                    height: 260,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        bottomLeft: Radius.circular(10),
-                      ),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          _buildVideo(index),
-                          Container(color: Colors.black26),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                final controller = _controllers[index];
-                                if (controller.value.isInitialized) {
-                                  controller.value.isPlaying
-                                      ? controller.pause()
-                                      : controller.play();
-                                  setState(() {});
-                                }
-                              },
-                              child: Container(
-                                width: 58,
-                                height: 58,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  _controllers[index].value.isInitialized &&
-                                          _controllers[index].value.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                  size: 34,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                 SizedBox(
+  width: leftWidth,
+  height: cardHeight,
+  child: ClipRRect(
+    borderRadius: const BorderRadius.only(
+      topLeft: Radius.circular(10),
+      bottomLeft: Radius.circular(10),
+    ),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildVideo(index),
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              final controller = _controllers[index];
+              if (_isVideoInitialized[index]) {
+                if (controller.value.isPlaying) {
+                  controller.pause();
+                } else {
+                  controller.play();
+                }
+                setState(() {});
+              }
+            },
+            child: Container(
+              width: 35,
+              height: 35,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _isVideoInitialized[index] && 
+                _controllers[index].value.isPlaying
+                    ? Icons.pause
+                    : Icons.play_arrow,
+                size: 20,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
-                  /// RIGHT — Text (shorter)
                   SizedBox(
                     width: rightWidth,
                     child: Align(
                       alignment: Alignment.center,
                       child: Container(
-                        height: 180, // ✅ shorter than video
+                        height: cardHeight * 0.7,
                         padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 16,
-                        ),
+                            vertical: 14, horizontal: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFD9D9D9),
                           borderRadius: const BorderRadius.only(
@@ -1592,7 +1840,8 @@ class _TestimonialSectionState extends State<TestimonialSection> {
                                     Row(
                                       children: List.generate(3, (i) {
                                         return const Padding(
-                                          padding: EdgeInsets.only(right: 2.0),
+                                          padding:
+                                              EdgeInsets.only(right: 2.0),
                                           child: Icon(
                                             Icons.star,
                                             size: 17,
@@ -1610,15 +1859,8 @@ class _TestimonialSectionState extends State<TestimonialSection> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        testimonials[index].profileAsset,
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
+                                        color: Colors.white, width: 2),
+                                    color: Colors.grey[400],
                                     boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black26,
@@ -1626,6 +1868,11 @@ class _TestimonialSectionState extends State<TestimonialSection> {
                                         offset: Offset(0, 2),
                                       ),
                                     ],
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey[600],
+                                    size: 24,
                                   ),
                                 ),
                               ],
@@ -1643,20 +1890,18 @@ class _TestimonialSectionState extends State<TestimonialSection> {
 
         const SizedBox(height: 16),
 
-        // ------------------------
-        // Dots Indicator
-        // ------------------------
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(testimonials.length, (index) {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: activeIndex == index ? 10 : 8,
-              height: activeIndex == index ? 10 : 8,
+              width: activeIndex == index ? 4 : 6,
+              height: activeIndex == index ? 4 : 6,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: activeIndex == index ? Colors.black87 : Colors.grey[400],
+                color:
+                    activeIndex == index ? AppColors.beeYellow : Colors.grey[400],
               ),
             );
           }),
@@ -1664,4 +1909,12 @@ class _TestimonialSectionState extends State<TestimonialSection> {
       ],
     );
   }
+}
+
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: PropertyDetailScreen(propertyId: 'prop_001'),
+  ));
 }

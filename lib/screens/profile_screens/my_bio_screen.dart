@@ -1,5 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // ✅ for date formatting
+import 'package:intl/intl.dart';
+import 'package:real_beez/screens/api/profile_service.dart';
+import 'package:real_beez/screens/models/profile_model.dart';
+
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyBioScreen(),
+    );
+  }
+}
 
 class MyBioScreen extends StatefulWidget {
   const MyBioScreen({super.key});
@@ -9,48 +28,163 @@ class MyBioScreen extends StatefulWidget {
 }
 
 class _MyBioScreenState extends State<MyBioScreen> {
-  final TextEditingController _nameController = TextEditingController(
-    text: 'Bhargavi',
-  );
-  final TextEditingController _phoneController = TextEditingController(
-    text: '+91 9234657898',
-  );
-  final TextEditingController _genderController = TextEditingController(
-    text: 'Female',
-  );
-  final TextEditingController _addressController = TextEditingController(
-    text: 'Hyderabad, Telangana',
-  );
-  final TextEditingController _dobController = TextEditingController(
-    text: '15 Mar 1999',
-  );
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
 
   bool _isNameEditable = false;
   bool _isPhoneEditable = false;
   bool _isGenderEditable = false;
   bool _isAddressEditable = false;
+  bool _isLoading = true;
+  bool _isSaving = false;
 
   String? _nameError;
   String? _phoneError;
 
+  ProfileModel? _currentProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfiles();
+  }
+
+  Future<void> _fetchProfiles() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final response = await ProfileService.getProfiles();
+      final List<ProfileModel> profiles = response.map<ProfileModel>((profile) {
+        return ProfileModel.fromJson(profile);
+      }).toList();
+
+      setState(() {
+        // Use the first profile as current profile for demo
+        if (profiles.isNotEmpty) {
+          _currentProfile = profiles.first;
+          _populateFormData(_currentProfile!);
+        } else {
+          _setDefaultData();
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching profiles: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      
+      // Show error message but continue with default data
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load profile data: $e'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      
+      // Set default data if API fails
+      _setDefaultData();
+    }
+  }
+
+  void _populateFormData(ProfileModel profile) {
+    _nameController.text = profile.name.isNotEmpty ? profile.name : 'Bhargavi';
+    _phoneController.text = profile.phone.isNotEmpty ? profile.phone : '+91 9234657898';
+    _genderController.text = profile.gender.isNotEmpty ? profile.gender : 'Female';
+    _addressController.text = profile.address.isNotEmpty ? profile.address : 'Hyderabad, Telangana';
+    
+    // Format date of birth
+    final formattedDob = _formatDateForDisplay(profile.dateOfBirth);
+    _dobController.text = formattedDob.isNotEmpty ? formattedDob : '15 Mar 1999';
+  }
+
+  void _setDefaultData() {
+    _nameController.text = 'Bhargavi';
+    _phoneController.text = '+91 9234657898';
+    _genderController.text = 'Female';
+    _addressController.text = 'Hyderabad, Telangana';
+    _dobController.text = '15 Mar 1999';
+  }
+
+  String _formatDateForDisplay(String dateString) {
+    try {
+      if (dateString.isEmpty) return '';
+      
+      // Handle different date formats from API
+      if (dateString.contains('-')) {
+        final parts = dateString.split('-');
+        if (parts.length == 3) {
+          final year = int.tryParse(parts[0]) ?? 1999;
+          final month = int.tryParse(parts[1]) ?? 3;
+          final day = int.tryParse(parts[2]) ?? 15;
+          final date = DateTime(year, month, day);
+          return DateFormat('dd MMM yyyy').format(date);
+        }
+      }
+      return dateString;
+    } catch (e) {
+      print('Error formatting date: $e');
+      return dateString;
+    }
+  }
+
+  String _formatDateForAPI(String displayDate) {
+    try {
+      if (displayDate.isEmpty) return '';
+      
+      final date = DateFormat('dd MMM yyyy').parse(displayDate);
+      return DateFormat('yyyy-MM-dd').format(date);
+    } catch (e) {
+      print('Error formatting date for API: $e');
+      return displayDate;
+    }
+  }
+
+  // Check if image URL is valid
+  bool _isValidImageUrl(String url) {
+    if (url.isEmpty) return false;
+    try {
+      final uri = Uri.tryParse(url);
+      return uri != null && uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ✅ Date of Birth Picker
   Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate;
+    try {
+      if (_dobController.text.isNotEmpty) {
+        initialDate = DateFormat('dd MMM yyyy').parse(_dobController.text);
+      } else {
+        initialDate = DateTime(1999, 3, 15);
+      }
+    } catch (e) {
+      initialDate = DateTime(1999, 3, 15);
+    }
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime(1999, 3, 15),
+      initialDate: initialDate,
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFFD5A021), // golden highlight
+              primary: Color(0xFFD5A021),
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Color(0xFFD5A021), // button color
+                foregroundColor: Color(0xFFD5A021),
               ),
             ),
           ),
@@ -92,8 +226,112 @@ class _MyBioScreenState extends State<MyBioScreen> {
     }
   }
 
+  Future<void> _saveProfile() async {
+    FocusScope.of(context).unfocus();
+    
+    _validateName(_nameController.text);
+    _validatePhone(_phoneController.text);
+
+    if (_nameError != null || _phoneError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fix the errors before saving'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final profileData = {
+        'name': _nameController.text,
+        'phone': _phoneController.text,
+        'gender': _genderController.text,
+        'address': _addressController.text,
+        'date_of_birth': _formatDateForAPI(_dobController.text),
+        'image_url': _currentProfile?.imageUrl ?? '',
+      };
+
+      Map<String, dynamic> result;
+      
+      if (_currentProfile != null && _currentProfile!.id.isNotEmpty) {
+        // Try to update existing profile
+        result = await ProfileService.updateProfile(
+          _currentProfile!.id,
+          profileData,
+        );
+        
+        // If update fails, try to create new profile
+        if (!result["success"]) {
+          result = await ProfileService.createProfile(profileData);
+        }
+      } else {
+        // Create new profile
+        result = await ProfileService.createProfile(profileData);
+      }
+
+      if (result["success"] == true) {
+        // Refresh profile data
+        await _fetchProfiles();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"] ?? 'Profile saved successfully!'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Reset edit modes
+        setState(() {
+          _isNameEditable = false;
+          _isPhoneEditable = false;
+          _isGenderEditable = false;
+          _isAddressEditable = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"] ?? 'Failed to save profile'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error in saveProfile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving profile: $e'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFFAF2DD),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD5A021)),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAF2DD),
       appBar: AppBar(
@@ -117,10 +355,8 @@ class _MyBioScreenState extends State<MyBioScreen> {
             alignment: Alignment.topRight,
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.black,
-                ),
+                icon: const Icon(Icons.notifications_none_rounded,
+                    color: Colors.black),
                 onPressed: () {},
               ),
               Positioned(
@@ -147,7 +383,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
           children: [
             const SizedBox(height: 10),
 
-            // Profile Avatar
+            // Profile Avatar with better error handling
             Center(
               child: Stack(
                 clipBehavior: Clip.none,
@@ -158,12 +394,41 @@ class _MyBioScreenState extends State<MyBioScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
-                      image: const DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          'https://via.placeholder.com/150x150.png?text=User',
-                        ),
-                      ),
+                      color: Colors.grey[200],
+                    ),
+                    child: ClipOval(
+                      child: _currentProfile != null && 
+                            _currentProfile!.imageUrl.isNotEmpty && 
+                            _isValidImageUrl(_currentProfile!.imageUrl)
+                          ? Image.network(
+                              _currentProfile!.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.grey[600],
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD5A021)),
+                                  ),
+                                );
+                              },
+                            )
+                          : Icon(
+                              Icons.person,
+                              size: 40,
+                              color: Colors.grey[600],
+                            ),
                     ),
                   ),
                   Positioned(
@@ -175,15 +440,10 @@ class _MyBioScreenState extends State<MyBioScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black.withOpacity(0.6),
-                        ),
+                        border: Border.all(color: Colors.black.withOpacity(0.6)),
                       ),
-                      child: const Icon(
-                        Icons.edit,
-                        size: 18,
-                        color: Colors.black87,
-                      ),
+                      child: const Icon(Icons.edit,
+                          size: 18, color: Colors.black87),
                     ),
                   ),
                 ],
@@ -265,28 +525,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
               child: SizedBox(
                 width: 160,
                 child: ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    _validateName(_nameController.text);
-                    _validatePhone(_phoneController.text);
-
-                    if (_nameError == null && _phoneError == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile saved successfully!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fix the errors before saving'),
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _isSaving ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD5A021),
                     shape: const StadiumBorder(),
@@ -294,14 +533,23 @@ class _MyBioScreenState extends State<MyBioScreen> {
                     elevation: 2,
                     shadowColor: Colors.black26,
                   ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -319,7 +567,10 @@ class _MyBioScreenState extends State<MyBioScreen> {
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
       ),
     );
@@ -361,20 +612,18 @@ class _MyBioScreenState extends State<MyBioScreen> {
                   keyboardType: keyboardType,
                   style: const TextStyle(fontSize: 15),
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                     border: InputBorder.none,
                   ),
                   onChanged: onChanged,
                 ),
               ),
               IconButton(
-                icon: const Icon(
-                  Icons.calendar_today_outlined,
+                icon: Icon(
+                  isEditable ? Icons.check : Icons.edit,
                   size: 18,
-                  color: Color(0xFFD5A021),
+                  color: const Color(0xFFD5A021),
                 ),
                 onPressed: onEditPressed,
               ),
@@ -386,7 +635,10 @@ class _MyBioScreenState extends State<MyBioScreen> {
             padding: const EdgeInsets.only(left: 12, top: 4),
             child: Text(
               errorText,
-              style: const TextStyle(color: Colors.red, fontSize: 12),
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
             ),
           ),
       ],

@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:real_beez/screens/homescreen/booking_screens/book_your_service_screen.dart';
+import 'package:real_beez/screens/booking_screens/book_your_service_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 import 'package:real_beez/screens/cutsom_widgets/custom_bottom_bar.dart';
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: MapScreen(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
+}
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -16,24 +25,20 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          /// Background static map image (no crash)
           SizedBox.expand(
-            child: Image.asset('assets/images/map.png', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/map.png',
+              fit: BoxFit.cover,
+            ),
           ),
-
-          /// Top Bar
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  /// Location pill
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(6),
@@ -53,15 +58,13 @@ class _MapScreenState extends State<MapScreen> {
                       ],
                     ),
                   ),
-
-                  /// Right side icons
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black45,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -75,20 +78,15 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
-
-          /// Book Button (Bottom Center above nav bar)
           Positioned(
-            bottom: 90, // sits above nav bar
+            bottom: 90,
             left: 0,
             right: 0,
             child: Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.beeYellow,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -114,13 +112,9 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
-
-      /// Your reusable bottom nav bar
       bottomNavigationBar: CustomBottomBar(
         currentIndex: 0,
-        onTabSelected: (int index) {
-          // Handle tab selection
-        },
+        onTabSelected: (int index) {},
       ),
     );
   }

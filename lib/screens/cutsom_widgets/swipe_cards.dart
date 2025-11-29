@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:real_beez/screens/map_screens/map_screen.dart';
 import 'package:real_beez/screens/homescreen/property_details_screen.dart';
 import 'package:real_beez/screens/models/wishlist_manager.dart';
-import 'package:real_beez/utils/app_colors.dart';
 import 'package:real_beez/screens/models/property.dart';
 import 'package:real_beez/screens/repositories/property_repository.dart';
 
@@ -99,7 +97,7 @@ class _PropertyDeckSectionState extends State<PropertyDeckSection> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PropertyDetailScreen(),
+        builder: (context) => PropertyDetailScreen(propertyId: property.id.toString()),
       ),
     );
   }
@@ -121,105 +119,25 @@ class _PropertyDeckSectionState extends State<PropertyDeckSection> {
                 child: Text(
                   "Featured Sites",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              Positioned(
-                right: 0,
-                child: TextButton.icon(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    backgroundColor: AppColors.background,
-                    foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  label: const Text(
-                    "Filter",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w600),
-                  ),
-                  icon: const Icon(Icons.filter_list,
-                      size: 18, color: Colors.black),
-                ),
-              ),
+             
             ],
           ),
         ),
-
-        Stack(
-          children: [
-            Center(
-              child: SizedBox(
-                width: cardW,
-                height: cardH + 60,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: _buildDeckWidgets(cardW, cardH),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: 102,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color.fromRGBO(61, 61, 61, 0.8),
-                        Color(0xFFD79A2F),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      backgroundColor: Colors.transparent,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RealEstateHome(),
-                        ),
-                      );
-                    },
-                    icon: const AnimatedCompassIcon(),
-                    label: const Text(
-                      "Maps",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+Center(
+  child: SizedBox(
+    width: cardW,
+    height: cardH, // ← Remove the +60 extra height
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: _buildDeckWidgets(cardW, cardH),
+    ),
+  ),
+),
       ],
     );
   }

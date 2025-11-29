@@ -1,6 +1,8 @@
 // main.dart
 import 'package:flutter/material.dart';
 
+void main() => runApp(MyApp());
+
 class MyApp extends StatelessWidget {
   // Basic color palette extracted from the screenshot
   static const Color bgCream = Color(0xFFF5ECD9); // page background
@@ -18,10 +20,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Roboto',
         textTheme: TextTheme(
           titleLarge: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.w700,
-            color: titleColor,
-          ),
+              fontSize: 20.0,
+              fontWeight: FontWeight.w700,
+              color: titleColor),
           bodyMedium: TextStyle(fontSize: 14.0, color: titleColor),
         ),
       ),
@@ -44,10 +45,8 @@ class PropertyServicesScreen extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   children: [
                     Expanded(child: _SearchBar()),
@@ -62,104 +61,79 @@ class PropertyServicesScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: SizedBox(
-                height:
-                    MediaQuery.of(context).size.height -
-                    100, // Give it a specific height
+                height: MediaQuery.of(context).size.height - 100, // Give it a specific height
                 child: Column(
                   children: [
                     Expanded(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: sideRailWidth,
-                            child: Scrollbar(
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    _railItem(
-                                      icon: Icons.grid_view,
-                                      label: 'All',
-                                      iconBg: Colors.transparent,
-                                      compactLabel: true,
-                                    ),
-                                    SizedBox(height: 12),
-                                    _railItemWithTile(
-                                      'Rental &\nLease Solution',
-                                    ),
-                                    SizedBox(height: 15),
-                                    _railItemWithTile(
-                                      'Asset &\nWealth\nManagement',
-                                    ),
-                                    SizedBox(height: 15),
-                                    _railItemWithTile(
-                                      'Legal Due\nDiligence &\nValuation',
-                                    ),
-                                    SizedBox(height: 15),
-                                    _railItemWithTile(
-                                      'Consultancy &\nAdvisory\nServices',
-                                    ),
-                                    SizedBox(height: 15),
-                                    _railItemWithTile(
-                                      'Marketing Contracts\n& Deal\nStructuring',
-                                    ),
-                                  ],
-                                ),
+                        SizedBox(
+                          width: sideRailWidth,
+                          child: Scrollbar(
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _railItem(
+                                    icon: Icons.grid_view,
+                                    label: 'All',
+                                    iconBg: Colors.transparent,
+                                    compactLabel: true,
+                                  ),
+                                  SizedBox(height: 12),
+                                  _railItemWithTile('Rental &\nLease Solution'),
+                                  SizedBox(height: 15),
+                                  _railItemWithTile('Asset &\nWealth\nManagement'),
+                                  SizedBox(height: 15),
+                                  _railItemWithTile('Legal Due\nDiligence &\nValuation'),
+                                  SizedBox(height: 15),
+                                  _railItemWithTile('Consultancy &\nAdvisory\nServices'),
+                                  SizedBox(height: 15),
+                                  _railItemWithTile('Marketing Contracts\n& Deal\nStructuring'),
+                                ],
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Scrollbar(
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Property Acquisitions & Sales',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                      textAlign: TextAlign.center,
+                        ),
+                        Expanded(
+                          child: Scrollbar(
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Property Acquisitions & Sales',
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    SizedBox(height: 8),
-                                    _VideoCard(),
-                                    Container(
-                                      alignment: Alignment.centerLeft,
-                                      margin: const EdgeInsets.only(
-                                        top: 6,
-                                        left: 6,
-                                      ),
-                                      child: Text(
-                                        'How its works?',
-                                        style: TextStyle(
-                                          fontSize: 12.5,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 8),
+                                  _VideoCard(),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    margin: const EdgeInsets.only(top: 6, left: 6),
+                                    child: Text(
+                                      'How its works?',
+                                      style: TextStyle(fontSize: 12.5, color: Colors.black54),
                                     ),
-                                    SizedBox(height: 10),
-                                    _FormSection(),
-                                    SizedBox(height: 8),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  _FormSection(),
+                                  SizedBox(height: 8),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12,
-                        right: 12,
-                        bottom: 10,
-                      ),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
                       child: Center(
                         child: Container(
                           width: media.size.width * 0.56,
@@ -172,17 +146,16 @@ class PropertyServicesScreen extends StatelessWidget {
                                 color: Colors.black26,
                                 offset: Offset(0, 6),
                                 blurRadius: 10,
-                              ),
+                              )
                             ],
                           ),
                           child: Center(
                             child: Text(
                               'Submit',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
@@ -198,12 +171,11 @@ class PropertyServicesScreen extends StatelessWidget {
     );
   }
 
-  Widget _railItem({
-    required IconData icon,
-    required String label,
-    Color iconBg = Colors.white,
-    bool compactLabel = false,
-  }) {
+  Widget _railItem(
+      {required IconData icon,
+      required String label,
+      Color iconBg = Colors.white,
+      bool compactLabel = false}) {
     return Column(
       children: [
         Container(
@@ -213,21 +185,16 @@ class PropertyServicesScreen extends StatelessWidget {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(
-            icon,
-            size: compactLabel ? 18 : 22,
-            color: Colors.black87,
-          ),
+          child:
+              Icon(icon, size: compactLabel ? 18 : 22, color: Colors.black87),
         ),
         SizedBox(height: 6),
         Text(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: compactLabel ? 12 : 11.5,
-            color: Colors.black87,
-          ),
-        ),
+              fontSize: compactLabel ? 12 : 11.5, color: Colors.black87),
+        )
       ],
     );
   }
@@ -246,7 +213,9 @@ class PropertyServicesScreen extends StatelessWidget {
               end: Alignment.bottomRight,
             ),
           ),
-          child: Center(child: Icon(Icons.home, size: 26, color: Colors.white)),
+          child: Center(
+            child: Icon(Icons.home, size: 26, color: Colors.white),
+          ),
         ),
         SizedBox(height: 8),
         SizedBox(
@@ -274,7 +243,11 @@ class _SearchBar extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -299,6 +272,7 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
+
 class _VideoCard extends StatelessWidget {
   const _VideoCard({Key? key}) : super(key: key);
 
@@ -312,9 +286,7 @@ class _VideoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         color: Colors.grey[300],
         image: DecorationImage(
-          image: NetworkImage(
-            'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=1200&q=80&auto=format&fit=crop',
-          ),
+          image: NetworkImage('https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=1200&q=80&auto=format&fit=crop'),
           fit: BoxFit.cover,
         ),
       ),
@@ -363,9 +335,7 @@ class _FormSection extends StatelessWidget {
                   Text(
                     label,
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15.0,
-                    ),
+                        fontWeight: FontWeight.w700, fontSize: 15.0),
                   ),
                   SizedBox(height: 6),
                   Container(
@@ -375,10 +345,9 @@ class _FormSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 3))
                       ],
                     ),
                     child: Row(
@@ -388,9 +357,7 @@ class _FormSection extends StatelessWidget {
                           child: Text(
                             'Upload a Document',
                             style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 14,
-                            ),
+                                color: Colors.grey[500], fontSize: 14),
                           ),
                         ),
                         Container(
@@ -398,11 +365,11 @@ class _FormSection extends StatelessWidget {
                           height: 44,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(12),
-                              bottomRight: Radius.circular(12),
-                            ),
+                                topRight: Radius.circular(12),
+                                bottomRight: Radius.circular(12)),
                           ),
-                          child: Icon(Icons.link, color: Colors.grey[700]),
+                          child:
+                              Icon(Icons.link, color: Colors.grey[700]),
                         ),
                         SizedBox(width: 10),
                       ],

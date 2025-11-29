@@ -7,11 +7,7 @@ class ChatMessage {
   final Sender sender;
   final String text;
   final DateTime timestamp;
-  ChatMessage({
-    required this.sender,
-    required this.text,
-    required this.timestamp,
-  });
+  ChatMessage({required this.sender, required this.text, required this.timestamp});
 }
 
 class AiAssistantController extends ChangeNotifier {
@@ -24,11 +20,7 @@ class AiAssistantController extends ChangeNotifier {
 
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
-    final userMessage = ChatMessage(
-      sender: Sender.user,
-      text: text,
-      timestamp: DateTime.now(),
-    );
+    final userMessage = ChatMessage(sender: Sender.user, text: text, timestamp: DateTime.now());
     _messages.add(userMessage);
     notifyListeners();
     await _simulateAiResponse(userMessage);
@@ -41,14 +33,9 @@ class AiAssistantController extends ChangeNotifier {
     notifyListeners();
     await Future.delayed(const Duration(seconds: 2));
     try {
-      if (userMessage.text.toLowerCase().contains('error'))
-        throw Exception('Simulated AI error');
+      if (userMessage.text.toLowerCase().contains('error')) throw Exception('Simulated AI error');
       final aiText = _generateDummyResponse(userMessage.text);
-      final aiMessage = ChatMessage(
-        sender: Sender.ai,
-        text: aiText,
-        timestamp: DateTime.now(),
-      );
+      final aiMessage = ChatMessage(sender: Sender.ai, text: aiText, timestamp: DateTime.now());
       _messages.add(aiMessage);
       isTyping.value = false;
       notifyListeners();
@@ -61,24 +48,25 @@ class AiAssistantController extends ChangeNotifier {
   }
 
   String _generateDummyResponse(String userInput) {
-    final lower = userInput.toLowerCase();
+  final lower = userInput.toLowerCase();
 
-    if (lower.contains('2 bhk') || lower.contains('2 bedroom')) {
-      return 'Looking for a 2 BHK under 40 lakhs? I can suggest some affordable listings in your preferred area.';
-    } else if (lower.contains('budget') || lower.contains('under')) {
-      return 'I can filter properties within your budget. Which city or locality are you interested in?';
-    } else if (lower.contains('rent')) {
-      return 'Are you looking to rent or buy the property?';
-    } else if (lower.contains('buy')) {
-      return 'I can show you trending properties available for purchase.';
-    } else if (lower.contains('sell')) {
-      return 'Are you looking to sell a property? I can help you estimate the market value.';
-    } else if (lower.contains('hi') || lower.contains('hello')) {
-      return 'Hello! I’m your AI real estate assistant. How can I help you find your dream property today?';
-    } else {
-      return 'Got it! Could you tell me more details like location, budget, or type of property?';
-    }
+  if (lower.contains('2 bhk') || lower.contains('2 bedroom')) {
+    return 'Looking for a 2 BHK under 40 lakhs? I can suggest some affordable listings in your preferred area.';
+  } else if (lower.contains('budget') || lower.contains('under')) {
+    return 'I can filter properties within your budget. Which city or locality are you interested in?';
+  } else if (lower.contains('rent')) {
+    return 'Are you looking to rent or buy the property?';
+  } else if (lower.contains('buy')) {
+    return 'I can show you trending properties available for purchase.';
+  } else if (lower.contains('sell')) {
+    return 'Are you looking to sell a property? I can help you estimate the market value.';
+  } else if (lower.contains('hi') || lower.contains('hello')) {
+    return 'Hello! I’m your AI real estate assistant. How can I help you find your dream property today?';
+  } else {
+    return 'Got it! Could you tell me more details like location, budget, or type of property?';
   }
+}
+
 
   Future<void> retryLastResponse() async {
     if (!hasError.value) return;
@@ -118,8 +106,8 @@ class AiAssistantController extends ChangeNotifier {
 class AiAssistantScreen extends StatefulWidget {
   final AiAssistantController controller;
   AiAssistantScreen({Key? key, AiAssistantController? controller})
-    : controller = controller ?? _DefaultController().controller,
-      super(key: key);
+      : controller = controller ?? _DefaultController().controller,
+        super(key: key);
   @override
   State<AiAssistantScreen> createState() => _AiAssistantScreenState();
 }
@@ -206,23 +194,17 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   final messages = widget.controller.messages;
                   return ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    itemCount:
-                        messages.length +
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    itemCount: messages.length +
                         (widget.controller.isTyping.value ? 1 : 0) +
                         (widget.controller.hasError.value ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index < messages.length) {
                         final message = messages[index];
                         return ChatBubble(message: message);
-                      } else if (widget.controller.isTyping.value &&
-                          index == messages.length) {
+                      } else if (widget.controller.isTyping.value && index == messages.length) {
                         return const TypingIndicator();
-                      } else if (widget.controller.hasError.value &&
-                          index == messages.length) {
+                      } else if (widget.controller.hasError.value && index == messages.length) {
                         return GestureDetector(
                           onTap: widget.controller.retryLastResponse,
                           child: Container(
@@ -234,11 +216,8 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                widget.controller.lastErrorMessage.value ??
-                                    'Error occurred',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onErrorContainer,
-                                ),
+                                widget.controller.lastErrorMessage.value ?? 'Error occurred',
+                                style: TextStyle(color: theme.colorScheme.onErrorContainer),
                               ),
                             ),
                           ),
@@ -270,9 +249,7 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = message.sender == Sender.user;
     final theme = Theme.of(context);
-    final alignment = isUser
-        ? CrossAxisAlignment.end
-        : CrossAxisAlignment.start;
+    final alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final bgColor = isUser
         ? theme.colorScheme.primaryContainer
         : theme.colorScheme.surfaceVariant;
@@ -291,18 +268,13 @@ class ChatBubble extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 2)],
           ),
-          child: Text(
-            message.text,
-            style: TextStyle(color: textColor, fontSize: 15),
-          ),
+          child: Text(message.text, style: TextStyle(color: textColor, fontSize: 15)),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 4, right: 8, left: 8),
           child: Text(
             _formatTime(message.timestamp),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: const Color.fromARGB(255, 236, 230, 192),
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: const Color.fromARGB(255, 236, 230, 192)),
           ),
         ),
       ],
@@ -320,12 +292,8 @@ class InputComposer extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onSend;
-  const InputComposer({
-    Key? key,
-    required this.controller,
-    required this.focusNode,
-    required this.onSend,
-  }) : super(key: key);
+  const InputComposer({Key? key, required this.controller, required this.focusNode, required this.onSend})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -344,9 +312,7 @@ class InputComposer extends StatelessWidget {
               onChanged: (_) => (context as Element).markNeedsBuild(),
               decoration: const InputDecoration(
                 hintText: 'Type your message...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
               ),
             ),
           ),
@@ -369,8 +335,7 @@ class TypingIndicator extends StatefulWidget {
   State<TypingIndicator> createState() => _TypingIndicatorState();
 }
 
-class _TypingIndicatorState extends State<TypingIndicator>
-    with SingleTickerProviderStateMixin {
+class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProviderStateMixin {
   late Timer _timer;
   String _dots = '';
 
@@ -402,10 +367,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
         children: [
           const CircleAvatar(radius: 10, child: Icon(Icons.android, size: 12)),
           const SizedBox(width: 8),
-          Text(
-            'AI is typing$_dots',
-            style: const TextStyle(color: Colors.grey),
-          ),
+          Text('AI is typing$_dots', style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );
@@ -431,6 +393,10 @@ class ClearConfirmationDialog extends StatelessWidget {
       ],
     );
   }
+}
+
+void main() {
+  runApp(const AiAssistantApp());
 }
 
 class AiAssistantApp extends StatelessWidget {

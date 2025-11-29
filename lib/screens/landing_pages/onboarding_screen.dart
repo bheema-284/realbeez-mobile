@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:real_beez/screens/landing_pages/flash_screen_aadhar.dart';
-import 'package:real_beez/screens/landing_pages/login_screen.dart';
+import 'package:real_beez/screens/landing_pages/register_screen.dart';
+import 'package:real_beez/screens/auth/auth_footer.dart';
 import 'package:real_beez/screens/forms/common_button.dart';
 import '../../utils/app_colors.dart';
+
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,7 +27,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -62,70 +67,80 @@ class OnboardingScreen extends StatelessWidget {
               const Spacer(),
 
               // Button section - Fixed height
-              SizedBox(
-                height: screenHeight * 0.4,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // Aadhar Card Login Button
-                    CommonButton(
-                      text: "Log in with Aadhar card",
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AadhaarLoginScreen(),
-                          ),
-                        );
-                      },
-                      backgroundColor: AppColors.beeYellow,
-                      textColor: AppColors.white,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // "Or" divider
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: Colors.grey[400], thickness: 1),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            "Or",
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: Colors.grey[400], thickness: 1),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Phone Number Login Button
-                    CommonButton(
-                      text: "Log in with Phone Number",
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterNumberScreen(),
-                          ),
-                        );
-                      },
-                      backgroundColor: AppColors.white,
-                      textColor: AppColors
-                          .beeYellow, // You might need to adjust this color
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+             SizedBox(
+  height: screenHeight * 0.4,
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      // Aadhar Card Login Button
+      CommonButton(
+        text: "Log in with Aadhar card",
+        onPressed: () {
+           Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AadhaarLoginScreen()),
+          );
+        },
+        backgroundColor: AppColors.beeYellow,
+        textColor: AppColors.white,
+      ),
+      const SizedBox(height: 16),
+      
+      // "Or" divider
+      Row(
+        children: [
+          Expanded(
+            child: Divider(
+              color: Colors.grey[400],
+              thickness: 1,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              "Or",
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
+            ),
+          ),
+          Expanded(
+            child: Divider(
+              color: Colors.grey[400],
+              thickness: 1,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      
+      // Phone Number Login Button
+      CommonButton(
+        text: "Log in with Phone Number",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const RegisterNumberScreen()),
+          );
+        },
+        backgroundColor: AppColors.white,
+        textColor: AppColors.beeYellow, // You might need to adjust this color
+      ),
+      const SizedBox(height: 16),
+      
+      AuthFooter(
+        text: "Don't have an account?",
+        linkText: "Sign up",
+        onLinkTap: () {
+          // Navigate to login screen
+        },
+      ),
+      const SizedBox(height: 10),
+    ],
+  ),
+),
             ],
           ),
         ),
@@ -141,13 +156,10 @@ class ImageSwitchingHexagonLayout extends StatefulWidget {
   const ImageSwitchingHexagonLayout({super.key, required this.images});
 
   @override
-  State<ImageSwitchingHexagonLayout> createState() =>
-      _ImageSwitchingHexagonLayoutState();
+  State<ImageSwitchingHexagonLayout> createState() => _ImageSwitchingHexagonLayoutState();
 }
 
-class _ImageSwitchingHexagonLayoutState
-    extends State<ImageSwitchingHexagonLayout>
-    with SingleTickerProviderStateMixin {
+class _ImageSwitchingHexagonLayoutState extends State<ImageSwitchingHexagonLayout> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int _currentCycle = 0;
   final int _totalCycles = 6; // Number of switching cycles
@@ -165,16 +177,17 @@ class _ImageSwitchingHexagonLayoutState
   @override
   void initState() {
     super.initState();
-
-    _controller =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              // Move to next cycle when animation completes
-              _switchToNextCycle();
-            }
-          });
-
+    
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          // Move to next cycle when animation completes
+          _switchToNextCycle();
+        }
+      });
+    
     // Start the animation
     _startAnimation();
   }
@@ -187,7 +200,7 @@ class _ImageSwitchingHexagonLayoutState
     setState(() {
       _currentCycle = (_currentCycle + 1) % _totalCycles;
     });
-
+    
     // Restart animation after a brief pause
     Future.delayed(const Duration(milliseconds: 500), () {
       _controller.forward(from: 0.0);
@@ -208,8 +221,7 @@ class _ImageSwitchingHexagonLayoutState
 
     // Get current and next image indices
     final List<int> currentIndices = _switchingPatterns[_currentCycle];
-    final List<int> nextIndices =
-        _switchingPatterns[(_currentCycle + 1) % _totalCycles];
+    final List<int> nextIndices = _switchingPatterns[(_currentCycle + 1) % _totalCycles];
 
     return AnimatedBuilder(
       animation: _controller,
@@ -226,9 +238,9 @@ class _ImageSwitchingHexagonLayoutState
               _controller.value,
               0,
             ),
-
+            
             SizedBox(height: hexagonSize * 0.1),
-
+            
             // Second row - 2 hexagons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -251,9 +263,9 @@ class _ImageSwitchingHexagonLayoutState
                 ),
               ],
             ),
-
+            
             SizedBox(height: hexagonSize * 0.1),
-
+            
             // Third row - 3 hexagons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -290,17 +302,11 @@ class _ImageSwitchingHexagonLayoutState
     );
   }
 
-  Widget _buildSwitchingHexagon(
-    String currentImage,
-    String nextImage,
-    double size,
-    double animationValue,
-    int position,
-  ) {
+  Widget _buildSwitchingHexagon(String currentImage, String nextImage, double size, double animationValue, int position) {
     // Calculate positions for smooth transition
     final double currentOpacity = 1.0 - animationValue;
     final double nextOpacity = animationValue;
-
+    
     // Add some scale effect during transition
     final double scale = 1.0 - (animationValue * 0.3 * (1.0 - animationValue));
 
@@ -314,7 +320,7 @@ class _ImageSwitchingHexagonLayoutState
             child: _buildHexagon(currentImage, size),
           ),
         ),
-
+        
         // Next image fading in
         Opacity(
           opacity: nextOpacity,
@@ -349,9 +355,9 @@ class _ImageSwitchingHexagonLayoutState
             return Container(
               color: Colors.grey[300],
               child: Icon(
-                Icons.image,
-                size: size * 0.5,
-                color: Colors.grey[600],
+                Icons.image, 
+                size: size * 0.5, 
+                color: Colors.grey[600]
               ),
             );
           },
@@ -368,13 +374,10 @@ class CircularRotationHexagonLayout extends StatefulWidget {
   const CircularRotationHexagonLayout({super.key, required this.images});
 
   @override
-  State<CircularRotationHexagonLayout> createState() =>
-      _CircularRotationHexagonLayoutState();
+  State<CircularRotationHexagonLayout> createState() => _CircularRotationHexagonLayoutState();
 }
 
-class _CircularRotationHexagonLayoutState
-    extends State<CircularRotationHexagonLayout>
-    with SingleTickerProviderStateMixin {
+class _CircularRotationHexagonLayoutState extends State<CircularRotationHexagonLayout> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<String> _currentImages = [];
 
@@ -382,7 +385,7 @@ class _CircularRotationHexagonLayoutState
   void initState() {
     super.initState();
     _currentImages.addAll(widget.images);
-
+    
     _controller = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
@@ -418,8 +421,7 @@ class _CircularRotationHexagonLayoutState
       animation: _controller,
       builder: (context, child) {
         // Rotate images every 0.5 seconds
-        if (_controller.value % 0.166 < 0.01) {
-          // 6 rotations per cycle (3 seconds / 6 = 0.5s each)
+        if (_controller.value % 0.166 < 0.01) { // 6 rotations per cycle (3 seconds / 6 = 0.5s each)
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _rotateImages();
           });
@@ -431,9 +433,9 @@ class _CircularRotationHexagonLayoutState
           children: [
             // First row - 1 hexagon
             _buildHexagon(_currentImages[0], hexagonSize),
-
+            
             SizedBox(height: hexagonSize * 0.1),
-
+            
             // Second row - 2 hexagons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -444,9 +446,9 @@ class _CircularRotationHexagonLayoutState
                 _buildHexagon(_currentImages[2], hexagonSize),
               ],
             ),
-
+            
             SizedBox(height: hexagonSize * 0.1),
-
+            
             // Third row - 3 hexagons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -477,11 +479,7 @@ class _CircularRotationHexagonLayoutState
           errorBuilder: (context, error, stackTrace) {
             return Container(
               color: Colors.grey[300],
-              child: Icon(
-                Icons.image,
-                size: size * 0.5,
-                color: Colors.grey[600],
-              ),
+              child: Icon(Icons.image, size: size * 0.5, color: Colors.grey[600]),
             );
           },
         ),

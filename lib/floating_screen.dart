@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
+void main() {
+  runApp(const RealbeeMarathonApp());
+}
+
 class RealbeeMarathonApp extends StatelessWidget {
   const RealbeeMarathonApp({super.key});
 
@@ -60,11 +64,17 @@ class _RealbeeMarathonScreenState extends State<RealbeeMarathonScreen>
               // Logo
               Column(
                 children: [
-                  Image.asset('assets/logo/logo.png', height: 48),
+                  Image.asset(
+                    'assets/logo/logo.png',
+                    height: 48,
+                  ),
                   const SizedBox(height: 4),
                   const Text(
                     "Presents",
-                    style: TextStyle(color: Colors.black, fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
@@ -158,11 +168,7 @@ class _RealbeeMarathonScreenState extends State<RealbeeMarathonScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.remove,
-                    color: AppColors.beeYellow,
-                    size: 18,
-                  ),
+                  const Icon(Icons.remove, color: AppColors.beeYellow, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     "Sponsors",
@@ -174,11 +180,7 @@ class _RealbeeMarathonScreenState extends State<RealbeeMarathonScreen>
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(
-                    Icons.remove,
-                    color: AppColors.beeYellow,
-                    size: 18,
-                  ),
+                  const Icon(Icons.remove, color: AppColors.beeYellow, size: 18),
                 ],
               ),
 

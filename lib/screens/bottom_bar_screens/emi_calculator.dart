@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class EmiCalculatorScreen extends StatefulWidget {
@@ -8,484 +10,530 @@ class EmiCalculatorScreen extends StatefulWidget {
 }
 
 class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
-  final TextEditingController _loanAmountController = TextEditingController();
-  final TextEditingController _interestRateController = TextEditingController();
-  final TextEditingController _loanTenureController = TextEditingController();
+  final TextEditingController _propertyValueController = TextEditingController(text: '1,500,000');
+  final TextEditingController _loanAmountController = TextEditingController(text: '1,500,000');
   
+  String _propertyType = 'Residential';
+  String _theProperty = '1';
+  double _loanTerm = 10.0; // Default value is 10 months
+  
+  double _grossLoan = 650000.0;
+  double _netLoan = 41850.0;
+  double _interestRate = 2.25;
   double _emiAmount = 0.0;
-  double _totalInterest = 0.0;
-  double _totalAmount = 0.0;
-  bool _isMonths = false; // false for years, true for months
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateEMI();
+    
+    // Add listeners to controllers to recalculate when text changes
+    _propertyValueController.addListener(_onInputChanged);
+    _loanAmountController.addListener(_onInputChanged);
+  }
+
+  void _onInputChanged() {
+    _calculateEMI();
+  }
 
   void _calculateEMI() {
-    double principal = double.tryParse(_loanAmountController.text) ?? 0;
-    double rate = double.tryParse(_interestRateController.text) ?? 0;
-    double tenure = double.tryParse(_loanTenureController.text) ?? 0;
+    // Parse input values
+    double propertyValue = _parseCurrency(_propertyValueController.text);
+    double loanAmount = _parseCurrency(_loanAmountController.text);
+    double loanTermMonths = _loanTerm;
 
-    if (principal > 0 && rate > 0 && tenure > 0) {
-      // Convert annual rate to monthly
-      double monthlyRate = rate / 12 / 100;
+    // Validate inputs
+    if (propertyValue <= 0 || loanAmount <= 0 || loanTermMonths <= 0) {
+      return;
+    }
+
+    // Calculate interest rate based on property type and loan term
+    _calculateInterestRate();
+
+    // Convert annual interest rate to monthly and percentage to decimal
+    double monthlyInterestRate = _interestRate / 12 / 100;
+
+    // Calculate EMI using the formula: 
+    // EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]
+    // Where P = Principal, R = Monthly Interest Rate, N = Loan Term in Months
+    if (monthlyInterestRate > 0) {
+      double emi = (loanAmount * 
+                   monthlyInterestRate * 
+                   _pow(1 + monthlyInterestRate, loanTermMonths)) / 
+                  (_pow(1 + monthlyInterestRate, loanTermMonths) - 1);
       
-      // Convert tenure to months based on selection
-      double months = _isMonths ? tenure : tenure * 12;
-
-      // EMI formula: [P x R x (1+R)^N]/[(1+R)^N-1]
-      double emi = (principal * monthlyRate * _power(1 + monthlyRate, months)) /
-          (_power(1 + monthlyRate, months) - 1);
-
-      double totalAmount = emi * months;
-      double totalInterest = totalAmount - principal;
+      // Calculate total payment (Gross Loan)
+      double totalPayment = emi * loanTermMonths;
+      
+      // Calculate net loan (principal amount)
+      double netLoan = loanAmount;
 
       setState(() {
-        _emiAmount = double.parse(emi.toStringAsFixed(2));
-        _totalInterest = double.parse(totalInterest.toStringAsFixed(2));
-        _totalAmount = double.parse(totalAmount.toStringAsFixed(2));
+        _emiAmount = emi;
+        _grossLoan = totalPayment;
+        _netLoan = netLoan;
+      });
+    } else {
+      // If interest rate is 0, EMI is simply loan amount divided by months
+      double emi = loanAmount / loanTermMonths;
+      setState(() {
+        _emiAmount = emi;
+        _grossLoan = loanAmount;
+        _netLoan = loanAmount;
       });
     }
   }
 
-  double _power(double base, double exponent) {
-    double result = 1;
-    for (int i = 0; i < exponent; i++) {
-      result *= base;
+  void _calculateInterestRate() {
+    // Different interest rates based on property type and loan term
+    switch (_propertyType) {
+      case 'Residential':
+        if (_loanTerm <= 12) {
+          _interestRate = 2.25;
+        } else if (_loanTerm <= 24) {
+          _interestRate = 2.75;
+        } else if (_loanTerm <= 36) {
+          _interestRate = 3.25;
+        } else if (_loanTerm <= 48) {
+          _interestRate = 3.75;
+        } else {
+          _interestRate = 4.25;
+        }
+        break;
+      case 'Commercial':
+        if (_loanTerm <= 12) {
+          _interestRate = 3.25;
+        } else if (_loanTerm <= 24) {
+          _interestRate = 3.75;
+        } else if (_loanTerm <= 36) {
+          _interestRate = 4.25;
+        } else if (_loanTerm <= 48) {
+          _interestRate = 4.75;
+        } else {
+          _interestRate = 5.25;
+        }
+        break;
+      case 'Industrial':
+        if (_loanTerm <= 12) {
+          _interestRate = 4.25;
+        } else if (_loanTerm <= 24) {
+          _interestRate = 4.75;
+        } else if (_loanTerm <= 36) {
+          _interestRate = 5.25;
+        } else if (_loanTerm <= 48) {
+          _interestRate = 5.75;
+        } else {
+          _interestRate = 6.25;
+        }
+        break;
+      default:
+        _interestRate = 2.25;
     }
-    return result;
   }
 
-  void _resetCalculator() {
-    _loanAmountController.clear();
-    _interestRateController.clear();
-    _loanTenureController.clear();
-    setState(() {
-      _emiAmount = 0.0;
-      _totalInterest = 0.0;
-      _totalAmount = 0.0;
-      _isMonths = false;
-    });
+  double _pow(double x, double y) {
+    return pow(x, y).toDouble();
+  }
+
+  double _parseCurrency(String value) {
+    try {
+      // Remove currency symbols and commas, then parse
+      String cleanedValue = value.replaceAll(RegExp(r'[^\d.]'), '');
+      return double.parse(cleanedValue.isEmpty ? '0' : cleanedValue);
+    } catch (e) {
+      return 0.0;
+    }
+  }
+
+
+  String _formatCurrencyWithDecimal(double amount) {
+    return '\$${amount.toStringAsFixed(2).replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(\.\d+)?$)'),
+          (Match m) => '${m[1]},',
+        )}';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set scaffold background to white
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('EMI Calculator'),
+        title: const Text(
+          'Loan Calculator',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.white, // Set appbar background to white
-        elevation: 0, // Remove shadow
-        scrolledUnderElevation: 0, // Remove elevation when scrolling
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
-      
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Container(
-        color: Colors.white, // Set body background to white
-        child: Padding(
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context).copyWith(
-              scrollbars: false, // This disables the scrollbar
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Input Section
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          _buildTextField(
-                            controller: _loanAmountController,
-                            label: 'Loan Amount',
-                            hint: 'Enter loan amount',
-                            suffix: '₹',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: _interestRateController,
-                            label: 'Interest Rate',
-                            hint: 'Enter interest rate',
-                            suffix: '%',
-                          ),
-                          const SizedBox(height: 20),
-                          // Loan Tenure with Toggle
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Loan Tenure',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF3A3A3A),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Toggle between Years and Months
-                              Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _isMonths = false;
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: !_isMonths ? const Color(0xFFD79A2F) : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              'Years',
-                                              style: TextStyle(
-                                                color: !_isMonths ? Colors.white : Colors.grey[600],
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _isMonths = true;
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: _isMonths ? const Color(0xFFD79A2F) : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              'Months',
-                                              style: TextStyle(
-                                                color: _isMonths ? Colors.white : Colors.grey[600],
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildTextField(
-                                controller: _loanTenureController,
-                                label: '',
-                                hint: _isMonths ? 'Enter tenure in months' : 'Enter tenure in years',
-                                suffix: _isMonths ? 'Months' : 'Years',
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: _calculateEMI,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFD79A2F),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 2,
-                                  ),
-                                  child: const Text(
-                                    'Calculate EMI',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: _resetCalculator,
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    side: const BorderSide(color: Color(0xFFD79A2F)),
-                                  ),
-                                  child: const Text(
-                                    'Reset',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFD79A2F),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Results Section - Improved UI
-                  if (_emiAmount > 0) ...[
-                    const Text(
-                      'Calculation Results',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF3A3A3A),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFFD79A2F).withOpacity(0.1),
-                            const Color(0xFFD79A2F).withOpacity(0.05),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: const Color(0xFFD79A2F).withOpacity(0.3),
-                          width: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Text
+              const Text(
+                'Find out how much you or your clients can borrow today with our Loan Calculators.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Note: "Enter a few relevant details about your property and get a free instant quote with indicative terms estimating how much it may cost."',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Loan Calculator Card
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Loan Calculator',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            // Main EMI Card
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD79A2F),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFD79A2F).withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    'Monthly EMI',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '₹${_emiAmount.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            
-                            // Additional Details
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildDetailCard(
-                                    title: 'Total Interest',
-                                    value: '₹${_totalInterest.toStringAsFixed(2)}',
-                                    icon: Icons.percent,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildDetailCard(
-                                    title: 'Total Amount',
-                                    value: '₹${_totalAmount.toStringAsFixed(2)}',
-                                    icon: Icons.account_balance_wallet,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            
-                            const SizedBox(height: 16),
-                            
-                            // Loan Tenure Summary
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.grey[200]!,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today,
-                                        color: const Color(0xFFD79A2F),
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Loan Tenure',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    _isMonths 
-                                        ? '${_loanTenureController.text} Months'
-                                        : '${_loanTenureController.text} Years',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF3A3A3A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      const SizedBox(height: 20),
+
+                      // Property Type
+                      _buildDropdownField(
+                        label: 'Property Type',
+                        value: _propertyType,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _propertyType = value!;
+                            _calculateEMI();
+                          });
+                        },
+                        items: ['Residential', 'Commercial', 'Industrial'],
                       ),
-                    ),
-                  ],
-                  
-                  // Information Section
-                  const SizedBox(height: 24),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.grey[200]!,
+                      const SizedBox(height: 16),
+
+                      // The Property
+                      _buildDropdownField(
+                        label: 'The Property',
+                        value: _theProperty,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _theProperty = value!;
+                          });
+                        },
+                        items: ['1', '2', '3', '4', '5'],
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
+                      const SizedBox(height: 16),
+
+                      // Property Value
+                      _buildCurrencyTextField(
+                        controller: _propertyValueController,
+                        label: 'Property Value',
+                        onChanged: (String value) {
+                          _calculateEMI();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Loan Amount Required
+                      _buildCurrencyTextField(
+                        controller: _loanAmountController,
+                        label: 'Loan Amount Required',
+                        onChanged: (String value) {
+                          _calculateEMI();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Loan Term - Simple display with slider
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: const Color(0xFFD79A2F),
-                                size: 24,
+                          const Text(
+                            'Loan Term',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          
+                          // Display box showing selected value
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${_loanTerm.toInt()} Months',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
                               ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'About EMI',
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Simple Slider
+                          Slider(
+                            value: _loanTerm,
+                            min: 1.0,
+                            max: 60.0,
+                            divisions: 59, // 1 to 60 months
+                            onChanged: (double value) {
+                              setState(() {
+                                _loanTerm = value;
+                                _calculateEMI();
+                              });
+                            },
+                            activeColor: const Color(0xFFD79A2F), // Gold color
+                            inactiveColor: Colors.grey[300],
+                          ),
+                          
+                          // Month indicators
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '1 Month',
                                 style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF3A3A3A),
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              Text(
+                                '60 Months',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'EMI (Equated Monthly Installment) is the fixed payment amount made by a borrower to a lender at a specified date each calendar month. EMIs are used to pay off both interest and principal each month, so that over a specified number of years, the loan is paid off in full.',
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Formula: EMI = [P x R x (1+R)^N]/[(1+R)^N-1]',
-                            style: TextStyle(
-                              color: const Color(0xFFD79A2F),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
                         ],
                       ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Loan Estimate Card
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Loan Estimate',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Gross Loan (Total Payment)
+                        _buildEstimateRow(
+                          label: 'Total Payment',
+                          value: _formatCurrencyWithDecimal(_grossLoan),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Net Loan (Principal Amount)
+                        _buildEstimateRow(
+                          label: 'Loan Amount',
+                          value: _formatCurrencyWithDecimal(_netLoan),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Interest Rate
+                        _buildEstimateRow(
+                          label: 'Interest Rate',
+                          value: '${_interestRate.toStringAsFixed(2)}% ($_propertyType)',
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Monthly EMI
+                        _buildEstimateRow(
+                          label: 'Monthly EMI',
+                          value: _formatCurrencyWithDecimal(_emiAmount),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Total Interest
+                        _buildEstimateRow(
+                          label: 'Total Interest',
+                          value: _formatCurrencyWithDecimal(_grossLoan - _netLoan),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Disclaimer
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.amber[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.amber.shade200),
+                          ),
+                          child: const Text(
+                            'This is an estimate only and is used to give you a basic understanding of our terms. To get a precise quote, contact us now.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Talk To Expert Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Handle expert consultation
+                              _showExpertDialog();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD79A2F),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: const Text(
+                              'Talk To An Expert',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
+  Widget _buildDropdownField({
     required String label,
-    required String hint,
-    required String suffix,
+    required String value,
+    required Function(String?) onChanged,
+    required List<String> items,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label.isNotEmpty) ...[
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3A3A3A),
-              fontSize: 16,
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: DropdownButton<String>(
+              value: value,
+              onChanged: onChanged,
+              isExpanded: true,
+              underline: const SizedBox(),
+              items: items.map((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
             ),
           ),
-          const SizedBox(height: 8),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrencyTextField({
+    required TextEditingController controller,
+    required String label,
+    required Function(String) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            hintText: hint,
-            suffixText: suffix,
-            suffixStyle: const TextStyle(
+            prefixText: '\$ ',
+            prefixStyle: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Color(0xFFD79A2F),
+              color: Colors.black87,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -495,75 +543,80 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFFD79A2F)),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10
-            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEstimateRow({
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDetailCard({
-    required String title,
-    required String value,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey[200]!,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+  void _showExpertDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Talk To An Expert"),
+          content: const Text(
+            "Our loan experts are available to provide you with personalized advice and accurate calculations based on your specific situation.",
           ),
-        ], 
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                icon,
-                color: const Color(0xFFD79A2F),
-                size: 18,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3A3A3A),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Close"),
             ),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Add your contact logic here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD79A2F),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text("Contact Now"),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   void dispose() {
+    _propertyValueController.removeListener(_onInputChanged);
+    _loanAmountController.removeListener(_onInputChanged);
+    _propertyValueController.dispose();
     _loanAmountController.dispose();
-    _interestRateController.dispose();
-    _loanTenureController.dispose();
     super.dispose();
   }
 }
