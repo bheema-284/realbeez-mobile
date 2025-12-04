@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:real_beez/screens/cutsom_widgets/swipe_cards.dart';
 import 'package:real_beez/screens/map_screens/map_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
@@ -8,52 +7,67 @@ class StickyMapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 80,
-      height: 40,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.fromRGBO(61, 61, 61, 0.8),
-            AppColors.beeYellow,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const RealEstateHome(),
+          ),
+        );
+      },
+      child: Container(
+        width: 75,
+        height: 60,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromRGBO(61, 61, 61, 0.8),
+              AppColors.beeYellow,
+            ],
+          ),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(13),
+            topRight: Radius.circular(13),
+          
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: TextButton.icon(
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const RealEstateHome(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 35,
+              height: 34,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: Center(
+                child: Image.asset(
+                  "assets/icons/compass.png",
+                  width: 36,
+                  height: 36,
+                ),
+              ),
             ),
-          );
-        },
-        icon: const AnimatedCompassIcon(),
-        label: const Text(
-          "Map",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
+            
+            const Text(
+              "Maps",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       ),
     );
