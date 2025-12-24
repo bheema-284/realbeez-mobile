@@ -112,32 +112,26 @@ class _PropertyDeckSectionState extends State<PropertyDeckSection> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const Center(
-                child: Text(
-                  "Featured Sites",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+          child: const Center(
+            child: Text(
+              "Featured Sites",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
-             
-            ],
+            ),
           ),
         ),
-Center(
-  child: SizedBox(
-    width: cardW,
-    height: cardH, // ← Remove the +60 extra height
-    child: Stack(
-      clipBehavior: Clip.none,
-      children: _buildDeckWidgets(cardW, cardH),
-    ),
-  ),
-),
+        Center(
+          child: SizedBox(
+            width: cardW,
+            height: cardH,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: _buildDeckWidgets(cardW, cardH),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -236,7 +230,6 @@ class PropertyCard extends StatelessWidget {
         borderRadius: borderRadius,
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 6.0,
             offset: const Offset(0, 4),
@@ -274,7 +267,10 @@ class PropertyCard extends StatelessWidget {
                           children: [
                             _circleIcon(Icons.location_on, Colors.orange),
                             const SizedBox(width: 8),
-                            _AnimatedWishlistButton(property: property),
+                            _AnimatedWishlistButton(
+                              key: ValueKey(property.id), // ✅ FIX for wishlist duplication
+                              property: property,
+                            ),
                           ],
                         ),
                       ],
@@ -328,7 +324,6 @@ class PropertyCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              // ignore: deprecated_member_use
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
@@ -437,7 +432,7 @@ class PropertyCard extends StatelessWidget {
 class _AnimatedWishlistButton extends StatefulWidget {
   final Property property;
 
-  const _AnimatedWishlistButton({required this.property});
+  const _AnimatedWishlistButton({super.key, required this.property});
 
   @override
   State<_AnimatedWishlistButton> createState() => _AnimatedWishlistButtonState();
@@ -452,20 +447,22 @@ class _AnimatedWishlistButtonState extends State<_AnimatedWishlistButton>
   @override
   void initState() {
     super.initState();
+    
+    // ✅ FIX: Sync with wishlist manager on init
+    isWishlisted = WishlistManager().isWishlisted(widget.property);
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
 
-    // FIXED: Use a simple Tween instead of TweenSequence
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.elasticOut, // This gives a nice bounce effect
+        curve: Curves.elasticOut,
       ),
     );
 
-    // Reset the animation when it completes
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _controller.reverse();
@@ -473,15 +470,13 @@ class _AnimatedWishlistButtonState extends State<_AnimatedWishlistButton>
     });
   }
 
-  void _onTap() async {
-    // Use heavy impact for stronger vibration like Myntra
+  void _onTap() {
     HapticFeedback.heavyImpact();
     
     setState(() {
       isWishlisted = !isWishlisted;
     });
 
-    // FIXED: Properly handle the animation
     if (_controller.isAnimating) {
       _controller.stop();
     }
@@ -528,40 +523,6 @@ class _AnimatedWishlistButtonState extends State<_AnimatedWishlistButton>
           ),
         ),
       ),
-    );
-  }
-}
-
-class AnimatedCompassIcon extends StatefulWidget {
-  const AnimatedCompassIcon({super.key});
-
-  @override
-  State<AnimatedCompassIcon> createState() => _AnimatedCompassIconState();
-}
-
-class _AnimatedCompassIconState extends State<AnimatedCompassIcon>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 3))
-          ..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RotationTransition(
-      turns: _controller,
-      child: const Icon(Icons.explore, color: Colors.white, size: 22),
     );
   }
 }

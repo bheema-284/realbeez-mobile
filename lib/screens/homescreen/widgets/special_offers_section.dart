@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:real_beez/property_cards.dart';
 import 'package:real_beez/utils/app_colors.dart';
@@ -5,11 +6,13 @@ import 'package:real_beez/utils/app_colors.dart';
 class SpecialOffersSection extends StatefulWidget {
   final int currentSpecialOfferPage;
   final ValueChanged<int> onPageChanged;
+  final GlobalKey dotsKey;  // 🔥 PATCH 3: Added this field
 
   const SpecialOffersSection({
     super.key,
     required this.currentSpecialOfferPage,
     required this.onPageChanged,
+    required this.dotsKey,  // 🔥 PATCH 3: Added this parameter
   });
 
   @override
@@ -19,55 +22,181 @@ class SpecialOffersSection extends StatefulWidget {
 
 class _SpecialOffersSectionState extends State<SpecialOffersSection> {
   final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+  bool _isAutoPlaying = true;
+  Timer? _autoPlayTimer;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = widget.currentSpecialOfferPage;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isInitialized = true;
+      _scrollController.addListener(_onScroll);
+      _startAutoPlay();
+    });
+  }
+
+  @override
+  void didUpdateWidget(SpecialOffersSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // If parent updated the page (from auto-play), sync with scroll
+    if (widget.currentSpecialOfferPage != _currentPage && 
+        widget.currentSpecialOfferPage != oldWidget.currentSpecialOfferPage) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _isInitialized) {
+          _scrollToPage(widget.currentSpecialOfferPage, notifyParent: false);
+        }
+      });
+    }
+  }
+
+  void _startAutoPlay() {
+    _autoPlayTimer?.cancel(); // Cancel any existing timer first
+    _autoPlayTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (mounted && _isAutoPlaying && _isInitialized) {
+        final nextPage = (_currentPage + 1) % PropertyData.specialOffers.length;
+        _scrollToPage(nextPage);
+      }
+    });
+  }
+
+  void _scrollToPage(int page, {bool notifyParent = true}) {
+    if (!_scrollController.hasClients || !mounted || !_isInitialized) return;
+    
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.48;
+    const spacing = 8.0;
+    const leftPadding = 4.0;
+    
+    final scrollOffset = (cardWidth + spacing) * page + leftPadding;
+    
+    // SLOWER ANIMATION DURATION - Changed from 500ms to 1000ms (1 second)
+    _scrollController.animateTo(
+      scrollOffset,
+      duration: const Duration(milliseconds: 1000), // <-- SLOWER HERE
+      curve: Curves.easeInOut,
+    );
+    
+    // Update local state
+    if (mounted) {
+      setState(() {
+        _currentPage = page;
+      });
+    }
+    
+    // Notify parent if needed
+    if (notifyParent) {
+      widget.onPageChanged(page);
+    }
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients || 
+        !_scrollController.position.hasContentDimensions ||
+        !_isInitialized) {
+      return;
+    }
+    
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.48;
+    const spacing = 8.0;
+    
+    final scrollOffset = _scrollController.offset;
+    final estimatedPage = (scrollOffset / (cardWidth + spacing)).round();
+    
+    // Only update if page actually changed
+    if (estimatedPage != _currentPage) {
+      _currentPage = estimatedPage.clamp(0, PropertyData.specialOffers.length - 1);
+      
+      // Delay setState to avoid build conflicts
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      
+      // Notify parent
+      widget.onPageChanged(_currentPage);
+    }
+  }
+
+  void _onDragStart(DragStartDetails details) {
+    _isAutoPlaying = false;
+    _autoPlayTimer?.cancel();
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    // Restart auto-play after 3 seconds of inactivity
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _isInitialized) {
+        _isAutoPlaying = true;
+        _startAutoPlay();
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _autoPlayTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = screenWidth * 0.48; // Slightly less than half for spacing
+    final cardWidth = screenWidth * 0.48;
     
     return SizedBox(
-      height: 180,
+      height: 184,
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.zero, // Remove all padding
-              itemCount: PropertyData.specialOffers.length,
-              itemBuilder: (context, index) {
-                final offer = PropertyData.specialOffers[index];
-                return Container(
-                  width: cardWidth,
-                  margin: const EdgeInsets.only(right: 8), // Only right margin for spacing
-                  child: _buildOfferCard(
-                    imageUrl: offer['image']!,
-                    title: offer['title']!,
-                  ),
-                );
-              },
+            child: GestureDetector(
+              onHorizontalDragStart: _onDragStart,
+              onHorizontalDragEnd: _onDragEnd,
+              child: ListView.builder(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: PropertyData.specialOffers.length,
+                itemBuilder: (context, index) {
+                  final offer = PropertyData.specialOffers[index];
+                  return Container(
+                    width: cardWidth,
+                    margin: const EdgeInsets.only(right: 8, left: 4),
+                    child: _buildOfferCard(
+                      imageUrl: offer['image']!,
+                      title: offer['title']!,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Row(
+            key: widget.dotsKey,    // 🔥 PATCH 4: Added this
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               PropertyData.specialOffers.length,
-              (index) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.currentSpecialOfferPage == index
-                      ? Colors.black
-                      : Colors.grey,
+              (index) => GestureDetector(
+                onTap: () {
+                  _scrollToPage(index);
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentPage == index ? Colors.black : Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -84,7 +213,6 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 5,
             spreadRadius: 1,
@@ -94,6 +222,7 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 4),
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: imageUrl.startsWith('assets/')

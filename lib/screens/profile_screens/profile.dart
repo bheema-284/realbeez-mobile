@@ -29,7 +29,7 @@ class ProfileSettingsScreen extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Clear all saved data
+    await prefs.clear();
 
     if (!context.mounted) return;
 
@@ -53,7 +53,7 @@ class ProfileSettingsScreen extends StatelessWidget {
                 children: [
                   _buildAppBar(context),
                   const SizedBox(height: 20),
-                  _buildProfileSection(),
+                  _buildProfileSection(),     // <-- UPDATED
                   const SizedBox(height: 20),
                   _buildSettingsCard(context),
                 ],
@@ -92,17 +92,41 @@ class ProfileSettingsScreen extends StatelessWidget {
     );
   }
 
+  // ---------------------------------------------------------
+  // UPDATED PROFILE SECTION (LOADS NAME FROM SHARED PREFS)
+  // ---------------------------------------------------------
   Widget _buildProfileSection() {
     return Column(
-      children: const [
-        CircleAvatar(
+      children: [
+        const CircleAvatar(
           radius: 32,
           backgroundImage: AssetImage('assets/images/car.png'),
         ),
-        SizedBox(height: 10),
-        Text(
-          'Someone',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+        const SizedBox(height: 10),
+
+        // 🔥 REPLACED "Someone" WITH SAVED NAME
+        FutureBuilder(
+          future: SharedPreferences.getInstance(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Text(
+                "Loading...",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              );
+            }
+
+            final prefs = snapshot.data!;
+            final name = prefs.getString("fullName") ?? "User";
+
+            return Text(
+              name,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            );
+          },
         ),
       ],
     );
@@ -127,8 +151,10 @@ class ProfileSettingsScreen extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 12),
-            child: Text('Settings',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+            child: Text(
+              'Settings',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+            ),
           ),
           ...settingsItems.asMap().entries.map((entry) {
             int idx = entry.key;
@@ -153,7 +179,6 @@ class ProfileSettingsScreen extends StatelessWidget {
                     }
                   },
                   borderRadius: BorderRadius.circular(8),
-                  // ignore: deprecated_member_use
                   splashColor: AppColors.beeYellow.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -162,17 +187,17 @@ class ProfileSettingsScreen extends StatelessWidget {
                         Container(
                           width: 36,
                           height: 36,
-                          decoration:
-                              const BoxDecoration(color: AppColors.beeYellow, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(
+                              color: AppColors.beeYellow, shape: BoxShape.circle),
                           child: Icon(item.icon, color: Colors.white, size: 18),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
-                          child: Text(item.label,
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black)),
+                          child: Text(
+                            item.label,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+                          ),
                         ),
                         const Icon(Icons.chevron_right, color: chevronColor, size: 18),
                       ],

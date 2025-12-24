@@ -44,9 +44,8 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
         const SizedBox(height: 10),
         
         RecommendedSitesSection(
-          currentRecommendedPage: widget.currentRecommendedPage,
+
           recommendedSites: widget.recommendedSites,
-          onPageChanged: widget.onRecommendedPageChanged,
         ),
         const SizedBox(height: 6),
         

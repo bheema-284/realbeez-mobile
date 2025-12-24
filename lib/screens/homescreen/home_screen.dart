@@ -687,6 +687,7 @@ Widget _buildScrollableContent() {
          
           margin: EdgeInsets.fromLTRB(12, 2, 6, 2),
           child: SpecialOffersSection( 
+            dotsKey: GlobalKey(),
             currentSpecialOfferPage: _currentSpecialOfferPage, 
             onPageChanged: (index) { 
               setState(() { 

@@ -44,17 +44,17 @@ class StickyMapButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 35,
-              height: 34,
+              width: 38,
+              height: 38,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
               ),
               child: Center(
                 child: Image.asset(
-                  "assets/icons/compass.png",
-                  width: 36,
-                  height: 36,
+                  "assets/icons/locations.png",
+                  width: 34,
+                  height: 32,
                 ),
               ),
             ),

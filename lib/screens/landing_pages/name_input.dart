@@ -1,13 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:real_beez/screens/homescreen/home_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 import 'package:real_beez/screens/forms/common_button.dart';
 import 'package:real_beez/screens/forms/common_text.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // ✅ Added
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: NameInputPage(),
     debugShowCheckedModeBanner: false,
   ));
@@ -23,6 +25,7 @@ class NameInputPage extends StatefulWidget {
 class _NameInputPageState extends State<NameInputPage> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
+
   String? _selectedGender;
   String? _errorMessage;
 
@@ -33,6 +36,7 @@ class _NameInputPageState extends State<NameInputPage> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
+
     if (picked != null) {
       setState(() {
         _dateOfBirthController.text =
@@ -45,48 +49,68 @@ class _NameInputPageState extends State<NameInputPage> {
     final fullName = _fullNameController.text.trim();
     final dateOfBirth = _dateOfBirthController.text.trim();
 
-    // Check for empty fields
     if (fullName.isEmpty || dateOfBirth.isEmpty) {
-      setState(() {
-        _errorMessage = "Please fill in all fields";
-      });
+      setState(() => _errorMessage = "Please fill in all fields");
       return;
     }
 
-    // Check if gender is selected
     if (_selectedGender == null) {
-      setState(() {
-        _errorMessage = "Please select your gender";
-      });
+      setState(() => _errorMessage = "Please select your gender");
       return;
     }
 
-    // Allow only alphabets for name
     final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
     if (!nameRegExp.hasMatch(fullName)) {
-      setState(() {
-        _errorMessage = "Name can only contain letters (A–Z)";
-      });
+      setState(() => _errorMessage = "Name can only contain letters (A–Z)");
       return;
     }
 
-    // ✅ Clear error and save login state
-    setState(() {
-      _errorMessage = null;
-    });
+    setState(() => _errorMessage = null);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    await prefs.setString('fullName', fullName);
-    await prefs.setString('gender', _selectedGender!);
-    await prefs.setString('dob', dateOfBirth);
-
-    // ✅ Navigate to Home after saving
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) =>  HomeScreen()),
+    final url = Uri.parse(
+      "https://realbeez-backend.vercel.app/api/user",
     );
+
+    final body = {
+      "name": fullName,
+      "date_of_birth": dateOfBirth, // ✅ CORRECT KEY
+      "gender": _selectedGender!,
+    };
+
+    try {
+      final resp = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+
+      final decoded = jsonDecode(resp.body);
+
+      if (resp.statusCode == 200 || resp.statusCode == 201) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('fullName', fullName);
+        await prefs.setString('date_of_birth', dateOfBirth);
+        await prefs.setString('gender', _selectedGender!);
+
+        if (decoded["_id"] != null) {
+          await prefs.setString("userId", decoded["_id"]);
+        }
+
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = decoded["message"] ?? "Failed to register";
+        });
+      }
+    } catch (e) {
+      setState(() => _errorMessage = "Error: $e");
+    }
   }
 
   InputDecoration _fieldDecoration(String hint) {
@@ -125,31 +149,24 @@ class _NameInputPageState extends State<NameInputPage> {
     );
   }
 
-  Widget _buildGenderOption(String gender, String displayText) {
+  Widget _buildGenderOption(String value, String label) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedGender = gender;
-          });
-        },
+        onTap: () => setState(() => _selectedGender = value),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: _selectedGender == gender
+            color: _selectedGender == value
                 ? AppColors.beeYellow
                 : Colors.transparent,
-            border: Border.all(
-              color: AppColors.beeYellow,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.beeYellow),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            displayText,
+            label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: _selectedGender == gender
+              color: _selectedGender == value
                   ? AppColors.white
                   : AppColors.beeYellow,
               fontWeight: FontWeight.w500,
@@ -171,12 +188,12 @@ class _NameInputPageState extends State<NameInputPage> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -186,20 +203,15 @@ class _NameInputPageState extends State<NameInputPage> {
               fontSize: 16,
             ),
             const SizedBox(height: 12),
-
-            // ✅ Full Name Field
             TextField(
               controller: _fullNameController,
-              keyboardType: TextInputType.name,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]')),
               ],
               decoration: _fieldDecoration("Full Name"),
             ),
-
             const SizedBox(height: 20),
 
-            // ✅ Date of Birth Field
             const CommonText(
               text: "Date of Birth",
               isBold: true,
@@ -212,10 +224,8 @@ class _NameInputPageState extends State<NameInputPage> {
               decoration: _dateFieldDecoration(),
               onTap: _selectDate,
             ),
-
             const SizedBox(height: 20),
 
-            // ✅ Gender Selection
             const CommonText(
               text: "Gender",
               isBold: true,
@@ -267,7 +277,6 @@ class SuccessScreen extends StatelessWidget {
           'assets/images/submit.png',
           width: 120,
           height: 120,
-          fit: BoxFit.contain,
         ),
       ),
     );

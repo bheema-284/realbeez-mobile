@@ -3,6 +3,7 @@ import 'package:real_beez/screens/booking_screens/booking_confirm.dart';
 import 'package:real_beez/utils/app_colors.dart';
 import 'package:video_player/video_player.dart';
 import 'package:real_beez/screens/api/cab_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const BookServiceApp());
@@ -30,26 +31,16 @@ class BookServiceScreen extends StatefulWidget {
 class _BookServiceScreenState extends State<BookServiceScreen> {
   late VideoPlayerController _controller;
 
-  // Controllers for text fields
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _dropLocationController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _membersController = TextEditingController();
 
   final List<String> _months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
+
   final List<int> _years = [2024, 2025, 2026, 2027, 2028];
 
   String _selectedMonth = 'July';
@@ -57,13 +48,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
   int _selectedDate = 24;
   final DateTime _currentDate = DateTime.now();
   String? _selectedTimeSlot;
-  
-  // Add state for showing booking confirmation
+
   bool _showBookingConfirmation = false;
 
   @override
   void initState() {
     super.initState();
+
+    // ------------------------------------------
+    // AUTO FILL SAVED NAME FROM SHARED PREFERENCES
+    // ------------------------------------------
+    _loadSavedName();
+
     _controller = VideoPlayerController.asset(
       'assets/videos/real_estate.mp4',
     )..initialize().then((_) {
@@ -77,6 +73,20 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     _selectedDate = _currentDate.day;
     _selectedMonth = _months[_currentDate.month - 1];
     _selectedYear = _currentDate.year;
+  }
+
+  // ------------------------------------------------
+  // NEW — LOAD NAME FROM REGISTER SCREEN (Local Data)
+  // ------------------------------------------------
+  Future<void> _loadSavedName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString("fullName");
+
+    if (savedName != null && savedName.isNotEmpty) {
+      setState(() {
+        _nameController.text = savedName;
+      });
+    }
   }
 
   @override
@@ -113,20 +123,15 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Month Grid
                 const Text(
                   'Select Month',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -134,15 +139,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                   ),
                   itemCount: _months.length,
                   itemBuilder: (context, index) {
-                    bool isDisabled =
-                        _isMonthDisabled(index + 1, _selectedYear);
+                    bool isDisabled = _isMonthDisabled(index + 1, _selectedYear);
                     return TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: _selectedMonth == _months[index]
                             ? AppColors.beeYellow
-                            : (isDisabled
-                                ? Colors.grey[100]
-                                : Colors.grey[100]),
+                            : (isDisabled ? Colors.grey[100] : Colors.grey[100]),
                         padding: const EdgeInsets.all(4),
                         minimumSize: Size.zero,
                       ),
@@ -151,8 +153,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           : () {
                               setState(() {
                                 _selectedMonth = _months[index];
-                                _selectedTimeSlot =
-                                    null; // Reset selected time when month changes
+                                _selectedTimeSlot = null;
                               });
                               Navigator.pop(context);
                             },
@@ -162,9 +163,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           fontSize: 12,
                           color: _selectedMonth == _months[index]
                               ? Colors.white
-                              : (isDisabled
-                                  ? Colors.grey[400]
-                                  : Colors.black),
+                              : (isDisabled ? Colors.grey[400] : Colors.black),
                         ),
                       ),
                     );
@@ -172,20 +171,16 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Year Grid
                 const Text(
                   'Select Year',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
+
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -198,9 +193,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                       style: TextButton.styleFrom(
                         backgroundColor: _selectedYear == _years[index]
                             ? AppColors.beeYellow
-                            : (isDisabled
-                                ? Colors.grey[100]
-                                : Colors.grey[100]),
+                            : (isDisabled ? Colors.grey[100] : Colors.grey[100]),
                         padding: const EdgeInsets.all(4),
                         minimumSize: Size.zero,
                       ),
@@ -209,8 +202,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           : () {
                               setState(() {
                                 _selectedYear = _years[index];
-                                _selectedTimeSlot =
-                                    null; // Reset selected time when year changes
+                                _selectedTimeSlot = null;
                               });
                               Navigator.pop(context);
                             },
@@ -220,15 +212,14 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           fontSize: 12,
                           color: _selectedYear == _years[index]
                               ? Colors.white
-                              : (isDisabled
-                                  ? Colors.grey[400]
-                                  : Colors.black),
+                              : (isDisabled ? Colors.grey[400] : Colors.black),
                         ),
                       ),
                     );
                   },
                 ),
                 const SizedBox(height: 16),
+
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
@@ -241,10 +232,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                     },
                     child: const Text(
                       'Close',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black,
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.black),
                     ),
                   ),
                 ),
@@ -256,13 +244,11 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     );
   }
 
-  // Show booking confirmation overlay
   void _showBookingConfirmationOverlay() {
     setState(() {
       _showBookingConfirmation = true;
     });
-    
-    // Auto-hide after 3 seconds and navigate
+
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
@@ -272,9 +258,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     });
   }
 
-  // Show confirmation dialog
   void _showConfirmationDialog() {
-    // Use parent context (with Scaffold) inside dialog callbacks
     final parentContext = context;
 
     showDialog(
@@ -293,25 +277,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Date Section
                 const Text(
                   "Select Date:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
+
                 Text(
                   "$_selectedMonth, $_selectedYear",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
 
-                // Days of week
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: const [
@@ -326,35 +303,26 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Selected date indicator (simplified)
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     _selectedDate.toString(),
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Confirmation Question
                 const Text(
                   "Do you want to book a cab service?",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
-                // Yes/No Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // No Button
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -368,7 +336,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.pop(dialogContext); // Close dialog
+                            Navigator.pop(dialogContext);
                           },
                           child: const Text(
                             "No",
@@ -377,7 +345,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         ),
                       ),
                     ),
-                    // Yes Button
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(left: 8),
@@ -391,67 +358,68 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             ),
                           ),
                           onPressed: () async {
-                            Navigator.pop(dialogContext); // Close dialog first
+                            Navigator.pop(dialogContext);
 
-                            // Format date as YYYY-MM-DD
-                            final monthIndex =
-                                _months.indexOf(_selectedMonth) + 1;
+                            final monthIndex = _months.indexOf(_selectedMonth) + 1;
+
                             final bookingDate =
                                 "${_selectedYear.toString().padLeft(4, '0')}-"
                                 "${monthIndex.toString().padLeft(2, '0')}-"
                                 "${_selectedDate.toString().padLeft(2, '0')}";
 
-                            // Convert AM/PM time to 24-hour format
                             String bookingTime = "";
                             if (_selectedTimeSlot != null) {
                               bookingTime = _convertTo24HourFormat(_selectedTimeSlot!);
                             }
 
-                            // Generate a simple booking id
                             final bookingId =
                                 "BK${DateTime.now().millisecondsSinceEpoch}";
 
-                            // Convert members to int
-                            final passengerCount = int.tryParse(
-                                    _membersController.text.trim()) ??
-                                1;
+                            final passengerCount =
+                                int.tryParse(_membersController.text.trim()) ?? 1;
 
                             final pickupLocation =
                                 _locationController.text.trim();
                             final dropLocation =
                                 _dropLocationController.text.trim();
-                            final name = _nameController.text.trim();
+                            final name =
+                                _nameController.text.trim();
 
-                            // Validate required fields
                             if (pickupLocation.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter pickup location")),
+                                const SnackBar(
+                                    content:
+                                        Text("Please enter pickup location")),
                               );
                               return;
                             }
 
                             if (dropLocation.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter drop location")),
+                                const SnackBar(
+                                    content:
+                                        Text("Please enter drop location")),
                               );
                               return;
                             }
 
                             if (name.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter your name")),
+                                const SnackBar(
+                                    content: Text("Please enter your name")),
                               );
                               return;
                             }
 
                             if (bookingTime.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please select a time slot")),
+                                const SnackBar(
+                                    content: Text("Please select a time slot")),
                               );
                               return;
                             }
-                            final response =
-                                await CabService.postCabBooking(
+
+                            final response = await CabService.postCabBooking(
                               bookingId: bookingId,
                               passengerCount: passengerCount,
                               bookingDate: bookingDate,
@@ -460,34 +428,33 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                               dropLocation: dropLocation,
                             );
 
-                            // Remove loading indicator
-                            ScaffoldMessenger.of(parentContext).hideCurrentSnackBar();
+                            ScaffoldMessenger.of(parentContext)
+                                .hideCurrentSnackBar();
 
                             if (!mounted) return;
 
                             if (response["success"] == true) {
-                              // Show booking confirmation overlay
                               _showBookingConfirmationOverlay();
-                              
-                              // Extract the booking ID from the response
+
                               String newBookingId = "";
                               if (response["data"] != null) {
-                                // Check different possible field names for booking ID
                                 if (response["data"]["_id"] != null) {
-                                  newBookingId = response["data"]["_id"].toString();
+                                  newBookingId =
+                                      response["data"]["_id"].toString();
                                 } else if (response["data"]["id"] != null) {
-                                  newBookingId = response["data"]["id"].toString();
-                                } else if (response["data"]["bookingId"] != null) {
-                                  newBookingId = response["data"]["bookingId"].toString();
+                                  newBookingId =
+                                      response["data"]["id"].toString();
+                                } else if (response["data"]["bookingId"] !=
+                                    null) {
+                                  newBookingId = response["data"]["bookingId"]
+                                      .toString();
                                 }
                               }
-                              
-                              // If no ID in response, use the generated one
+
                               if (newBookingId.isEmpty) {
                                 newBookingId = bookingId;
                               }
 
-                              // Clear all fields after successful booking
                               _locationController.clear();
                               _dropLocationController.clear();
                               _nameController.clear();
@@ -496,26 +463,27 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                 _selectedTimeSlot = null;
                               });
 
-                              // Wait for overlay to show, then navigate
                               Future.delayed(const Duration(seconds: 2), () {
                                 if (mounted) {
                                   Navigator.push(
                                     parentContext,
                                     MaterialPageRoute(
-                                      builder: (context) => BookingConfirmationScreen(
-                                        bookingId: newBookingId, // Pass the booking ID
+                                      builder: (context) =>
+                                          BookingConfirmationScreen(
+                                        bookingId: newBookingId,
                                       ),
                                     ),
                                   );
                                 }
                               });
                             } else {
-                              // Show detailed error message
-                              String errorMessage = response["message"] ?? "Failed to create booking";
+                              String errorMessage = response["message"] ??
+                                  "Failed to create booking";
                               if (response["statusCode"] != null) {
-                                errorMessage += " (Status: ${response["statusCode"]})";
+                                errorMessage +=
+                                    " (Status: ${response["statusCode"]})";
                               }
-                              
+
                               ScaffoldMessenger.of(parentContext).showSnackBar(
                                 SnackBar(
                                   content: Text(errorMessage),
@@ -542,7 +510,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     );
   }
 
-  // Helper function to convert AM/PM to 24-hour format
   String _convertTo24HourFormat(String time12Hour) {
     try {
       List<String> parts = time12Hour.split(' ');
@@ -551,15 +518,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
       int minute = int.parse(timeParts[1]);
       String period = parts[1];
 
-      if (period == 'PM' && hour != 12) {
-        hour += 12;
-      } else if (period == 'AM' && hour == 12) {
-        hour = 0;
-      }
+      if (period == 'PM' && hour != 12) hour += 12;
+      if (period == 'AM' && hour == 12) hour = 0;
 
       return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
     } catch (e) {
-      return time12Hour; // Return original if conversion fails
+      return time12Hour;
     }
   }
 
@@ -582,8 +546,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     if (_selectedYear == now.year && selectedMonthIndex < now.month) {
       return true;
     }
-    if (_selectedYear == now.year &&
-        selectedMonthIndex == now.month) {
+    if (_selectedYear == now.year && selectedMonthIndex == now.month) {
       return day < now.day;
     }
 
@@ -592,8 +555,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
 
   bool _isTimeSlotAvailable(String time) {
     DateTime now = DateTime.now();
-    DateTime selectedDateTime = DateTime(
-        _selectedYear, _months.indexOf(_selectedMonth) + 1, _selectedDate);
+    DateTime selectedDateTime =
+        DateTime(_selectedYear, _months.indexOf(_selectedMonth) + 1, _selectedDate);
 
     if (selectedDateTime.year == now.year &&
         selectedDateTime.month == now.month &&
@@ -603,11 +566,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
 
       if (selectedTime.hour < currentTime.hour) return false;
       if (selectedTime.hour == currentTime.hour &&
-          selectedTime.minute <= currentTime.minute) {
-        return false;
-      }
+          selectedTime.minute <= currentTime.minute) return false;
     }
-
     return true;
   }
 
@@ -626,7 +586,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
   List<Widget> _getAvailableTimeSlots() {
     List<Widget> slots = [];
 
-    // Keep the same time slots as original
     List<Map<String, dynamic>> allSlots = [
       {'time': '9:30 AM', 'booked': true},
       {'time': '10:30 AM', 'booked': false},
@@ -645,7 +604,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
       bool available = !booked && _isTimeSlotAvailable(time);
       bool isSelected = _selectedTimeSlot == time;
 
-      // Only add if it's available or booked (but not past time)
       if (booked || available) {
         slots.add(
           buildTimeSlot(
@@ -677,23 +635,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
           SafeArea(
             child: Column(
               children: [
-                // ---------------- AppBar ----------------
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Back arrow aligned to the start
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
-                        icon:
-                            const Icon(Icons.arrow_back, color: Colors.black),
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                     ),
-
-                    // Centered text
                     const Text(
                       "Book Your Services",
                       style: TextStyle(
@@ -709,25 +662,21 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        // ---------------- Video Player ----------------
                         _controller.value.isInitialized
                             ? GestureDetector(
                                 onTap: _togglePlayPause,
                                 child: SizedBox(
-                                  height: 180, // Reduced height
+                                  height: 180,
                                   child: Stack(
                                     alignment: Alignment.center,
                                     children: [
                                       ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12),
                                         child: AspectRatio(
-                                          aspectRatio: _controller
-                                              .value.aspectRatio,
+                                          aspectRatio: _controller.value.aspectRatio,
                                           child: VideoPlayer(_controller),
                                         ),
                                       ),
-                                      // Show play button when video is NOT playing
                                       if (!_controller.value.isPlaying)
                                         Container(
                                           color: Colors.transparent,
@@ -735,8 +684,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                             child: Container(
                                               height: 50,
                                               width: 50,
-                                              decoration:
-                                                  const BoxDecoration(
+                                              decoration: const BoxDecoration(
                                                 color: Colors.white,
                                                 shape: BoxShape.circle,
                                               ),
@@ -748,7 +696,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                             ),
                                           ),
                                         ),
-                                      // Show pause button when video IS playing (optional)
                                       if (_controller.value.isPlaying)
                                         Container(
                                           color: Colors.transparent,
@@ -758,8 +705,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                               child: Container(
                                                 height: 50,
                                                 width: 50,
-                                                decoration:
-                                                    const BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   color: Colors.black,
                                                   shape: BoxShape.circle,
                                                 ),
@@ -777,10 +723,9 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                 ),
                               )
                             : Container(
-                                height: 180, // Same height for consistency
+                                height: 180,
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                                   color: Colors.grey[300],
                                 ),
                                 child: const Center(
@@ -788,16 +733,14 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                 ),
                               ),
                         const SizedBox(height: 10),
+
                         const Text(
                           "SMR Buildings",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
 
-                        // ---------------- Current Location ----------------
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -813,34 +756,23 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         TextField(
                           controller: _locationController,
                           decoration: const InputDecoration(
-                            hintText:
-                                "Liberty (40.6892° N, 74.0445° W)",
+                            hintText: "Liberty (40.6892° N, 74.0445° W)",
                             hintStyle: TextStyle(color: Colors.grey),
-                            suffixIcon: Icon(Icons.location_on,
-                                color: Colors.red),
+                            suffixIcon: Icon(Icons.location_on, color: Colors.red),
                             filled: true,
-                            fillColor: Color(0xFFFFFFFF), // #FFFFFF
+                            fillColor: Color(0xFFFFFFFF),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA), // #DBDADA
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA),
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                           ),
                         ),
                         const SizedBox(height: 15),
 
-                        // ---------------- Drop Location (NEW UI) ----------------
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -859,28 +791,19 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             hintText: "Enter Drop Location",
                             hintStyle: TextStyle(color: Colors.grey),
                             filled: true,
-                            fillColor: Color(0xFFFFFFFF), // #FFFFFF
+                            fillColor: Color(0xFFFFFFFF),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA), // #DBDADA
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA),
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                           ),
                         ),
                         const SizedBox(height: 15),
 
-                        // ---------------- Name ----------------
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -899,28 +822,19 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             hintText: "Enter Name",
                             hintStyle: TextStyle(color: Colors.grey),
                             filled: true,
-                            fillColor: Color(0xFFFFFFFF), // #FFFFFF
+                            fillColor: Color(0xFFFFFFFF),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA), // #DBDADA
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA),
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                           ),
                         ),
                         const SizedBox(height: 15),
 
-                        // ---------------- Members ----------------
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -940,53 +854,36 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             hintText: "Enter Members",
                             hintStyle: TextStyle(color: Colors.grey),
                             filled: true,
-                            fillColor: Color(0xFFFFFFFF), // #FFFFFF
+                            fillColor: Color(0xFFFFFFFF),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA), // #DBDADA
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              borderSide: BorderSide(
-                                color: Color(0xFFDBDADA),
-                                width: 0.5,
-                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide(color: Color(0xFFDBDADA), width: 0.5),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 15),
-
                         const SizedBox(height: 20),
 
-                        // ---------------- Month & Year Dropdown ----------------
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
                               "Select Date:",
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             GestureDetector(
                               onTap: _showMonthYearPicker,
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.circular(8),
-                                  border:
-                                      Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey),
                                 ),
                                 child: Row(
                                   children: [
@@ -994,13 +891,11 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                       "$_selectedMonth, $_selectedYear",
                                       style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight:
-                                            FontWeight.w500,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.arrow_drop_down,
-                                        size: 18),
+                                    const Icon(Icons.arrow_drop_down, size: 18),
                                   ],
                                 ),
                               ),
@@ -1009,7 +904,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         ),
                         const SizedBox(height: 15),
 
-                        // ---------------- Horizontal Scrollable Dates ----------------
                         SizedBox(
                           height: 70,
                           child: ListView(
@@ -1017,59 +911,42 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             children: List.generate(31, (index) {
                               int dayNumber = index + 1;
                               List<String> days = [
-                                'Mon',
-                                'Tue',
-                                'Wed',
-                                'Thu',
-                                'Fri',
-                                'Sat',
-                                'Sun'
+                                'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
                               ];
                               String dayName = days[dayNumber % 7];
-                              bool isSelected =
-                                  dayNumber == _selectedDate;
-                              bool isDisabled =
-                                  _isDateDisabled(dayNumber);
+                              bool isSelected = dayNumber == _selectedDate;
+                              bool isDisabled = _isDateDisabled(dayNumber);
 
                               return GestureDetector(
                                 onTap: isDisabled
                                     ? null
                                     : () {
                                         setState(() {
-                                          _selectedDate =
-                                              dayNumber;
-                                          _selectedTimeSlot =
-                                              null; // Reset selected time when date changes
+                                          _selectedDate = dayNumber;
+                                          _selectedTimeSlot = null;
                                         });
                                       },
                                 child: Container(
                                   width: 60,
-                                  margin: const EdgeInsets.only(
-                                      right: 8),
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                          vertical: 8),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
                                   decoration: BoxDecoration(
                                     color: isDisabled
                                         ? Colors.grey[200]
                                         : (isSelected
                                             ? AppColors.beeYellow
                                             : Colors.white),
-                                    borderRadius:
-                                        BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: isDisabled
                                           ? Colors.grey[300]!
                                           : (isSelected
-                                              ? AppColors
-                                                  .beeYellow
-                                              : Colors.grey[
-                                                  300]!),
+                                              ? AppColors.beeYellow
+                                              : Colors.grey[300]!),
                                     ),
                                   ),
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         dayName,
@@ -1077,14 +954,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                           fontSize: 12,
                                           fontWeight: isSelected
                                               ? FontWeight.bold
-                                              : FontWeight
-                                                  .normal,
+                                              : FontWeight.normal,
                                           color: isDisabled
                                               ? Colors.grey[400]
                                               : (isSelected
                                                   ? Colors.black
-                                                  : Colors.grey[
-                                                      700]),
+                                                  : Colors.grey[700]),
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -1094,14 +969,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                           fontSize: 14,
                                           fontWeight: isSelected
                                               ? FontWeight.bold
-                                              : FontWeight
-                                                  .normal,
+                                              : FontWeight.normal,
                                           color: isDisabled
                                               ? Colors.grey[400]
                                               : (isSelected
                                                   ? Colors.black
-                                                  : Colors.grey[
-                                                      700]),
+                                                  : Colors.grey[700]),
                                         ),
                                       ),
                                     ],
@@ -1113,14 +986,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         ),
                         const SizedBox(height: 25),
 
-                        // ---------------- Schedule Time ----------------
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             "Select Schedule Time:",
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1161,14 +1032,14 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
 
                         const SizedBox(height: 30),
 
-                        // ---------------- Book Button ----------------
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.beeYellow,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -1189,8 +1060,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
               ],
             ),
           ),
-          
-          // Booking Confirmation Overlay
+
           if (_showBookingConfirmation)
             Positioned.fill(
               child: Container(
@@ -1199,11 +1069,10 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Animated checkmark icon
                       Container(
                         width: 60,
                         height: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.green,
                           shape: BoxShape.circle,
                         ),
@@ -1214,7 +1083,6 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      // Success message
                       const Text(
                         "Booking Confirmed!",
                         style: TextStyle(
@@ -1223,9 +1091,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           color: Colors.white,
                         ),
                       ),
-                     
                       const SizedBox(height: 20),
-                      // Loading indicator
                       const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
@@ -1239,7 +1105,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     );
   }
 
-  // ---------------- Time Slot Widget ----------------
+  // SLOT WIDGET---------------------------------------
   Widget buildTimeSlot(
     String time, {
     bool booked = false,
@@ -1257,10 +1123,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
         ),
         child: Column(
           children: [
-            Text(time,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const Text("Booked",
-                style: TextStyle(color: Colors.black54)),
+            Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const Text("Booked", style: TextStyle(color: Colors.black54)),
           ],
         ),
       );
@@ -1276,8 +1140,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
           ),
           child: Column(
             children: [
-              Text(time,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
@@ -1304,8 +1167,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
           ),
           child: Column(
             children: [
-              Text(time,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
