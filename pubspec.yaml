@@ -31,6 +31,11 @@ dependencies:
   google_maps_flutter: ^2.13.1
   geolocator: ^11.1.0
 
+  flutter_riverpod: ^2.5.1
+  google_generative_ai: ^0.4.0
+  flutter_markdown: ^0.7.3
+  scroll_to_index: ^2.1.1
+
 
   maplibre_gl:
     git:

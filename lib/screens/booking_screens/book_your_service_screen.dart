@@ -48,7 +48,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     'September',
     'October',
     'November',
-    'December'
+    'December',
   ];
   final List<int> _years = [2024, 2025, 2026, 2027, 2028];
 
@@ -57,16 +57,15 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
   int _selectedDate = 24;
   final DateTime _currentDate = DateTime.now();
   String? _selectedTimeSlot;
-  
+
   // Add state for showing booking confirmation
   bool _showBookingConfirmation = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(
-      'assets/videos/real_estate.mp4',
-    )..initialize().then((_) {
+    _controller = VideoPlayerController.asset('assets/videos/real_estate.mp4')
+      ..initialize().then((_) {
         setState(() {});
       });
 
@@ -116,17 +115,13 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 // Month Grid
                 const Text(
                   'Select Month',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -134,15 +129,17 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                   ),
                   itemCount: _months.length,
                   itemBuilder: (context, index) {
-                    bool isDisabled =
-                        _isMonthDisabled(index + 1, _selectedYear);
+                    bool isDisabled = _isMonthDisabled(
+                      index + 1,
+                      _selectedYear,
+                    );
                     return TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: _selectedMonth == _months[index]
                             ? AppColors.beeYellow
                             : (isDisabled
-                                ? Colors.grey[100]
-                                : Colors.grey[100]),
+                                  ? Colors.grey[100]
+                                  : Colors.grey[100]),
                         padding: const EdgeInsets.all(4),
                         minimumSize: Size.zero,
                       ),
@@ -162,9 +159,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           fontSize: 12,
                           color: _selectedMonth == _months[index]
                               ? Colors.white
-                              : (isDisabled
-                                  ? Colors.grey[400]
-                                  : Colors.black),
+                              : (isDisabled ? Colors.grey[400] : Colors.black),
                         ),
                       ),
                     );
@@ -175,17 +170,13 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 // Year Grid
                 const Text(
                   'Select Year',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -199,8 +190,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         backgroundColor: _selectedYear == _years[index]
                             ? AppColors.beeYellow
                             : (isDisabled
-                                ? Colors.grey[100]
-                                : Colors.grey[100]),
+                                  ? Colors.grey[100]
+                                  : Colors.grey[100]),
                         padding: const EdgeInsets.all(4),
                         minimumSize: Size.zero,
                       ),
@@ -220,9 +211,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           fontSize: 12,
                           color: _selectedYear == _years[index]
                               ? Colors.white
-                              : (isDisabled
-                                  ? Colors.grey[400]
-                                  : Colors.black),
+                              : (isDisabled ? Colors.grey[400] : Colors.black),
                         ),
                       ),
                     );
@@ -241,10 +230,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                     },
                     child: const Text(
                       'Close',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black,
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.black),
                     ),
                   ),
                 ),
@@ -261,7 +247,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     setState(() {
       _showBookingConfirmation = true;
     });
-    
+
     // Auto-hide after 3 seconds and navigate
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -296,18 +282,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 // Date Section
                 const Text(
                   "Select Date:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   "$_selectedMonth, $_selectedYear",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
 
@@ -342,10 +322,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                 // Confirmation Question
                 const Text(
                   "Do you want to book a cab service?",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
@@ -404,7 +381,9 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             // Convert AM/PM time to 24-hour format
                             String bookingTime = "";
                             if (_selectedTimeSlot != null) {
-                              bookingTime = _convertTo24HourFormat(_selectedTimeSlot!);
+                              bookingTime = _convertTo24HourFormat(
+                                _selectedTimeSlot!,
+                              );
                             }
 
                             // Generate a simple booking id
@@ -412,46 +391,53 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                 "BK${DateTime.now().millisecondsSinceEpoch}";
 
                             // Convert members to int
-                            final passengerCount = int.tryParse(
-                                    _membersController.text.trim()) ??
+                            final passengerCount =
+                                int.tryParse(_membersController.text.trim()) ??
                                 1;
 
-                            final pickupLocation =
-                                _locationController.text.trim();
-                            final dropLocation =
-                                _dropLocationController.text.trim();
+                            final pickupLocation = _locationController.text
+                                .trim();
+                            final dropLocation = _dropLocationController.text
+                                .trim();
                             final name = _nameController.text.trim();
 
                             // Validate required fields
                             if (pickupLocation.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter pickup location")),
+                                const SnackBar(
+                                  content: Text("Please enter pickup location"),
+                                ),
                               );
                               return;
                             }
 
                             if (dropLocation.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter drop location")),
+                                const SnackBar(
+                                  content: Text("Please enter drop location"),
+                                ),
                               );
                               return;
                             }
 
                             if (name.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please enter your name")),
+                                const SnackBar(
+                                  content: Text("Please enter your name"),
+                                ),
                               );
                               return;
                             }
 
                             if (bookingTime.isEmpty) {
                               ScaffoldMessenger.of(parentContext).showSnackBar(
-                                const SnackBar(content: Text("Please select a time slot")),
+                                const SnackBar(
+                                  content: Text("Please select a time slot"),
+                                ),
                               );
                               return;
                             }
-                            final response =
-                                await CabService.postCabBooking(
+                            final response = await CabService.postCabBooking(
                               bookingId: bookingId,
                               passengerCount: passengerCount,
                               bookingDate: bookingDate,
@@ -461,27 +447,34 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             );
 
                             // Remove loading indicator
-                            ScaffoldMessenger.of(parentContext).hideCurrentSnackBar();
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(
+                              parentContext,
+                            ).hideCurrentSnackBar();
 
                             if (!mounted) return;
 
                             if (response["success"] == true) {
                               // Show booking confirmation overlay
                               _showBookingConfirmationOverlay();
-                              
+
                               // Extract the booking ID from the response
                               String newBookingId = "";
                               if (response["data"] != null) {
                                 // Check different possible field names for booking ID
                                 if (response["data"]["_id"] != null) {
-                                  newBookingId = response["data"]["_id"].toString();
+                                  newBookingId = response["data"]["_id"]
+                                      .toString();
                                 } else if (response["data"]["id"] != null) {
-                                  newBookingId = response["data"]["id"].toString();
-                                } else if (response["data"]["bookingId"] != null) {
-                                  newBookingId = response["data"]["bookingId"].toString();
+                                  newBookingId = response["data"]["id"]
+                                      .toString();
+                                } else if (response["data"]["bookingId"] !=
+                                    null) {
+                                  newBookingId = response["data"]["bookingId"]
+                                      .toString();
                                 }
                               }
-                              
+
                               // If no ID in response, use the generated one
                               if (newBookingId.isEmpty) {
                                 newBookingId = bookingId;
@@ -500,22 +493,29 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                               Future.delayed(const Duration(seconds: 2), () {
                                 if (mounted) {
                                   Navigator.push(
+                                    // ignore: use_build_context_synchronously
                                     parentContext,
                                     MaterialPageRoute(
-                                      builder: (context) => BookingConfirmationScreen(
-                                        bookingId: newBookingId, // Pass the booking ID
-                                      ),
+                                      builder: (context) =>
+                                          BookingConfirmationScreen(
+                                            bookingId:
+                                                newBookingId, // Pass the booking ID
+                                          ),
                                     ),
                                   );
                                 }
                               });
                             } else {
                               // Show detailed error message
-                              String errorMessage = response["message"] ?? "Failed to create booking";
+                              String errorMessage =
+                                  response["message"] ??
+                                  "Failed to create booking";
                               if (response["statusCode"] != null) {
-                                errorMessage += " (Status: ${response["statusCode"]})";
+                                errorMessage +=
+                                    " (Status: ${response["statusCode"]})";
                               }
-                              
+
+                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(parentContext).showSnackBar(
                                 SnackBar(
                                   content: Text(errorMessage),
@@ -582,8 +582,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     if (_selectedYear == now.year && selectedMonthIndex < now.month) {
       return true;
     }
-    if (_selectedYear == now.year &&
-        selectedMonthIndex == now.month) {
+    if (_selectedYear == now.year && selectedMonthIndex == now.month) {
       return day < now.day;
     }
 
@@ -593,7 +592,10 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
   bool _isTimeSlotAvailable(String time) {
     DateTime now = DateTime.now();
     DateTime selectedDateTime = DateTime(
-        _selectedYear, _months.indexOf(_selectedMonth) + 1, _selectedDate);
+      _selectedYear,
+      _months.indexOf(_selectedMonth) + 1,
+      _selectedDate,
+    );
 
     if (selectedDateTime.year == now.year &&
         selectedDateTime.month == now.month &&
@@ -685,8 +687,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
-                        icon:
-                            const Icon(Icons.arrow_back, color: Colors.black),
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -719,11 +720,10 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                     alignment: Alignment.center,
                                     children: [
                                       ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12),
                                         child: AspectRatio(
-                                          aspectRatio: _controller
-                                              .value.aspectRatio,
+                                          aspectRatio:
+                                              _controller.value.aspectRatio,
                                           child: VideoPlayer(_controller),
                                         ),
                                       ),
@@ -735,8 +735,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                             child: Container(
                                               height: 50,
                                               width: 50,
-                                              decoration:
-                                                  const BoxDecoration(
+                                              decoration: const BoxDecoration(
                                                 color: Colors.white,
                                                 shape: BoxShape.circle,
                                               ),
@@ -758,8 +757,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                               child: Container(
                                                 height: 50,
                                                 width: 50,
-                                                decoration:
-                                                    const BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   color: Colors.black,
                                                   shape: BoxShape.circle,
                                                 ),
@@ -779,8 +777,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             : Container(
                                 height: 180, // Same height for consistency
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                                   color: Colors.grey[300],
                                 ),
                                 child: const Center(
@@ -791,8 +788,9 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         const Text(
                           "SMR Buildings",
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
@@ -813,24 +811,27 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         TextField(
                           controller: _locationController,
                           decoration: const InputDecoration(
-                            hintText:
-                                "Liberty (40.6892° N, 74.0445° W)",
+                            hintText: "Liberty (40.6892° N, 74.0445° W)",
                             hintStyle: TextStyle(color: Colors.grey),
-                            suffixIcon: Icon(Icons.location_on,
-                                color: Colors.red),
+                            suffixIcon: Icon(
+                              Icons.location_on,
+                              color: Colors.red,
+                            ),
                             filled: true,
                             fillColor: Color(0xFFFFFFFF), // #FFFFFF
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA), // #DBDADA
                                 width: 0.5,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA),
                                 width: 0.5,
@@ -861,16 +862,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             filled: true,
                             fillColor: Color(0xFFFFFFFF), // #FFFFFF
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA), // #DBDADA
                                 width: 0.5,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA),
                                 width: 0.5,
@@ -901,16 +904,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             filled: true,
                             fillColor: Color(0xFFFFFFFF), // #FFFFFF
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA), // #DBDADA
                                 width: 0.5,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA),
                                 width: 0.5,
@@ -942,16 +947,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             filled: true,
                             fillColor: Color(0xFFFFFFFF), // #FFFFFF
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA), // #DBDADA
                                 width: 0.5,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                               borderSide: BorderSide(
                                 color: Color(0xFFDBDADA),
                                 width: 0.5,
@@ -965,8 +972,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
 
                         // ---------------- Month & Year Dropdown ----------------
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
                               "Select Date:",
@@ -978,15 +984,14 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             GestureDetector(
                               onTap: _showMonthYearPicker,
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.circular(8),
-                                  border:
-                                      Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey),
                                 ),
                                 child: Row(
                                   children: [
@@ -994,13 +999,11 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                       "$_selectedMonth, $_selectedYear",
                                       style: const TextStyle(
                                         fontSize: 14,
-                                        fontWeight:
-                                            FontWeight.w500,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.arrow_drop_down,
-                                        size: 18),
+                                    const Icon(Icons.arrow_drop_down, size: 18),
                                   ],
                                 ),
                               ),
@@ -1023,53 +1026,45 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                 'Thu',
                                 'Fri',
                                 'Sat',
-                                'Sun'
+                                'Sun',
                               ];
                               String dayName = days[dayNumber % 7];
-                              bool isSelected =
-                                  dayNumber == _selectedDate;
-                              bool isDisabled =
-                                  _isDateDisabled(dayNumber);
+                              bool isSelected = dayNumber == _selectedDate;
+                              bool isDisabled = _isDateDisabled(dayNumber);
 
                               return GestureDetector(
                                 onTap: isDisabled
                                     ? null
                                     : () {
                                         setState(() {
-                                          _selectedDate =
-                                              dayNumber;
+                                          _selectedDate = dayNumber;
                                           _selectedTimeSlot =
                                               null; // Reset selected time when date changes
                                         });
                                       },
                                 child: Container(
                                   width: 60,
-                                  margin: const EdgeInsets.only(
-                                      right: 8),
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                          vertical: 8),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: isDisabled
                                         ? Colors.grey[200]
                                         : (isSelected
-                                            ? AppColors.beeYellow
-                                            : Colors.white),
-                                    borderRadius:
-                                        BorderRadius.circular(10),
+                                              ? AppColors.beeYellow
+                                              : Colors.white),
+                                    borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: isDisabled
                                           ? Colors.grey[300]!
                                           : (isSelected
-                                              ? AppColors
-                                                  .beeYellow
-                                              : Colors.grey[
-                                                  300]!),
+                                                ? AppColors.beeYellow
+                                                : Colors.grey[300]!),
                                     ),
                                   ),
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         dayName,
@@ -1077,14 +1072,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                           fontSize: 12,
                                           fontWeight: isSelected
                                               ? FontWeight.bold
-                                              : FontWeight
-                                                  .normal,
+                                              : FontWeight.normal,
                                           color: isDisabled
                                               ? Colors.grey[400]
                                               : (isSelected
-                                                  ? Colors.black
-                                                  : Colors.grey[
-                                                      700]),
+                                                    ? Colors.black
+                                                    : Colors.grey[700]),
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -1094,14 +1087,12 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                                           fontSize: 14,
                                           fontWeight: isSelected
                                               ? FontWeight.bold
-                                              : FontWeight
-                                                  .normal,
+                                              : FontWeight.normal,
                                           color: isDisabled
                                               ? Colors.grey[400]
                                               : (isSelected
-                                                  ? Colors.black
-                                                  : Colors.grey[
-                                                      700]),
+                                                    ? Colors.black
+                                                    : Colors.grey[700]),
                                         ),
                                       ),
                                     ],
@@ -1119,8 +1110,9 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           child: Text(
                             "Select Schedule Time:",
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1136,6 +1128,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
+                              // ignore: deprecated_member_use
                               color: AppColors.beeYellow.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: AppColors.beeYellow),
@@ -1143,8 +1136,11 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.access_time,
-                                    color: AppColors.beeYellow, size: 16),
+                                const Icon(
+                                  Icons.access_time,
+                                  color: AppColors.beeYellow,
+                                  size: 16,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   "Selected Time: $_selectedTimeSlot",
@@ -1185,15 +1181,16 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
-          
+
           // Booking Confirmation Overlay
           if (_showBookingConfirmation)
             Positioned.fill(
               child: Container(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.5),
                 child: Center(
                   child: Column(
@@ -1223,7 +1220,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                           color: Colors.white,
                         ),
                       ),
-                     
+
                       const SizedBox(height: 20),
                       // Loading indicator
                       const CircularProgressIndicator(
@@ -1257,10 +1254,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
         ),
         child: Column(
           children: [
-            Text(time,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const Text("Booked",
-                style: TextStyle(color: Colors.black54)),
+            Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const Text("Booked", style: TextStyle(color: Colors.black54)),
           ],
         ),
       );
@@ -1276,17 +1271,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
           ),
           child: Column(
             children: [
-              Text(time,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(Icons.check_circle, size: 12, color: Colors.white),
                   SizedBox(width: 4),
-                  Text("Selected",
-                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                  Text(
+                    "Selected",
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -1304,17 +1300,18 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
           ),
           child: Column(
             children: [
-              Text(time,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(Icons.circle, size: 8, color: Colors.green),
                   SizedBox(width: 4),
-                  Text("Available",
-                      style: TextStyle(color: Colors.green, fontSize: 12)),
+                  Text(
+                    "Available",
+                    style: TextStyle(color: Colors.green, fontSize: 12),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),

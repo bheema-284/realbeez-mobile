@@ -8,7 +8,7 @@ import 'package:real_beez/utils/app_colors.dart';
 
 void main() {
   runApp(const BookingApp());
-} 
+}
 
 class BookingApp extends StatelessWidget {
   const BookingApp({super.key});
@@ -25,25 +25,21 @@ class BookingApp extends StatelessWidget {
 
 class BookingConfirmationScreen extends StatefulWidget {
   final String? bookingId;
-  
-  const BookingConfirmationScreen({
-    super.key,
-    this.bookingId,
-  });
+
+  const BookingConfirmationScreen({super.key, this.bookingId});
 
   @override
   State<BookingConfirmationScreen> createState() =>
       _BookingConfirmationScreenState();
 }
 
-class _BookingConfirmationScreenState
-    extends State<BookingConfirmationScreen> {
+class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   bool _showRescheduleUI = false;
   bool _showCompletionDialog = false;
   String _completionType = "";
   BookingModel? _currentBooking;
   bool _isProcessing = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -60,12 +56,12 @@ class _BookingConfirmationScreenState
   void dispose() {
     super.dispose();
   }
+
   Future<void> _fetchSpecificBooking(String bookingId) async {
     try {
       if (!mounted) return;
-      
-      setState(() {
-      });
+
+      setState(() {});
       final allBookings = await CabService.getCabBookings().timeout(
         const Duration(seconds: 10),
         onTimeout: () {
@@ -75,7 +71,7 @@ class _BookingConfirmationScreenState
       BookingModel? foundBooking;
       for (var bookingData in allBookings) {
         final booking = BookingModel.fromJson(bookingData);
-        if (booking.id == bookingId || 
+        if (booking.id == bookingId ||
             bookingData["_id"] == bookingId ||
             bookingData["id"] == bookingId) {
           foundBooking = booking;
@@ -84,7 +80,7 @@ class _BookingConfirmationScreenState
       }
 
       if (!mounted) return;
-      
+
       setState(() {
         if (foundBooking != null) {
           _currentBooking = foundBooking;
@@ -97,7 +93,9 @@ class _BookingConfirmationScreenState
       if (foundBooking == null && widget.bookingId != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Booking ${widget.bookingId} not found. Showing latest booking.'),
+            content: Text(
+              'Booking ${widget.bookingId} not found. Showing latest booking.',
+            ),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 3),
           ),
@@ -105,10 +103,9 @@ class _BookingConfirmationScreenState
       }
     } catch (e) {
       if (!mounted) return;
-      
-      setState(() {
-      });
-      
+
+      setState(() {});
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load booking details: $e'),
@@ -122,22 +119,21 @@ class _BookingConfirmationScreenState
   Future<void> _fetchBookings() async {
     try {
       if (!mounted) return;
-      
-      setState(() {
-      });
+
+      setState(() {});
       final response = await CabService.getCabBookings().timeout(
         const Duration(seconds: 10),
         onTimeout: () {
           throw TimeoutException('Booking fetch timeout');
         },
       );
-      
+
       final List<BookingModel> bookings = response.map<BookingModel>((booking) {
         return BookingModel.fromJson(booking);
       }).toList();
 
       if (!mounted) return;
-      
+
       setState(() {
         // If we have a specific booking ID but had to fall back to fetch all,
         // try to find it again
@@ -157,10 +153,9 @@ class _BookingConfirmationScreenState
       });
     } catch (e) {
       if (!mounted) return;
-      
-      setState(() {
-      });
-      
+
+      setState(() {});
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load booking details: $e'),
@@ -173,9 +168,9 @@ class _BookingConfirmationScreenState
 
   void _showCompletionPopup(String type) {
     if (!mounted) return;
-    
+
     debugPrint("Showing completion popup for type: $type");
-    
+
     setState(() {
       _showCompletionDialog = true;
       _completionType = type;
@@ -184,9 +179,9 @@ class _BookingConfirmationScreenState
 
   void _hideCompletionPopup() {
     if (!mounted) return;
-    
+
     debugPrint("Hiding completion popup");
-    
+
     setState(() {
       _showCompletionDialog = false;
       _completionType = "";
@@ -234,42 +229,44 @@ class _BookingConfirmationScreenState
       return timeString;
     }
   }
-  
+
   Future<void> _handleCancelBooking(String bookingId, String reason) async {
     if (_isProcessing || !mounted) return;
-    
+
     debugPrint("Starting cancellation for booking: $bookingId");
     debugPrint("Cancellation reason: $reason");
-    
+
     setState(() {
       _isProcessing = true;
     });
 
     try {
       final result = await CabService.cancelBooking(bookingId, reason);
-      
+
       debugPrint("Cancellation API result: $result");
-      
-     if (result["success"] == true) {
-  debugPrint("Cancellation successful, showing completion popup");
-  _showCompletionPopup("cancel");
-  // Don't fetch bookings here - let the dialog handle navigation
-} else if (result["statusCode"] == 405 && 
-           (result["message"]?.contains("successfully") ?? false)) {
-  // Handle 405 status with success message as success
-  debugPrint("Cancellation successful (405 status), showing completion popup");
-  _showCompletionPopup("cancel");
-} else {
-  debugPrint("Cancellation failed: ${result["message"]}");
-  if (!mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(result["message"] ?? "Cancellation failed"),
-      backgroundColor: Colors.red,
-      duration: const Duration(seconds: 3),
-    ),
-  );
-}
+
+      if (result["success"] == true) {
+        debugPrint("Cancellation successful, showing completion popup");
+        _showCompletionPopup("cancel");
+        // Don't fetch bookings here - let the dialog handle navigation
+      } else if (result["statusCode"] == 405 &&
+          (result["message"]?.contains("successfully") ?? false)) {
+        // Handle 405 status with success message as success
+        debugPrint(
+          "Cancellation successful (405 status), showing completion popup",
+        );
+        _showCompletionPopup("cancel");
+      } else {
+        debugPrint("Cancellation failed: ${result["message"]}");
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"] ?? "Cancellation failed"),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     } catch (e) {
       debugPrint("Error in cancellation: $e");
       if (!mounted) return;
@@ -290,84 +287,90 @@ class _BookingConfirmationScreenState
     }
   }
 
- Future<void> _handleRescheduleBooking(
-  String bookingId, 
-  String reason, 
-  String newDate, 
-  String newTime
-) async {
-  if (_isProcessing || !mounted) return;
-  
-  debugPrint("Starting reschedule for booking: $bookingId");
-  debugPrint("Reschedule reason: $reason");
-  debugPrint("New date: $newDate, New time: $newTime");
-  
-  setState(() {
-    _isProcessing = true;
-  });
+  Future<void> _handleRescheduleBooking(
+    String bookingId,
+    String reason,
+    String newDate,
+    String newTime,
+  ) async {
+    if (_isProcessing || !mounted) return;
 
-  try {
-    final result = await CabService.rescheduleBooking(
-      bookingId, 
-      reason, 
-      newDate, 
-      newTime
-    );
-    
-    debugPrint("Reschedule API result: $result");
-    
-    if (result["success"] == true) {
-      debugPrint("Reschedule successful, showing completion popup");
-      _showCompletionPopup("reschedule");
-      // Don't fetch bookings here
-      if (mounted) {
-        setState(() {
-          _showRescheduleUI = false;
-        });
+    debugPrint("Starting reschedule for booking: $bookingId");
+    debugPrint("Reschedule reason: $reason");
+    debugPrint("New date: $newDate, New time: $newTime");
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      final result = await CabService.rescheduleBooking(
+        bookingId,
+        reason,
+        newDate,
+        newTime,
+      );
+
+      debugPrint("Reschedule API result: $result");
+
+      if (result["success"] == true) {
+        debugPrint("Reschedule successful, showing completion popup");
+        _showCompletionPopup("reschedule");
+        // Don't fetch bookings here
+        if (mounted) {
+          setState(() {
+            _showRescheduleUI = false;
+          });
+        }
+      } else if (result["statusCode"] == 405 &&
+          (result["message"]?.contains("successfully") ?? false)) {
+        // Handle 405 status with success message as success
+        debugPrint(
+          "Reschedule successful (405 status), showing completion popup",
+        );
+        _showCompletionPopup("reschedule");
+        if (mounted) {
+          setState(() {
+            _showRescheduleUI = false;
+          });
+        }
+      } else {
+        debugPrint("Reschedule failed: ${result["message"]}");
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"] ?? "Reschedule failed"),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
-    } else if (result["statusCode"] == 405 && 
-               (result["message"]?.contains("successfully") ?? false)) {
-      // Handle 405 status with success message as success
-      debugPrint("Reschedule successful (405 status), showing completion popup");
-      _showCompletionPopup("reschedule");
-      if (mounted) {
-        setState(() {
-          _showRescheduleUI = false;
-        });
-      }
-    } else {
-      debugPrint("Reschedule failed: ${result["message"]}");
+    } catch (e) {
+      debugPrint("Error in reschedule: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result["message"] ?? "Reschedule failed"),
+          content: Text('Error rescheduling booking: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
       );
-    }
-  } catch (e) {
-    debugPrint("Error in reschedule: $e");
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error rescheduling booking: $e'),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  } finally {
-    if (mounted) {
-      debugPrint("Setting _isProcessing to false for reschedule");
-      setState(() {
-        _isProcessing = false;
-      });
+    } finally {
+      if (mounted) {
+        debugPrint("Setting _isProcessing to false for reschedule");
+        setState(() {
+          _isProcessing = false;
+        });
+      }
     }
   }
-}
 
   // Build map fallback widget
-  Widget _buildMapFallback(LatLng pickupCoords, LatLng dropCoords, BookingModel booking) {
+  Widget _buildMapFallback(
+    LatLng pickupCoords,
+    LatLng dropCoords,
+    BookingModel booking,
+  ) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.32,
       width: double.infinity,
@@ -421,16 +424,16 @@ class _BookingConfirmationScreenState
               const SizedBox(height: 8),
               Text(
                 'Please check your booking details',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[500],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[500]),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.beeYellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text(
@@ -466,7 +469,11 @@ class _BookingConfirmationScreenState
                       SizedBox(
                         height: mapHeight,
                         width: double.infinity,
-                        child: _buildMapFallback(pickupCoords, dropCoords, booking),
+                        child: _buildMapFallback(
+                          pickupCoords,
+                          dropCoords,
+                          booking,
+                        ),
                       ),
                       Positioned(
                         top: 20,
@@ -475,12 +482,15 @@ class _BookingConfirmationScreenState
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 8),
+                              horizontal: 18,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
+                                  // ignore: deprecated_member_use
                                   color: Colors.black.withOpacity(0.1),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
@@ -492,9 +502,14 @@ class _BookingConfirmationScreenState
                               children: [
                                 CircleAvatar(
                                   radius: 10,
-                                  backgroundColor: _getStatusColor(booking.status),
-                                  child: Icon(_getStatusIcon(booking.status),
-                                      size: 14, color: Colors.white),
+                                  backgroundColor: _getStatusColor(
+                                    booking.status,
+                                  ),
+                                  child: Icon(
+                                    _getStatusIcon(booking.status),
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
@@ -521,6 +536,7 @@ class _BookingConfirmationScreenState
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
+                                // ignore: deprecated_member_use
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
@@ -528,8 +544,11 @@ class _BookingConfirmationScreenState
                             ],
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.black, size: 20),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                              size: 20,
+                            ),
                             onPressed: () {
                               if (_showRescheduleUI) {
                                 setState(() => _showRescheduleUI = false);
@@ -562,13 +581,20 @@ class _BookingConfirmationScreenState
                                       ),
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.fromLTRB(0, 40, 16, 12),
+                                          padding: const EdgeInsets.fromLTRB(
+                                            0,
+                                            40,
+                                            16,
+                                            12,
+                                          ),
                                           child: Padding(
-                                            padding: const EdgeInsets.only(left: 16),
+                                            padding: const EdgeInsets.only(
+                                              left: 16,
+                                            ),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -598,7 +624,11 @@ class _BookingConfirmationScreenState
                                         Container(
                                           width: double.infinity,
                                           padding: const EdgeInsets.fromLTRB(
-                                              16, 20, 16, 40),
+                                            16,
+                                            20,
+                                            16,
+                                            40,
+                                          ),
                                           decoration: const BoxDecoration(
                                             color: Colors.white,
                                             borderRadius: BorderRadius.vertical(
@@ -608,17 +638,21 @@ class _BookingConfirmationScreenState
                                           child: _showRescheduleUI
                                               ? RescheduleUI(
                                                   bookingId: booking.id,
-                                                  onRescheduleComplete: (date, time) {
-                                                    _handleRescheduleBooking(
-                                                      booking.id,
-                                                      "Customer requested reschedule",
-                                                      date,
-                                                      time,
-                                                    );
-                                                  },
+                                                  onRescheduleComplete:
+                                                      (date, time) {
+                                                        _handleRescheduleBooking(
+                                                          booking.id,
+                                                          "Customer requested reschedule",
+                                                          date,
+                                                          time,
+                                                        );
+                                                      },
                                                   isLoading: _isProcessing,
                                                 )
-                                              : _bookingDetailsUI(context, booking),
+                                              : _bookingDetailsUI(
+                                                  context,
+                                                  booking,
+                                                ),
                                         ),
                                       ],
                                     ),
@@ -665,7 +699,9 @@ class _BookingConfirmationScreenState
                 color: Colors.black.withOpacity(0.3),
                 child: Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.beeYellow),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.beeYellow,
+                    ),
                   ),
                 ),
               ),
@@ -731,7 +767,7 @@ class _BookingConfirmationScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-         "Booking ID: ${booking.id}",
+          "Booking ID: ${booking.id}",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -755,9 +791,9 @@ class _BookingConfirmationScreenState
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _infoTile(
-              icon: Icons.group, 
-              label: "Members", 
-              value: "${booking.passengerCount}"
+              icon: Icons.group,
+              label: "Members",
+              value: "${booking.passengerCount}",
             ),
             _infoTile(
               icon: Icons.calendar_today,
@@ -768,7 +804,7 @@ class _BookingConfirmationScreenState
           ],
         ),
         const SizedBox(height: 80),
-        
+
         // Action Buttons
         Row(
           children: [
@@ -852,8 +888,11 @@ class _BookingConfirmationScreenState
   }
 
   /// ---------------- Info Tile Helper ----------------
-  static Widget _infoTile(
-      {required IconData icon, required String label, String? value}) {
+  static Widget _infoTile({
+    required IconData icon,
+    required String label,
+    String? value,
+  }) {
     return Container(
       width: 90,
       height: 90,
@@ -861,11 +900,7 @@ class _BookingConfirmationScreenState
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -882,11 +917,10 @@ class _BookingConfirmationScreenState
             const SizedBox(height: 2),
             Text(
               value,
-              style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -897,7 +931,7 @@ class _SimpleCompletionDialog extends StatefulWidget {
   final String type;
   final VoidCallback onClose;
   final String bookingId;
-  
+
   const _SimpleCompletionDialog({
     required this.type,
     required this.onClose,
@@ -905,7 +939,8 @@ class _SimpleCompletionDialog extends StatefulWidget {
   });
 
   @override
-  State<_SimpleCompletionDialog> createState() => _SimpleCompletionDialogState();
+  State<_SimpleCompletionDialog> createState() =>
+      _SimpleCompletionDialogState();
 }
 
 class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
@@ -918,7 +953,7 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -927,22 +962,12 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
     _scaleAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.elasticOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     // Start animation
     _controller.forward();
@@ -956,16 +981,16 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
 
   void _redirectToHome() {
     if (_isRedirecting) return;
-    
+
     _isRedirecting = true;
-    
+
     // First close the dialog
     widget.onClose();
-    
+
     // Then navigate after a small delay to ensure dialog is closed
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!mounted) return;
-      
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => HomeScreen()),
         (route) => false,
@@ -1004,7 +1029,7 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: Text(
-                  widget.type == "reschedule" 
+                  widget.type == "reschedule"
                       ? "Reschedule Completed!"
                       : "Cancellation Completed!",
                   style: const TextStyle(
@@ -1019,11 +1044,11 @@ class _SimpleCompletionDialogState extends State<_SimpleCompletionDialog>
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: Image.asset(
-                  widget.type == "reschedule" 
+                  widget.type == "reschedule"
                       ? "assets/icons/reschedule.png"
                       : "assets/icons/cancelled.png",
-                  width: 50, 
-                  height: 50, 
+                  width: 50,
+                  height: 50,
                 ),
               ),
               const SizedBox(height: 10),
@@ -1063,10 +1088,7 @@ class LocationBuildingTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
+        border: Border.all(color: Colors.grey, width: 1.0),
         boxShadow: const [
           BoxShadow(
             color: Color(0x8CE8E8E8),
@@ -1093,16 +1115,15 @@ class LocationBuildingTile extends StatelessWidget {
         ],
       ),
     );
-    }
   }
-
+}
 
 class CancelBookingPopup extends StatefulWidget {
   final String bookingId;
   final Function(String) onCancelBooking;
-  
+
   const CancelBookingPopup({
-    super.key, 
+    super.key,
     required this.bookingId,
     required this.onCancelBooking,
   });
@@ -1148,16 +1169,16 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
                   const Spacer(),
                   const Text(
                     "Cancel Booking",
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   InkWell(
                     onTap: () => Navigator.of(context).pop(),
-                    child:
-                        const Icon(Icons.close, size: 20, color: Colors.black),
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
@@ -1204,7 +1225,7 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
                 }).toList(),
               ),
               const SizedBox(height: 22),
-              
+
               // Cancel Booking Button
               SizedBox(
                 width: double.infinity,
@@ -1216,16 +1237,19 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
                       borderRadius: BorderRadius.circular(7),
                     ),
                   ),
-                  onPressed: _selectedReason != null ? () {
-                    Navigator.of(context).pop();
-                    widget.onCancelBooking(_selectedReason!);
-                  } : null,
+                  onPressed: _selectedReason != null
+                      ? () {
+                          Navigator.of(context).pop();
+                          widget.onCancelBooking(_selectedReason!);
+                        }
+                      : null,
                   child: const Text(
                     "Cancel Booking",
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -1239,11 +1263,8 @@ class _CancelBookingPopupState extends State<CancelBookingPopup> {
 
 class ReschedulePopup extends StatefulWidget {
   final VoidCallback onRescheduleNow;
-  
-  const ReschedulePopup({
-    super.key, 
-    required this.onRescheduleNow,
-  });
+
+  const ReschedulePopup({super.key, required this.onRescheduleNow});
 
   @override
   State<ReschedulePopup> createState() => _ReschedulePopupState();
@@ -1286,16 +1307,16 @@ class _ReschedulePopupState extends State<ReschedulePopup> {
                   const Spacer(),
                   const Text(
                     "Reschedule Booking",
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   InkWell(
                     onTap: () => Navigator.of(context).pop(),
-                    child:
-                        const Icon(Icons.close, size: 20, color: Colors.black),
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
@@ -1342,7 +1363,7 @@ class _ReschedulePopupState extends State<ReschedulePopup> {
                 }).toList(),
               ),
               const SizedBox(height: 22),
-              
+
               // Reschedule Now Button
               SizedBox(
                 width: double.infinity,
@@ -1354,13 +1375,16 @@ class _ReschedulePopupState extends State<ReschedulePopup> {
                       borderRadius: BorderRadius.circular(7),
                     ),
                   ),
-                  onPressed: _selectedReason != null ? widget.onRescheduleNow : null,
+                  onPressed: _selectedReason != null
+                      ? widget.onRescheduleNow
+                      : null,
                   child: const Text(
                     "Reschedule Now",
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -1376,9 +1400,9 @@ class RescheduleUI extends StatefulWidget {
   final String bookingId;
   final Function(String, String) onRescheduleComplete;
   final bool isLoading;
-  
+
   const RescheduleUI({
-    super.key, 
+    super.key,
     required this.bookingId,
     required this.onRescheduleComplete,
     this.isLoading = false,
@@ -1404,7 +1428,7 @@ class _RescheduleUIState extends State<RescheduleUI> {
     "01:00 PM",
     "03:00 PM",
     "05:00 PM",
-    "07:00 PM"
+    "07:00 PM",
   ];
 
   void _showMonthYearPicker() {
@@ -1426,7 +1450,8 @@ class _RescheduleUIState extends State<RescheduleUI> {
             color: isSelected ? AppColors.beeYellow : Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-                color: isSelected ? AppColors.beeYellow : Colors.grey.shade300),
+              color: isSelected ? AppColors.beeYellow : Colors.grey.shade300,
+            ),
           ),
           child: Column(
             children: [
@@ -1440,7 +1465,11 @@ class _RescheduleUIState extends State<RescheduleUI> {
               if (isSelected)
                 const Padding(
                   padding: EdgeInsets.only(top: 4),
-                  child: Icon(Icons.check_circle, size: 14, color: Colors.white),
+                  child: Icon(
+                    Icons.check_circle,
+                    size: 14,
+                    color: Colors.white,
+                  ),
                 ),
             ],
           ),
@@ -1469,8 +1498,10 @@ class _RescheduleUIState extends State<RescheduleUI> {
               GestureDetector(
                 onTap: _showMonthYearPicker,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -1500,7 +1531,15 @@ class _RescheduleUIState extends State<RescheduleUI> {
                   scrollDirection: Axis.horizontal,
                   children: List.generate(31, (index) {
                     int dayNumber = index + 1;
-                    List<String> days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    List<String> days = [
+                      'Mon',
+                      'Tue',
+                      'Wed',
+                      'Thu',
+                      'Fri',
+                      'Sat',
+                      'Sun',
+                    ];
                     String dayName = days[dayNumber % 7];
                     bool isSelected = dayNumber == _selectedDate;
                     bool isDisabled = _isDateDisabled(dayNumber);
@@ -1521,12 +1560,16 @@ class _RescheduleUIState extends State<RescheduleUI> {
                         decoration: BoxDecoration(
                           color: isDisabled
                               ? Colors.grey[200]
-                              : (isSelected ? AppColors.beeYellow : Colors.white),
+                              : (isSelected
+                                    ? AppColors.beeYellow
+                                    : Colors.white),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: isDisabled
                                 ? Colors.grey[300]!
-                                : (isSelected ? AppColors.beeYellow : Colors.grey[300]!),
+                                : (isSelected
+                                      ? AppColors.beeYellow
+                                      : Colors.grey[300]!),
                           ),
                         ),
                         child: Column(
@@ -1536,10 +1579,14 @@ class _RescheduleUIState extends State<RescheduleUI> {
                               dayName,
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 color: isDisabled
                                     ? Colors.grey[400]
-                                    : (isSelected ? Colors.black : Colors.grey[700]),
+                                    : (isSelected
+                                          ? Colors.black
+                                          : Colors.grey[700]),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -1547,10 +1594,14 @@ class _RescheduleUIState extends State<RescheduleUI> {
                               '$dayNumber',
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 color: isDisabled
                                     ? Colors.grey[400]
-                                    : (isSelected ? Colors.black : Colors.grey[700]),
+                                    : (isSelected
+                                          ? Colors.black
+                                          : Colors.grey[700]),
                               ),
                             ),
                           ],
@@ -1566,7 +1617,10 @@ class _RescheduleUIState extends State<RescheduleUI> {
               const Text(
                 "Select Schedule Time:",
                 style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -1588,8 +1642,11 @@ class _RescheduleUIState extends State<RescheduleUI> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.access_time,
-                          color: AppColors.beeYellow, size: 16),
+                      const Icon(
+                        Icons.access_time,
+                        color: AppColors.beeYellow,
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         "Selected Time: $_selectedTimeSlot",
@@ -1619,11 +1676,17 @@ class _RescheduleUIState extends State<RescheduleUI> {
                   onPressed: (_selectedTimeSlot != null && !widget.isLoading)
                       ? () {
                           // Format date for API (YYYY-MM-DD)
-                          String formattedDate = "$_selectedYear-${_getMonthNumber(_selectedMonth)}-${_selectedDate.toString().padLeft(2, '0')}";
+                          String formattedDate =
+                              "$_selectedYear-${_getMonthNumber(_selectedMonth)}-${_selectedDate.toString().padLeft(2, '0')}";
                           // Format time for API (HH:MM)
-                          String formattedTime = _formatTimeForAPI(_selectedTimeSlot!);
-                          
-                          widget.onRescheduleComplete(formattedDate, formattedTime);
+                          String formattedTime = _formatTimeForAPI(
+                            _selectedTimeSlot!,
+                          );
+
+                          widget.onRescheduleComplete(
+                            formattedDate,
+                            formattedTime,
+                          );
                         }
                       : null,
                   child: widget.isLoading
@@ -1632,14 +1695,19 @@ class _RescheduleUIState extends State<RescheduleUI> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Text(
                           _selectedTimeSlot != null
                               ? "Reschedule for $_selectedTimeSlot"
                               : "Select Time to Reschedule",
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                 ),
               ),
@@ -1663,9 +1731,18 @@ class _RescheduleUIState extends State<RescheduleUI> {
 
   String _getMonthNumber(String month) {
     final months = {
-      'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-      'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-      'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+      'Jan': '01',
+      'Feb': '02',
+      'Mar': '03',
+      'Apr': '04',
+      'May': '05',
+      'Jun': '06',
+      'Jul': '07',
+      'Aug': '08',
+      'Sep': '09',
+      'Oct': '10',
+      'Nov': '11',
+      'Dec': '12',
     };
     return months[month] ?? '10';
   }

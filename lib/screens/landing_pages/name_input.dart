@@ -4,13 +4,10 @@ import 'package:real_beez/screens/homescreen/home_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 import 'package:real_beez/screens/forms/common_button.dart';
 import 'package:real_beez/screens/forms/common_text.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // ✅ Added
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: NameInputPage(),
-    debugShowCheckedModeBanner: false,
-  ));
+  runApp(MaterialApp(home: NameInputPage(), debugShowCheckedModeBanner: false));
 }
 
 class NameInputPage extends StatefulWidget {
@@ -85,7 +82,7 @@ class _NameInputPageState extends State<NameInputPage> {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) =>  HomeScreen()),
+      MaterialPageRoute(builder: (context) => HomeScreen()),
     );
   }
 
@@ -139,10 +136,7 @@ class _NameInputPageState extends State<NameInputPage> {
             color: _selectedGender == gender
                 ? AppColors.beeYellow
                 : Colors.transparent,
-            border: Border.all(
-              color: AppColors.beeYellow,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.beeYellow, width: 1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -200,11 +194,7 @@ class _NameInputPageState extends State<NameInputPage> {
             const SizedBox(height: 20),
 
             // ✅ Date of Birth Field
-            const CommonText(
-              text: "Date of Birth",
-              isBold: true,
-              fontSize: 16,
-            ),
+            const CommonText(text: "Date of Birth", isBold: true, fontSize: 16),
             const SizedBox(height: 12),
             TextField(
               controller: _dateOfBirthController,
@@ -216,11 +206,7 @@ class _NameInputPageState extends State<NameInputPage> {
             const SizedBox(height: 20),
 
             // ✅ Gender Selection
-            const CommonText(
-              text: "Gender",
-              isBold: true,
-              fontSize: 16,
-            ),
+            const CommonText(text: "Gender", isBold: true, fontSize: 16),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -234,11 +220,7 @@ class _NameInputPageState extends State<NameInputPage> {
 
             if (_errorMessage != null) ...[
               const SizedBox(height: 16),
-              CommonText(
-                text: _errorMessage!,
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              CommonText(text: _errorMessage!, color: Colors.red, fontSize: 12),
             ],
 
             const Spacer(),

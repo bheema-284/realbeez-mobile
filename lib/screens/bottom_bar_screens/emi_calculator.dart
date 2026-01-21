@@ -10,13 +10,17 @@ class EmiCalculatorScreen extends StatefulWidget {
 }
 
 class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
-  final TextEditingController _propertyValueController = TextEditingController(text: '1,500,000');
-  final TextEditingController _loanAmountController = TextEditingController(text: '1,500,000');
-  
+  final TextEditingController _propertyValueController = TextEditingController(
+    text: '1,500,000',
+  );
+  final TextEditingController _loanAmountController = TextEditingController(
+    text: '1,500,000',
+  );
+
   String _propertyType = 'Residential';
   String _theProperty = '1';
   double _loanTerm = 10.0; // Default value is 10 months
-  
+
   double _grossLoan = 650000.0;
   double _netLoan = 41850.0;
   double _interestRate = 2.25;
@@ -26,7 +30,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
   void initState() {
     super.initState();
     _calculateEMI();
-    
+
     // Add listeners to controllers to recalculate when text changes
     _propertyValueController.addListener(_onInputChanged);
     _loanAmountController.addListener(_onInputChanged);
@@ -53,18 +57,19 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
     // Convert annual interest rate to monthly and percentage to decimal
     double monthlyInterestRate = _interestRate / 12 / 100;
 
-    // Calculate EMI using the formula: 
+    // Calculate EMI using the formula:
     // EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]
     // Where P = Principal, R = Monthly Interest Rate, N = Loan Term in Months
     if (monthlyInterestRate > 0) {
-      double emi = (loanAmount * 
-                   monthlyInterestRate * 
-                   _pow(1 + monthlyInterestRate, loanTermMonths)) / 
-                  (_pow(1 + monthlyInterestRate, loanTermMonths) - 1);
-      
+      double emi =
+          (loanAmount *
+              monthlyInterestRate *
+              _pow(1 + monthlyInterestRate, loanTermMonths)) /
+          (_pow(1 + monthlyInterestRate, loanTermMonths) - 1);
+
       // Calculate total payment (Gross Loan)
       double totalPayment = emi * loanTermMonths;
-      
+
       // Calculate net loan (principal amount)
       double netLoan = loanAmount;
 
@@ -145,12 +150,8 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
     }
   }
 
-
   String _formatCurrencyWithDecimal(double amount) {
-    return '\$${amount.toStringAsFixed(2).replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(\.\d+)?$)'),
-          (Match m) => '${m[1]},',
-        )}';
+    return '\$${amount.toStringAsFixed(2).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(\.\d+)?$)'), (Match m) => '${m[1]},')}';
   }
 
   @override
@@ -160,17 +161,14 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
       appBar: AppBar(
         title: const Text(
           'Loan Calculator',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
+        automaticallyImplyLeading: false, // ✅ This removes the back arrow
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -181,10 +179,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               // Header Text
               const Text(
                 'Find out how much you or your clients can borrow today with our Loan Calculators.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -278,11 +273,14 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          
+
                           // Display box showing selected value
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(8),
@@ -297,7 +295,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           // Simple Slider
                           Slider(
                             value: _loanTerm,
@@ -313,7 +311,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                             activeColor: const Color(0xFFD79A2F), // Gold color
                             inactiveColor: Colors.grey[300],
                           ),
-                          
+
                           // Month indicators
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -386,7 +384,8 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                         // Interest Rate
                         _buildEstimateRow(
                           label: 'Interest Rate',
-                          value: '${_interestRate.toStringAsFixed(2)}% ($_propertyType)',
+                          value:
+                              '${_interestRate.toStringAsFixed(2)}% ($_propertyType)',
                         ),
                         const SizedBox(height: 12),
 
@@ -400,7 +399,9 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                         // Total Interest
                         _buildEstimateRow(
                           label: 'Total Interest',
-                          value: _formatCurrencyWithDecimal(_grossLoan - _netLoan),
+                          value: _formatCurrencyWithDecimal(
+                            _grossLoan - _netLoan,
+                          ),
                         ),
 
                         const SizedBox(height: 20),
@@ -497,10 +498,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               isExpanded: true,
               underline: const SizedBox(),
               items: items.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item),
-                );
+                return DropdownMenuItem<String>(value: item, child: Text(item));
               }).toList(),
             ),
           ),
@@ -543,7 +541,10 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFFD79A2F)),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
           ),
           onChanged: onChanged,
         ),
@@ -551,10 +552,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
     );
   }
 
-  Widget _buildEstimateRow({
-    required String label,
-    required String value,
-  }) {
+  Widget _buildEstimateRow({required String label, required String value}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

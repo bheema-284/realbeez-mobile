@@ -53,18 +53,59 @@ class PropertyImage {
   final String url;
   final bool isPrimary;
 
-  PropertyImage({
-    required this.url,
-    required this.isPrimary,
-  });
+  PropertyImage({required this.url, required this.isPrimary});
 }
 
 class PropertyData {
+  // Online video URLs (YouTube links for demo)
+  static final List<String> propertyVideoUrls = [
+    // Property tours
+    "https://www.youtube.com/watch?v=oQXyQ6JgMhE", // Modern apartment tour
+    "https://www.youtube.com/watch?v=QoUj_XNlX_4", // Luxury villa tour
+    "https://www.youtube.com/watch?v=9sJUDx7iEJw", // Aerial drone view
+    "https://www.youtube.com/watch?v=IA8GkZyoT_E", // Property walkthrough
+    "https://www.youtube.com/watch?v=tAGnKpE4NCI", // Residential property
+    "https://www.youtube.com/watch?v=7Bv7BZbYbXk", // Apartment interior
+    "https://www.youtube.com/watch?v=jNQXAC9IVRw", // Villa exterior
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Complete property tour
+    // Location and neighborhood
+    "https://www.youtube.com/watch?v=9bZkp7q19f0", // Neighborhood tour
+    "https://www.youtube.com/watch?v=JGwWNGJdvx8", // Location highlights
+    // Amenities
+    "https://www.youtube.com/watch?v=CduA0TULnow", // Amenities showcase
+    "https://www.youtube.com/watch?v=OPf0YbXqDm0", // Clubhouse tour
+    // Virtual tours
+    "https://www.youtube.com/watch?v=UxxajLWwzqY", // 360° virtual tour
+    "https://www.youtube.com/watch?v=zL19uMsnpSU", // Interactive tour
+  ];
+
+  // Alternative direct video links (if needed)
+  static final List<String> directVideoUrls = [
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+  ];
+
+  // Helper function to get video URL
+  static String getVideoUrl(int index, {bool useYouTube = true}) {
+    if (useYouTube) {
+      return propertyVideoUrls[index % propertyVideoUrls.length];
+    } else {
+      return directVideoUrls[index % directVideoUrls.length];
+    }
+  }
+
   static List<Map<String, dynamic>> properties = [
     {
       "id": "201",
       "title": "2 BHK Apartment in Sky Towers",
-      "description": "Modern 2-bedroom apartment with smart design and eco-friendly features.",
+      "description":
+          "Modern 2-bedroom apartment with smart design and eco-friendly features.",
       "type": "apartment",
       "status": "under_construction",
       "price": 5200000,
@@ -73,12 +114,7 @@ class PropertyData {
       "bedrooms": 2,
       "bathrooms": 2,
       "furnishing": "unfurnished",
-      "amenities": [
-        "parking",
-        "gym",
-        "clubhouse",
-        "24x7_security"
-      ],
+      "amenities": ["parking", "gym", "clubhouse", "24x7_security"],
       "rera_no": "RERA-TG-2025-56789",
       "block": "A",
       "no_of_units": 200,
@@ -92,70 +128,26 @@ class PropertyData {
         "state": "TG",
         "country": "India",
         "latitude": 17.4435,
-        "longitude": 78.3772
+        "longitude": 78.3772,
       },
       "images": [
-        {"orientation": "north", "image": "assets/images/swipe1.png"},
+        {"orientation": "north", "image": "assets/images/farmland1.png"},
         {"orientation": "south", "image": "assets/images/swipe.png"},
-        {"orientation": "east", "image": "assets/images/swipe1.png"},
-        {"orientation": "west", "image": "assets/images/swipe.png"}
+        {"orientation": "east", "image": "assets/images/farmland1.png"},
+        {"orientation": "west", "image": "assets/images/swipe.png"},
       ],
       "videos": [
-        {"orientation": "north", "video": "assets/videos/video1.mp4"},
-        {"orientation": "south", "video": "assets/videos/video2.mp4"}
+        {"orientation": "north", "video": getVideoUrl(0)},
+        {"orientation": "south", "video": getVideoUrl(1)},
       ],
       "created_at": "2025-09-29T10:30:00Z",
-      "updated_at": "2025-09-29T10:30:00Z"
+      "updated_at": "2025-09-29T10:30:00Z",
     },
     {
-      "id": "202",
-      "title": "Luxury Villas in Palm Meadows",
-      "description": "Exclusive gated community villas with private gardens and premium amenities.",
-      "type": "villa",
-      "status": "pre_launch",
-      "price": 12000000,
-      "currency": "INR",
-      "area_sq_ft": 2500,
-      "bedrooms": 4,
-      "bathrooms": 4,
-      "furnishing": "semi_furnished",
-      "amenities": [
-        "private_garden",
-        "swimming_pool",
-        "clubhouse",
-        "solar_power"
-      ],
-      "rera_no": "RERA-TG-2025-67890",
-      "block": "C",
-      "no_of_units": 40,
-      "no_of_floors": 2,
-      "floor_no": 1,
-      "flat_no": "Villa-15",
-      "address": {
-        "locality": "Palm Meadows",
-        "area": "Kompally",
-        "city": "Hyderabad",
-        "state": "TG",
-        "country": "India",
-        "latitude": 17.5600,
-        "longitude": 78.4900
-      },
-      "images": [
-        {"orientation": "north", "image": "assets/images/swipe1.png"},
-        {"orientation": "south", "image": "assets/images/swipe.png"},
-        {"orientation": "garden", "image": "assets/images/villa1.png"}
-      ],
-      "videos": [
-        {"orientation": "east", "video": "assets/videos/video3.mp4"},
-        {"orientation": "west", "video": "assets/videos/video4.mp4"}
-      ],
-      "created_at": "2025-09-29T10:30:00Z",
-      "updated_at": "2025-09-29T10:30:00Z"
-    },
-    {
-      "id": "203",
-      "title": "3 BHK Ready-to-Move Flat in Sunrise Residency",
-      "description": "Fully furnished 3BHK with modular kitchen and excellent connectivity.",
+      "id": 20897,
+      "title": "tretc  in Sunrise Residency",
+      "description":
+          "Fully furnished 3BHK with modular kitchen and excellent connectivity.",
       "type": "apartment",
       "status": "ready_to_move",
       "price": 8500000,
@@ -164,12 +156,7 @@ class PropertyData {
       "bedrooms": 3,
       "bathrooms": 3,
       "furnishing": "furnished",
-      "amenities": [
-        "parking",
-        "gym",
-        "swimming_pool",
-        "kids_play_area"
-      ],
+      "amenities": ["parking", "gym", "swimming_pool", "kids_play_area"],
       "rera_no": "RERA-TG-2025-99999",
       "block": "D",
       "no_of_units": 150,
@@ -183,20 +170,26 @@ class PropertyData {
         "state": "TG",
         "country": "India",
         "latitude": 17.4412,
-        "longitude": 78.3915
+        "longitude": 78.3915,
       },
       "images": [
-        {"orientation": "north", "image": "assets/images/swipe1.png"},
+        {"orientation": "north", "image": "assets/images/farmland1.png"},
         {"orientation": "south", "image": "assets/images/swipe.png"},
-        {"orientation": "east", "image": "assets/images/apartment2.png"}
+        {"orientation": "east", "image": "assets/images/farmland1.png"},
       ],
       "videos": [
-        {"orientation": "north_east", "video": "assets/videos/video5.mp4"},
-        {"orientation": "south_west", "video": "assets/videos/video6.mp4"}
+        {
+          "orientation": "north_east",
+          "video": "https://example.com/videos/property203/northeast.mp4",
+        },
+        {
+          "orientation": "south_west",
+          "video": "https://example.com/videos/property203/southwest.mp4",
+        },
       ],
       "created_at": "2025-09-29T10:30:00Z",
-      "updated_at": "2025-09-29T10:30:00Z"
-    }
+      "updated_at": "2025-09-29T10:30:00Z",
+    },
   ];
 
   // Special offers data
@@ -229,81 +222,94 @@ class PropertyData {
     'assets/images/lodha.png',
   ];
 
-  // Enhanced media data for featured sites
+  // Enhanced media data for featured sites - using online video URLs
   static Map<String, Map<String, dynamic>> enhancedMediaData = {
-    '4': { // Ankura Apartments
+    '4': {
+      // Ankura Apartments
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/apartment1.png'},
-        {'orientation': 'living_room', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'living_room', 'image': 'assets/images/farmland1.png'},
         {'orientation': 'bedroom', 'image': 'assets/images/swipe.png'},
         {'orientation': 'kitchen', 'image': 'assets/images/apartment2.png'},
       ],
       'videos': [
-        {'orientation': 'virtual_tour', 'video': "assets/videos/video1.mp4"},
-        {'orientation': 'amenities', 'video': "assets/videos/video7.mp4"},
-      ]
+        {'orientation': 'virtual_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'amenities', 'video': getVideoUrl(10)},
+      ],
     },
-    '201': { // Sky Towers
+    '201': {
+      // Sky Towers
       'images': [
-        {'orientation': 'exterior', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'exterior', 'image': 'assets/images/farmland1.png'},
         {'orientation': 'living_area', 'image': 'assets/images/swipe.png'},
-        {'orientation': 'master_bedroom', 'image': 'assets/images/apartment1.png'},
+        {
+          'orientation': 'master_bedroom',
+          'image': 'assets/images/apartment1.png',
+        },
         {'orientation': 'bathroom', 'image': 'assets/images/apartment2.png'},
       ],
       'videos': [
-        {'orientation': 'walkthrough', 'video': "assets/videos/video1.mp4"},
-        {'orientation': 'location', 'video': "assets/videos/video1.mp4"},
-      ]
+        {'orientation': 'walkthrough', 'video': getVideoUrl(3)},
+        {'orientation': 'location', 'video': getVideoUrl(9)},
+      ],
     },
-    '7': { // Prestige Apartments
+    '7': {
+      // Prestige Apartments
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/apartment2.png'},
-        {'orientation': 'living_room', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'living_room', 'image': 'assets/images/farmland1.png'},
         {'orientation': 'balcony', 'image': 'assets/images/swipe.png'},
         {'orientation': 'view', 'image': 'assets/images/apartment1.png'},
       ],
       'videos': [
-        {'orientation': 'tour', 'video': "assets/videos/video1.mp4"},
-        {'orientation': 'amenities', 'video': "assets/videos/video7.mp4"},
-      ]
+        {'orientation': 'tour', 'video': getVideoUrl(0)},
+        {'orientation': 'amenities', 'video': getVideoUrl(10)},
+      ],
     },
-    '203': { // Sunrise Residency
+    '203': {
+      // Sunrise Residency
       'images': [
         {'orientation': 'building', 'image': 'assets/images/swipe.png'},
-        {'orientation': 'interior', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'interior', 'image': 'assets/images/farmland1.png'},
         {'orientation': 'kitchen', 'image': 'assets/images/apartment2.png'},
         {'orientation': 'bathroom', 'image': 'assets/images/apartment1.png'},
       ],
       'videos': [
-        {'orientation': 'virtual_tour', 'video': "assets/videos/video1.mp4"},
-        {'orientation': 'neighborhood', 'video': "assets/videos/video2.mp4"},
-      ]
+        {'orientation': 'virtual_tour', 'video': getVideoUrl(11)},
+        {'orientation': 'neighborhood', 'video': getVideoUrl(8)},
+      ],
     },
-    '9': { // Luxury Towers
+    '9': {
+      // Luxury Towers
       'images': [
         {'orientation': 'tower', 'image': 'assets/images/apartment1.png'},
         {'orientation': 'penthouse', 'image': 'assets/images/apartment2.png'},
-        {'orientation': 'pool', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'pool', 'image': 'assets/images/farmland1.png'},
         {'orientation': 'gym', 'image': 'assets/images/swipe.png'},
       ],
       'videos': [
-        {'orientation': 'luxury_tour', 'video': "assets/videos/video4.mp4"},
-        {'orientation': 'amenities', 'video': "assets/videos/video5.mp4"},
-      ]
+        {'orientation': 'luxury_tour', 'video': getVideoUrl(6)},
+        {'orientation': 'amenities', 'video': getVideoUrl(10)},
+      ],
     },
-    '10': { // Elite Residences
+    '10': {
+      // Elite Residences
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/apartment2.png'},
-        {'orientation': 'living_space', 'image': 'assets/images/apartment1.png'},
+        {
+          'orientation': 'living_space',
+          'image': 'assets/images/apartment1.png',
+        },
         {'orientation': 'bedroom', 'image': 'assets/images/swipe.png'},
-        {'orientation': 'view', 'image': 'assets/images/swipe1.png'},
+        {'orientation': 'view', 'image': 'assets/images/farmland1.png'},
       ],
       'videos': [
-        {'orientation': 'walkthrough', 'video': "assets/videos/video6.mp4"},
-        {'orientation': 'location', 'video': "assets/videos/video3.mp4"},
-      ]
+        {'orientation': 'walkthrough', 'video': getVideoUrl(4)},
+        {'orientation': 'location', 'video': getVideoUrl(9)},
+      ],
     },
-    '11': { // Green Villa
+    '11': {
+      // Green Villa
       'images': [
         {'orientation': 'villa_exterior', 'image': 'assets/images/villa1.png'},
         {'orientation': 'garden', 'image': 'assets/images/villa2.png'},
@@ -311,11 +317,12 @@ class PropertyData {
         {'orientation': 'pool', 'image': 'assets/images/villa1.png'},
       ],
       'videos': [
-        {'orientation': 'virtual_tour', 'video': "assets/videos/video1.mp4"},
-        {'orientation': 'garden_tour', 'video': "assets/videos/video3.mp4"},
-      ]
+        {'orientation': 'virtual_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'garden_tour', 'video': getVideoUrl(2)},
+      ],
     },
-    '12': { // Palm Villas
+    '12': {
+      // Palm Villas
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/villa1.png'},
         {'orientation': 'interior', 'image': 'assets/images/villa2.png'},
@@ -323,11 +330,12 @@ class PropertyData {
         {'orientation': 'kitchen', 'image': 'assets/images/villa1.png'},
       ],
       'videos': [
-        {'orientation': 'tour', 'video': "assets/videos/video6.mp4"},
-        {'orientation': 'amenities', 'video': "assets/videos/video7.mp4"},
-      ]
+        {'orientation': 'tour', 'video': getVideoUrl(4)},
+        {'orientation': 'amenities', 'video': getVideoUrl(10)},
+      ],
     },
-    '13': { // Lake View Villas
+    '13': {
+      // Lake View Villas
       'images': [
         {'orientation': 'lake_view', 'image': 'assets/images/villa2.png'},
         {'orientation': 'exterior', 'image': 'assets/images/villa3.png'},
@@ -335,11 +343,12 @@ class PropertyData {
         {'orientation': 'master_suite', 'image': 'assets/images/villa2.png'},
       ],
       'videos': [
-        {'orientation': 'virtual_tour', 'video': "assets/videos/video6.mp4"},
-        {'orientation': 'lake_view', 'video': "assets/videos/video2.mp4"},
-      ]
+        {'orientation': 'virtual_tour', 'video': getVideoUrl(11)},
+        {'orientation': 'lake_view', 'video': getVideoUrl(2)},
+      ],
     },
-    '14': { // Royal Greens
+    '14': {
+      // Royal Greens
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/villa2.png'},
         {'orientation': 'garden', 'image': 'assets/images/villa3.png'},
@@ -347,23 +356,31 @@ class PropertyData {
         {'orientation': 'pool_area', 'image': 'assets/images/villa2.png'},
       ],
       'videos': [
-        {'orientation': 'tour', 'video': "assets/videos/video3.mp4"},
-        {'orientation': 'amenities', 'video': "assets/videos/video5.mp4"},
-      ]
+        {'orientation': 'tour', 'video': getVideoUrl(3)},
+        {'orientation': 'amenities', 'video': getVideoUrl(10)},
+      ],
     },
-    '15': { // Heritage Villa
+    '15': {
+      // Heritage Villa
       'images': [
-        {'orientation': 'heritage_exterior', 'image': 'assets/images/villa3.png'},
-        {'orientation': 'classic_interior', 'image': 'assets/images/villa1.png'},
+        {
+          'orientation': 'heritage_exterior',
+          'image': 'assets/images/villa3.png',
+        },
+        {
+          'orientation': 'classic_interior',
+          'image': 'assets/images/villa1.png',
+        },
         {'orientation': 'garden', 'image': 'assets/images/villa2.png'},
         {'orientation': 'pool', 'image': 'assets/images/villa3.png'},
       ],
       'videos': [
-        {'orientation': 'heritage_tour', 'video': "assets/videos/video2.mp4"},
-        {'orientation': 'garden_tour', 'video': "assets/videos/video7.mp4"},
-      ]
+        {'orientation': 'heritage_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'garden_tour', 'video': getVideoUrl(2)},
+      ],
     },
-    '202': { // Palm Meadows
+    '202': {
+      // Palm Meadows
       'images': [
         {'orientation': 'exterior', 'image': 'assets/images/villa3.png'},
         {'orientation': 'luxury_interior', 'image': 'assets/images/villa2.png'},
@@ -371,9 +388,186 @@ class PropertyData {
         {'orientation': 'private_garden', 'image': 'assets/images/villa3.png'},
       ],
       'videos': [
-        {'orientation': 'luxury_tour', 'video': "assets/videos/video5.mp4"},
-        {'orientation': 'garden_tour', 'video': "assets/videos/video3.mp4"},
-      ]
+        {'orientation': 'luxury_tour', 'video': getVideoUrl(6)},
+        {'orientation': 'garden_tour', 'video': getVideoUrl(2)},
+      ],
+    },
+    '16': {
+      // Sunrise Farms
+      'images': [
+        {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'field1', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'field2', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'irrigation', 'image': 'assets/images/farmland2.png'},
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'walkthrough', 'video': getVideoUrl(4)},
+      ],
+    },
+    '17': {
+      // Green Acres
+      'images': [
+        {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'crops', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'soil', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'boundary', 'image': 'assets/images/farmland2.png'},
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'tour', 'video': getVideoUrl(0)},
+      ],
+    },
+    '18': {
+      // Harvest Fields
+      'images': [
+        {'orientation': 'overview', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'field1', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'field2', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'water_source', 'image': 'assets/images/farmland1.png'},
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'walkthrough', 'video': getVideoUrl(4)},
+      ],
+    },
+    '19': {
+      // Golden Fields
+      'images': [
+        {'orientation': 'overview', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'irrigation', 'image': 'assets/images/farmland1.png'},
+        {'orientation': 'soil_quality', 'image': 'assets/images/farmland2.png'},
+        {'orientation': 'access_road', 'image': 'assets/images/farmland1.png'},
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'irrigation_system', 'video': getVideoUrl(1)},
+      ],
+    },
+    '20': {
+      // Valley Farms
+      'images': [
+        {'orientation': 'valley_view', 'image': 'assets/images/farmland1.png'},
+        {
+          'orientation': 'expansive_field',
+          'image': 'assets/images/farmland2.png',
+        },
+        {'orientation': 'water_body', 'image': 'assets/images/farmland1.png'},
+        {
+          'orientation': 'access_points',
+          'image': 'assets/images/farmland2.png',
+        },
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'valley_tour', 'video': getVideoUrl(5)},
+      ],
+    },
+    '21': {
+      // Mega Farms
+      'images': [
+        {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
+        {
+          'orientation': 'field_section1',
+          'image': 'assets/images/farmland2.png',
+        },
+        {
+          'orientation': 'field_section2',
+          'image': 'assets/images/farmland1.png',
+        },
+        {
+          'orientation': 'infrastructure',
+          'image': 'assets/images/farmland2.png',
+        },
+      ],
+      'videos': [
+        {'orientation': 'drone_view', 'video': getVideoUrl(2)},
+        {'orientation': 'complete_tour', 'video': getVideoUrl(5)},
+      ],
+    },
+    '22': {
+      // Emerald Plots
+      'images': [
+        {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'plot3', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'location', 'image': 'assets/images/openplot2.png'},
+      ],
+      'videos': [
+        {'orientation': 'site_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'neighborhood', 'video': getVideoUrl(8)},
+      ],
+    },
+    '23': {
+      // City Edge Plots
+      'images': [
+        {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'plot3', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'view', 'image': 'assets/images/openplot2.png'},
+      ],
+      'videos': [
+        {'orientation': 'site_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'location_view', 'video': getVideoUrl(8)},
+      ],
+    },
+    '24': {
+      // Sunset Plots
+      'images': [
+        {'orientation': 'lake_view', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'sunset_view', 'image': 'assets/images/openplot1.png'},
+      ],
+      'videos': [
+        {'orientation': 'lake_tour', 'video': getVideoUrl(2)},
+        {'orientation': 'plot_walkthrough', 'video': getVideoUrl(4)},
+      ],
+    },
+    '25': {
+      // Green Valley Plots
+      'images': [
+        {
+          'orientation': 'hillside_view',
+          'image': 'assets/images/openplot2.png',
+        },
+        {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'valley_view', 'image': 'assets/images/openplot1.png'},
+      ],
+      'videos': [
+        {'orientation': 'hillside_tour', 'video': getVideoUrl(2)},
+        {'orientation': 'valley_view', 'video': getVideoUrl(0)},
+      ],
+    },
+    '26': {
+      // Hilltop Plots
+      'images': [
+        {'orientation': 'hilltop_view', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot1', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot1.png'},
+        {
+          'orientation': 'panoramic_view',
+          'image': 'assets/images/openplot2.png',
+        },
+      ],
+      'videos': [
+        {'orientation': 'hilltop_tour', 'video': getVideoUrl(0)},
+        {'orientation': 'view_tour', 'video': getVideoUrl(1)},
+      ],
+    },
+    '27': {
+      // Royal Plots
+      'images': [
+        {'orientation': 'premium_view', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'plot1', 'image': 'assets/images/openplot2.png'},
+        {'orientation': 'plot2', 'image': 'assets/images/openplot1.png'},
+        {'orientation': 'location', 'image': 'assets/images/openplot2.png'},
+      ],
+      'videos': [
+        {'orientation': 'premium_tour', 'video': getVideoUrl(6)},
+        {'orientation': 'location_view', 'video': getVideoUrl(9)},
+      ],
     },
   };
 
@@ -405,7 +599,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500032',
                 ),
-                images: [PropertyImage(url: 'assets/images/apartment1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/apartment1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -417,7 +616,7 @@ class PropertyData {
               'location': 'Financial District',
               'price': 'Price Range start from',
               'priceRange': '52 Lakhs - 65 Lakhs',
-              'image': 'assets/images/swipe1.png',
+              'image': 'assets/images/farmland1.png',
               'isNew': false,
               'property': Property(
                 id: '201',
@@ -433,14 +632,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500032',
                 ),
-                images: [PropertyImage(url: 'assets/images/swipe1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['201']!['images'],
               'videos': enhancedMediaData['201']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -465,7 +669,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500081',
                 ),
-                images: [PropertyImage(url: 'assets/images/apartment2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/apartment2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -493,14 +702,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500081',
                 ),
-                images: [PropertyImage(url: 'assets/images/swipe.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/swipe.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['203']!['images'],
               'videos': enhancedMediaData['203']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -525,7 +739,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500033',
                 ),
-                images: [PropertyImage(url: 'assets/images/apartment2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/apartment1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -553,16 +772,21 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500034',
                 ),
-                images: [PropertyImage(url: 'assets/images/apartment2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/apartment2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['10']!['images'],
               'videos': enhancedMediaData['10']!['videos'],
             },
-          ]
+          ],
         },
-      ]
+      ],
     },
     'villa': {
       'titles': ['2 BHK Villas', '3 BHK Villas', '4 BHK Villas'],
@@ -590,7 +814,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500078',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -618,14 +847,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500068',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['12']!['images'],
               'videos': enhancedMediaData['12']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -650,7 +884,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500032',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -678,14 +917,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500072',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['14']!['images'],
               'videos': enhancedMediaData['14']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -710,7 +954,12 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500033',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa3.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa3.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
@@ -738,16 +987,21 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500014',
                 ),
-                images: [PropertyImage(url: 'assets/images/villa3.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/villa3.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
               'images': enhancedMediaData['202']!['images'],
               'videos': enhancedMediaData['202']!['videos'],
             },
-          ]
+          ],
         },
-      ]
+      ],
     },
     'farmland': {
       'titles': ['Small Farmlands', 'Medium Farmlands', 'Large Farmlands'],
@@ -775,20 +1029,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500075',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'field1', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'field2', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'irrigation', 'image': 'assets/images/farmland2.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'walkthrough', 'video': "assets/videos/video5.mp4"},
-              ],
+              'images': enhancedMediaData['16']!['images'],
+              'videos': enhancedMediaData['16']!['videos'],
             },
             {
               'subtitle': 'Green Acres',
@@ -811,22 +1062,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500076',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'crops', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'soil', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'boundary', 'image': 'assets/images/farmland2.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video2.mp4"},
-                {'orientation': 'tour', 'video': "assets/videos/video1.mp4"},
-              ],
+              'images': enhancedMediaData['17']!['images'],
+              'videos': enhancedMediaData['17']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -851,20 +1099,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500077',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'overview', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'field1', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'field2', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'water_source', 'image': 'assets/images/farmland1.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'walkthrough', 'video': "assets/videos/video4.mp4"},
-              ],
+              'images': enhancedMediaData['18']!['images'],
+              'videos': enhancedMediaData['18']!['videos'],
             },
             {
               'subtitle': 'Golden Fields',
@@ -887,22 +1132,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500078',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'overview', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'irrigation', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'soil_quality', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'access_road', 'image': 'assets/images/farmland1.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'irrigation_system', 'video': "assets/videos/video2.mp4"},
-              ],
+              'images': enhancedMediaData['19']!['images'],
+              'videos': enhancedMediaData['19']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -927,20 +1169,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500079',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'valley_view', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'expansive_field', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'water_body', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'access_points', 'image': 'assets/images/farmland2.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video7.mp4"},
-                {'orientation': 'valley_tour', 'video': "assets/videos/video6.mp4"},
-              ],
+              'images': enhancedMediaData['20']!['images'],
+              'videos': enhancedMediaData['20']!['videos'],
             },
             {
               'subtitle': 'Mega Farms',
@@ -963,24 +1202,21 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500080',
                 ),
-                images: [PropertyImage(url: 'assets/images/farmland1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/farmland1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'overview', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'field_section1', 'image': 'assets/images/farmland2.png'},
-                {'orientation': 'field_section2', 'image': 'assets/images/farmland1.png'},
-                {'orientation': 'infrastructure', 'image': 'assets/images/farmland2.png'},
-              ],
-              'videos': [
-                {'orientation': 'drone_view', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'complete_tour', 'video': "assets/videos/video6.mp4"},
-              ],
+              'images': enhancedMediaData['21']!['images'],
+              'videos': enhancedMediaData['21']!['videos'],
             },
-          ]
+          ],
         },
-      ]
+      ],
     },
     'open_plot': {
       'titles': ['Small Plots', 'Medium Plots', 'Large Plots'],
@@ -1008,20 +1244,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500080',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot3', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'location', 'image': 'assets/images/openplot2.png'},
-              ],
-              'videos': [
-                {'orientation': 'site_tour', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'neighborhood', 'video': "assets/videos/video1.mp4"},
-              ],
+              'images': enhancedMediaData['22']!['images'],
+              'videos': enhancedMediaData['22']!['videos'],
             },
             {
               'subtitle': 'City Edge Plots',
@@ -1044,22 +1277,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500081',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot3', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'view', 'image': 'assets/images/openplot2.png'},
-              ],
-              'videos': [
-                {'orientation': 'site_tour', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'location_view', 'video': "assets/videos/video1.mp4"},
-              ],
+              'images': enhancedMediaData['23']!['images'],
+              'videos': enhancedMediaData['23']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -1084,20 +1314,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500082',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'lake_view', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'sunset_view', 'image': 'assets/images/openplot1.png'},
-              ],
-              'videos': [
-                {'orientation': 'lake_tour', 'video': "assets/videos/video4.mp4"},
-                {'orientation': 'plot_walkthrough', 'video': "assets/videos/video3.mp4"},
-              ],
+              'images': enhancedMediaData['24']!['images'],
+              'videos': enhancedMediaData['24']!['videos'],
             },
             {
               'subtitle': 'Green Valley Plots',
@@ -1120,22 +1347,19 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500083',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot2.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot2.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'hillside_view', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot1', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'valley_view', 'image': 'assets/images/openplot1.png'},
-              ],
-              'videos': [
-                {'orientation': 'hillside_tour', 'video': "assets/videos/video3.mp4"},
-                {'orientation': 'valley_view', 'video': "assets/videos/video1.mp4"},
-              ],
+              'images': enhancedMediaData['25']!['images'],
+              'videos': enhancedMediaData['25']!['videos'],
             },
-          ]
+          ],
         },
         {
           'items': [
@@ -1160,20 +1384,17 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500083',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'hilltop_view', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot1', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'panoramic_view', 'image': 'assets/images/openplot2.png'},
-              ],
-              'videos': [
-                {'orientation': 'hilltop_tour', 'video': "assets/videos/video1.mp4"},
-                {'orientation': 'view_tour', 'video': "assets/videos/video2.mp4"},
-              ],
+              'images': enhancedMediaData['26']!['images'],
+              'videos': enhancedMediaData['26']!['videos'],
             },
             {
               'subtitle': 'Royal Plots',
@@ -1196,24 +1417,21 @@ class PropertyData {
                   state: 'Telangana',
                   pincode: '500084',
                 ),
-                images: [PropertyImage(url: 'assets/images/openplot1.png', isPrimary: true)],
+                images: [
+                  PropertyImage(
+                    url: 'assets/images/openplot1.png',
+                    isPrimary: true,
+                  ),
+                ],
                 features: [],
                 amenities: [],
               ),
-              'images': [
-                {'orientation': 'premium_view', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'plot1', 'image': 'assets/images/openplot2.png'},
-                {'orientation': 'plot2', 'image': 'assets/images/openplot1.png'},
-                {'orientation': 'location', 'image': 'assets/images/openplot2.png'},
-              ],
-              'videos': [
-                {'orientation': 'premium_tour', 'video': "assets/videos/video4.mp4"},
-                {'orientation': 'location_view', 'video': "assets/videos/video7.mp4"},
-              ],
+              'images': enhancedMediaData['27']!['images'],
+              'videos': enhancedMediaData['27']!['videos'],
             },
-          ]
+          ],
         },
-      ]
+      ],
     },
   };
 }

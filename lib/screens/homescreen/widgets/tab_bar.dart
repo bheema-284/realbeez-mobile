@@ -29,7 +29,6 @@ class CustomTabBar extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _CustomTabBarState createState() => _CustomTabBarState();
 }
 
@@ -43,7 +42,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
   @override
   Widget build(BuildContext context) {
     final isSmallScreen = MediaQuery.of(context).size.width < 360;
-    
+
     return Stack(
       children: [
         SizedBox(
@@ -53,38 +52,63 @@ class _CustomTabBarState extends State<CustomTabBar> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(widget.tabs.length, (index) {
               final isSelected = widget.selectedIndex == index;
-              final Color selectedColor = index == 0 ? widget.allTabEndColor : widget.tabColors[index];
-              final Color unselectedColor = widget.selectedIndex == 0 ? 
-                (widget.shouldUseWhiteIcons ? Colors.white : Colors.black) : Colors.black;
-              
-              return GestureDetector(
-                key: widget.tabKeys[index],
-                onTap: () {
-                  widget.onTabSelected(index);
-                  _updateCapsulePosition(index, () {
-                    
-                  });
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(height: 6),
-                    widget.tabs[index].imagePath != null
-                        ? Image.asset(widget.tabs[index].imagePath!,
-                            height: isSmallScreen ? 20 : 24,
-                            width: isSmallScreen ? 20 : 24,
-                            color: isSelected ? selectedColor : unselectedColor)
-                        : Icon(widget.tabs[index].icon!,
-                            color: isSelected ? selectedColor : unselectedColor,
-                            size: isSmallScreen ? 20 : 24),
-                    SizedBox(height: 4),
-                    Text(widget.tabs[index].label,
-                        style: TextStyle(
-                            color: isSelected ? selectedColor : unselectedColor,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            fontSize: isSmallScreen ? 10 : 12)),
-                    SizedBox(height: 10),
-                  ],
+              final Color selectedColor = index == 0
+                  ? widget.allTabEndColor
+                  : widget.tabColors[index];
+              final Color unselectedColor = widget.selectedIndex == 0
+                  ? (widget.shouldUseWhiteIcons ? Colors.white : Colors.black)
+                  : Colors.black;
+
+              return Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    widget.onTabSelected(index);
+                    _updateCapsulePosition(index, () {});
+                  },
+                  child: InkWell(
+                    onTap: null,
+                    child: Container(
+                      key: widget.tabKeys[index],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(height: 6),
+                          widget.tabs[index].imagePath != null
+                              ? Image.asset(
+                                  widget.tabs[index].imagePath!,
+                                  height: isSmallScreen ? 20 : 24,
+                                  width: isSmallScreen ? 20 : 24,
+                                  color: isSelected
+                                      ? selectedColor
+                                      : unselectedColor,
+                                )
+                              : Icon(
+                                  widget.tabs[index].icon!,
+                                  color: isSelected
+                                      ? selectedColor
+                                      : unselectedColor,
+                                  size: isSmallScreen ? 20 : 24,
+                                ),
+                          SizedBox(height: 4),
+                          Text(
+                            widget.tabs[index].label,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? selectedColor
+                                  : unselectedColor,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: isSmallScreen ? 10 : 12,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               );
             }),
@@ -97,10 +121,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
           child: CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 36),
             painter: CapsuleWaveLinePainter(
-                centerX: widget.capsuleCenterX,
-                capsuleWidth: widget.capsuleWidth,
-                capsuleHeight: 30,
-                borderRadius: 10),
+              centerX: widget.capsuleCenterX,
+              capsuleWidth: widget.capsuleWidth,
+              capsuleHeight: 30,
+              borderRadius: 10,
+            ),
           ),
         ),
       ],

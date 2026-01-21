@@ -11,7 +11,7 @@ class CapsuleWaveLinePainter extends CustomPainter {
     required this.centerX,
     required this.capsuleWidth,
     required this.capsuleHeight,
-    this.borderRadius = 12,
+    this.borderRadius = 8, // Reduced from 12
     this.lineColor,
   });
 
@@ -43,46 +43,37 @@ class CapsuleWaveLinePainter extends CustomPainter {
     final double top = 0;
     final double bottom = capsuleHeight;
 
+    // Control point offsets for smooth curves
+    final double curveOffset = 6.0;
+
     final path = Path();
 
     // Start from left edge at bottom
     path.moveTo(0, bottom);
 
-    // Draw bottom line from left edge to capsule with rounded connection
-    path.lineTo(left - borderRadius, bottom);
-    
-    // Rounded connection at left side
-    path.quadraticBezierTo(
-      left, bottom,
-      left, bottom - borderRadius,
-    );
+    // Draw bottom line from left edge to capsule with smooth curve
+    path.lineTo(left - curveOffset, bottom);
+
+    // Smooth curve from horizontal to vertical at bottom-left
+    path.quadraticBezierTo(left, bottom, left, bottom - curveOffset);
 
     // Draw left vertical line
     path.lineTo(left, top + borderRadius);
 
-    // Draw rounded top-left corner
-    path.quadraticBezierTo(
-      left, top,
-      left + borderRadius, top,
-    );
+    // Draw top-left corner with reduced curve
+    path.quadraticBezierTo(left, top, left + borderRadius, top);
 
     // Draw top line
     path.lineTo(right - borderRadius, top);
 
-    // Draw rounded top-right corner
-    path.quadraticBezierTo(
-      right, top,
-      right, top + borderRadius,
-    );
+    // Draw top-right corner with reduced curve
+    path.quadraticBezierTo(right, top, right, top + borderRadius);
 
     // Draw right vertical line
-    path.lineTo(right, bottom - borderRadius);
+    path.lineTo(right, bottom - curveOffset);
 
-    // Rounded connection at right side
-    path.quadraticBezierTo(
-      right, bottom,
-      right + borderRadius, bottom,
-    );
+    // Smooth curve from vertical to horizontal at bottom-right
+    path.quadraticBezierTo(right, bottom, right + curveOffset, bottom);
 
     // Draw bottom line from capsule to right edge
     path.lineTo(size.width, bottom);

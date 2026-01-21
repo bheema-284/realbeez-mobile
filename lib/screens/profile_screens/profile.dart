@@ -9,23 +9,69 @@ import 'package:real_beez/screens/profile_screens/my_bio_screen.dart';
 import 'package:real_beez/screens/profile_screens/privacy_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
 
-class ProfileSettingsScreen extends StatelessWidget {
+class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
 
+  @override
+  State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
+}
+
+class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   static const Color backgroundColor = Color(0xFFF8F3E7);
   static const Color cardColor = Colors.white;
   static const Color chevronColor = Color(0xFFACB3B7);
   static const Color dividerColor = Color(0xFFF1F1EF);
 
-  // ignore: library_private_types_in_public_api
   final List<_SettingItem> settingsItems = const [
-    _SettingItem(label: 'Booking Details', icon: Icons.calendar_today, key: Key('booking')),
+    _SettingItem(
+      label: 'Booking Details',
+      icon: Icons.calendar_today,
+      key: Key('booking'),
+    ),
     _SettingItem(label: 'My Bio', icon: Icons.badge, key: Key('bio')),
-    _SettingItem(label: 'Premium Plan Details', icon: Icons.stars, key: Key('premium')),
+    _SettingItem(
+      label: 'Premium Plan Details',
+      icon: Icons.stars,
+      key: Key('premium'),
+    ),
     _SettingItem(label: 'Privacy', icon: Icons.lock, key: Key('privacy')),
     _SettingItem(label: 'Help', icon: Icons.help_outline, key: Key('help')),
     _SettingItem(label: 'About', icon: Icons.info_outline, key: Key('about')),
   ];
+
+  String _userName = 'Someone'; // Default name
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  // ✅ Load user name from SharedPreferences
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString('fullName');
+
+    if (savedName != null && savedName.isNotEmpty) {
+      setState(() {
+        _userName = savedName;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // ✅ Reload user name when returning to this screen
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This ensures the name is refreshed when coming back from MyBioScreen
+    _loadUserName();
+  }
 
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -94,16 +140,35 @@ class ProfileSettingsScreen extends StatelessWidget {
 
   Widget _buildProfileSection() {
     return Column(
-      children: const [
+      children: [
         CircleAvatar(
           radius: 32,
-          backgroundImage: AssetImage('assets/images/car.png'),
+          backgroundImage: const AssetImage('assets/images/car.png'),
+          backgroundColor: Colors.grey[300], // Fallback color
+          child: _isLoading
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.beeYellow,
+                  ),
+                )
+              : null,
         ),
-        SizedBox(height: 10),
-        Text(
-          'Someone',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-        ),
+        const SizedBox(height: 10),
+        _isLoading
+            ? CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.beeYellow),
+              )
+            : Text(
+                _userName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
       ],
     );
   }
@@ -127,8 +192,14 @@ class ProfileSettingsScreen extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 12),
-            child: Text('Settings',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+            child: Text(
+              'Settings',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
           ),
           ...settingsItems.asMap().entries.map((entry) {
             int idx = entry.key;
@@ -137,23 +208,59 @@ class ProfileSettingsScreen extends StatelessWidget {
               children: [
                 InkWell(
                   key: item.key,
-                  onTap: () {
+                  onTap: () async {
                     if (item.label == 'Booking Details') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookingScreen(),
+                        ),
+                      );
                     } else if (item.label == 'My Bio') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MyBioScreen()));
+                      // ✅ Use push for result to handle updates from MyBioScreen
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyBioScreen(),
+                        ),
+                      );
+
+                      // ✅ If MyBioScreen returned with updated data, refresh the name
+                      if (result != null && result['nameUpdated'] == true) {
+                        // Refresh the name from SharedPreferences
+                        await _loadUserName();
+                      }
                     } else if (item.label == 'About') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutScreen(),
+                        ),
+                      );
                     } else if (item.label == 'Privacy') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacyPolicyScreen(),
+                        ),
+                      );
                     } else if (item.label == 'Help') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupportScreen(),
+                        ),
+                      );
                     } else if (item.label == 'Premium Plan Details') {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PremiumPlanScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PremiumPlanScreen(),
+                        ),
+                      );
                     }
                   },
                   borderRadius: BorderRadius.circular(8),
-                  // ignore: deprecated_member_use
                   splashColor: AppColors.beeYellow.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -162,19 +269,28 @@ class ProfileSettingsScreen extends StatelessWidget {
                         Container(
                           width: 36,
                           height: 36,
-                          decoration:
-                              const BoxDecoration(color: AppColors.beeYellow, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(
+                            color: AppColors.beeYellow,
+                            shape: BoxShape.circle,
+                          ),
                           child: Icon(item.icon, color: Colors.white, size: 18),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
-                          child: Text(item.label,
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black)),
+                          child: Text(
+                            item.label,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
-                        const Icon(Icons.chevron_right, color: chevronColor, size: 18),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: chevronColor,
+                          size: 18,
+                        ),
                       ],
                     ),
                   ),
@@ -198,13 +314,15 @@ class ProfileSettingsScreen extends StatelessWidget {
         onPressed: () => _logout(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.beeYellow,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: const Text(
           'Logout',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -215,5 +333,9 @@ class _SettingItem {
   final String label;
   final IconData icon;
   final Key key;
-  const _SettingItem({required this.label, required this.icon, required this.key});
+  const _SettingItem({
+    required this.label,
+    required this.icon,
+    required this.key,
+  });
 }

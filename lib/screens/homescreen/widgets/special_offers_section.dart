@@ -30,7 +30,7 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.48; // Slightly less than half for spacing
-    
+
     return SizedBox(
       height: 180,
       child: Column(
@@ -45,7 +45,9 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
                 final offer = PropertyData.specialOffers[index];
                 return Container(
                   width: cardWidth,
-                  margin: const EdgeInsets.only(right: 8), // Only right margin for spacing
+                  margin: const EdgeInsets.only(
+                    right: 8,
+                  ), // Only right margin for spacing
                   child: _buildOfferCard(
                     imageUrl: offer['image']!,
                     title: offer['title']!,
@@ -122,7 +124,10 @@ class _SpecialOffersSectionState extends State<SpecialOffersSection> {
                 const SizedBox(height: 2),
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

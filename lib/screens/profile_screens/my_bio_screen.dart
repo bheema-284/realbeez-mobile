@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:real_beez/screens/api/profile_service.dart';
 import 'package:real_beez/screens/models/profile_model.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,6 +51,40 @@ class _MyBioScreenState extends State<MyBioScreen> {
   void initState() {
     super.initState();
     _fetchProfiles();
+    _loadDataFromSharedPreferences();
+  }
+
+  Future<void> _loadDataFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString('fullName');
+    final savedGender = prefs.getString('gender');
+    final savedDob = prefs.getString('dob');
+
+    if (savedName != null && savedName.isNotEmpty) {
+      _nameController.text = savedName;
+    }
+
+    if (savedGender != null && savedGender.isNotEmpty) {
+      _genderController.text =
+          savedGender[0].toUpperCase() + savedGender.substring(1);
+    }
+
+    if (savedDob != null && savedDob.isNotEmpty) {
+      try {
+        final parts = savedDob.split('/');
+        if (parts.length == 3) {
+          final day = int.tryParse(parts[0]) ?? 1;
+          final month = int.tryParse(parts[1]) ?? 1;
+          final year = int.tryParse(parts[2]) ?? 1999;
+          final date = DateTime(year, month, day);
+          _dobController.text = DateFormat('dd MMM yyyy').format(date);
+        } else {
+          _dobController.text = savedDob;
+        }
+      } catch (e) {
+        _dobController.text = savedDob;
+      }
+    }
   }
 
   Future<void> _fetchProfiles() async {
@@ -65,7 +99,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
       }).toList();
 
       setState(() {
-        // Use the first profile as current profile for demo
         if (profiles.isNotEmpty) {
           _currentProfile = profiles.first;
           _populateFormData(_currentProfile!);
@@ -78,45 +111,69 @@ class _MyBioScreenState extends State<MyBioScreen> {
       setState(() {
         _isLoading = false;
       });
-      
-      // Show error message but continue with default data
-      // ignore: use_build_context_synchronously
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load profile data: $e'),
           backgroundColor: Colors.orange,
         ),
       );
-      
-      // Set default data if API fails
+
       _setDefaultData();
     }
   }
 
   void _populateFormData(ProfileModel profile) {
-    _nameController.text = profile.name.isNotEmpty ? profile.name : 'Bhargavi';
-    _phoneController.text = profile.phone.isNotEmpty ? profile.phone : '+91 9234657898';
-    _genderController.text = profile.gender.isNotEmpty ? profile.gender : 'Female';
-    _addressController.text = profile.address.isNotEmpty ? profile.address : 'Hyderabad, Telangana';
-    
-    // Format date of birth
-    final formattedDob = _formatDateForDisplay(profile.dateOfBirth);
-    _dobController.text = formattedDob.isNotEmpty ? formattedDob : '15 Mar 1999';
+    if (_nameController.text.isEmpty && profile.name.isNotEmpty) {
+      _nameController.text = profile.name;
+    }
+
+    if (_phoneController.text.isEmpty && profile.phone.isNotEmpty) {
+      _phoneController.text = profile.phone;
+    }
+
+    if (_genderController.text.isEmpty && profile.gender.isNotEmpty) {
+      _genderController.text = profile.gender;
+    }
+
+    if (_addressController.text.isEmpty && profile.address.isNotEmpty) {
+      _addressController.text = profile.address;
+    }
+
+    if (_dobController.text.isEmpty) {
+      final formattedDob = _formatDateForDisplay(profile.dateOfBirth);
+      _dobController.text = formattedDob.isNotEmpty
+          ? formattedDob
+          : '15 Mar 1999';
+    }
   }
 
   void _setDefaultData() {
-    _nameController.text = 'Bhargavi';
-    _phoneController.text = '+91 9234657898';
-    _genderController.text = 'Female';
-    _addressController.text = 'Hyderabad, Telangana';
-    _dobController.text = '15 Mar 1999';
+    if (_nameController.text.isEmpty) {
+      _nameController.text = 'Bhargavi';
+    }
+
+    if (_phoneController.text.isEmpty) {
+      _phoneController.text = '+91 9234657898';
+    }
+
+    if (_genderController.text.isEmpty) {
+      _genderController.text = 'Female';
+    }
+
+    if (_addressController.text.isEmpty) {
+      _addressController.text = 'Hyderabad, Telangana';
+    }
+
+    if (_dobController.text.isEmpty) {
+      _dobController.text = '15 Mar 1999';
+    }
   }
 
   String _formatDateForDisplay(String dateString) {
     try {
       if (dateString.isEmpty) return '';
-      
-      // Handle different date formats from API
+
       if (dateString.contains('-')) {
         final parts = dateString.split('-');
         if (parts.length == 3) {
@@ -136,7 +193,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
   String _formatDateForAPI(String displayDate) {
     try {
       if (displayDate.isEmpty) return '';
-      
+
       final date = DateFormat('dd MMM yyyy').parse(displayDate);
       return DateFormat('yyyy-MM-dd').format(date);
     } catch (e) {
@@ -144,18 +201,18 @@ class _MyBioScreenState extends State<MyBioScreen> {
     }
   }
 
-  // Check if image URL is valid
   bool _isValidImageUrl(String url) {
     if (url.isEmpty) return false;
     try {
       final uri = Uri.tryParse(url);
-      return uri != null && uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
+      return uri != null &&
+          uri.isAbsolute &&
+          (uri.scheme == 'http' || uri.scheme == 'https');
     } catch (e) {
       return false;
     }
   }
 
-  // ✅ Date of Birth Picker
   Future<void> _selectDate(BuildContext context) async {
     DateTime initialDate;
     try {
@@ -182,9 +239,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
               onSurface: Colors.black,
             ),
             textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Color(0xFFD5A021),
-              ),
+              style: TextButton.styleFrom(foregroundColor: Color(0xFFD5A021)),
             ),
           ),
           child: child!,
@@ -199,7 +254,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
     }
   }
 
-  // Validation
   void _validateName(String value) {
     if (value.isEmpty) {
       setState(() => _nameError = 'Name is required');
@@ -227,7 +281,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
 
   Future<void> _saveProfile() async {
     FocusScope.of(context).unfocus();
-    
+
     _validateName(_nameController.text);
     _validatePhone(_phoneController.text);
 
@@ -257,28 +311,44 @@ class _MyBioScreenState extends State<MyBioScreen> {
       };
 
       Map<String, dynamic> result;
-      
+
       if (_currentProfile != null && _currentProfile!.id.isNotEmpty) {
-        // Try to update existing profile
         result = await ProfileService.updateProfile(
           _currentProfile!.id,
           profileData,
         );
-        
-        // If update fails, try to create new profile
+
         if (!result["success"]) {
           result = await ProfileService.createProfile(profileData);
         }
       } else {
-        // Create new profile
         result = await ProfileService.createProfile(profileData);
       }
 
       if (result["success"] == true) {
+        // ✅ SAVE UPDATED DATA TO SHAREDPREFERENCES
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('fullName', _nameController.text);
+
+        // Save gender to SharedPreferences (convert to lowercase for consistency)
+        final genderLower = _genderController.text.toLowerCase();
+        await prefs.setString('gender', genderLower);
+
+        // Save date of birth to SharedPreferences
+        if (_dobController.text.isNotEmpty) {
+          try {
+            final date = DateFormat('dd MMM yyyy').parse(_dobController.text);
+            final formattedDob = '${date.day}/${date.month}/${date.year}';
+            await prefs.setString('dob', formattedDob);
+          } catch (e) {
+            // If parsing fails, save as-is
+            await prefs.setString('dob', _dobController.text);
+          }
+        }
+
         // Refresh profile data
         await _fetchProfiles();
-        
-        // ignore: use_build_context_synchronously
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result["message"] ?? 'Profile saved successfully!'),
@@ -286,7 +356,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // Reset edit modes
         setState(() {
           _isNameEditable = false;
@@ -294,8 +364,15 @@ class _MyBioScreenState extends State<MyBioScreen> {
           _isGenderEditable = false;
           _isAddressEditable = false;
         });
+
+        // ✅ NOTIFY PARENT/PREVIOUS SCREENS THAT DATA HAS BEEN UPDATED
+        // This will update the ProfileSettingsScreen automatically
+        Navigator.pop(context, {
+          'nameUpdated': true,
+          'newName': _nameController.text,
+          'newGender': genderLower,
+        });
       } else {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result["message"] ?? 'Failed to save profile'),
@@ -305,7 +382,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
         );
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error saving profile: $e'),
@@ -351,31 +427,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
             fontSize: 22,
           ),
         ),
-        actions: [
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none_rounded,
-                    color: Colors.black),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.pinkAccent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.yellowAccent, width: 1.5),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -384,7 +435,6 @@ class _MyBioScreenState extends State<MyBioScreen> {
           children: [
             const SizedBox(height: 10),
 
-            // Profile Avatar with better error handling
             Center(
               child: Stack(
                 clipBehavior: Clip.none,
@@ -398,9 +448,10 @@ class _MyBioScreenState extends State<MyBioScreen> {
                       color: Colors.grey[200],
                     ),
                     child: ClipOval(
-                      child: _currentProfile != null && 
-                            _currentProfile!.imageUrl.isNotEmpty && 
-                            _isValidImageUrl(_currentProfile!.imageUrl)
+                      child:
+                          _currentProfile != null &&
+                              _currentProfile!.imageUrl.isNotEmpty &&
+                              _isValidImageUrl(_currentProfile!.imageUrl)
                           ? Image.network(
                               _currentProfile!.imageUrl,
                               fit: BoxFit.cover,
@@ -411,19 +462,28 @@ class _MyBioScreenState extends State<MyBioScreen> {
                                   color: Colors.grey[600],
                                 );
                               },
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD5A021)),
-                                  ),
-                                );
-                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value:
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                            : null,
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Color(0xFFD5A021),
+                                            ),
+                                      ),
+                                    );
+                                  },
                             )
                           : Icon(
                               Icons.person,
@@ -441,11 +501,15 @@ class _MyBioScreenState extends State<MyBioScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        // ignore: deprecated_member_use
-                        border: Border.all(color: Colors.black.withOpacity(0.6)),
+                        border: Border.all(
+                          color: Colors.black.withOpacity(0.6),
+                        ),
                       ),
-                      child: const Icon(Icons.edit,
-                          size: 18, color: Colors.black87),
+                      child: const Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ],
@@ -541,7 +605,9 @@ class _MyBioScreenState extends State<MyBioScreen> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : const Text(
@@ -569,10 +635,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(
           label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );
@@ -614,8 +677,10 @@ class _MyBioScreenState extends State<MyBioScreen> {
                   keyboardType: keyboardType,
                   style: const TextStyle(fontSize: 15),
                   decoration: const InputDecoration(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
                     border: InputBorder.none,
                   ),
                   onChanged: onChanged,
@@ -637,10 +702,7 @@ class _MyBioScreenState extends State<MyBioScreen> {
             padding: const EdgeInsets.only(left: 12, top: 4),
             child: Text(
               errorText,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
       ],
