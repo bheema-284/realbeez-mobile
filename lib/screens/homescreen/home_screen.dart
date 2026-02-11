@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:real_beez/screens/cutsom_widgets/swipe_cards.dart';
+import 'package:real_beez/screens/cutsom_widgets/new_swipe_cards.dart';
 import 'package:real_beez/screens/homescreen/widgets/capsule_wave_painter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:real_beez/property_cards.dart';
@@ -44,6 +44,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentSpecialOfferPage = 0;
   int _currentRecommendedPage = 0;
   bool _isLoading = true;
+
+  // Filter state variables
+  Set<String> _selectedPropertyTypes = {};
+  Set<String> _selectedPriceRanges = {};
+  RangeValues _priceRange = const RangeValues(
+    0,
+    10000000,
+  ); // Adjust max as needed
+  RangeValues _areaRange = const RangeValues(0, 5000); // Square feet
+  Set<String> _selectedBedrooms = {};
+  Set<String> _selectedAmenities = {};
+  double _minRating = 0.0;
+  bool _isReadyToMove = false;
+  bool _isNewlyLaunched = false;
+  bool _hasOffers = false;
+  double _minRated = 0.0;
 
   late TabController _tabController;
   late AnimationController _anim;
@@ -108,26 +124,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'title': 'Top Trending Apartments',
       'image':
           'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80',
+      'propertyId': 'trend_001',
+      'description': 'Premium apartments with modern amenities',
+      'location': 'Gachibowli, Hyderabad',
+      'price': '2.5 Cr - 4.2 Cr',
+      'rating': '4.8',
     },
     {
       'title': 'Luxury Villas',
       'image':
           'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80',
+      'propertyId': 'trend_002',
+      'description': 'Luxury villas with private pools',
+      'location': 'Jubilee Hills, Hyderabad',
+      'price': '5.0 Cr - 8.5 Cr',
+      'rating': '4.9',
     },
     {
       'title': 'Budget Apartments',
       'image':
           'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80',
+      'propertyId': 'trend_003',
+      'description': 'Affordable apartments with all basic amenities',
+      'location': 'Kukatpally, Hyderabad',
+      'price': '60 L - 1.2 Cr',
+      'rating': '4.5',
     },
     {
       'title': 'Smart Homes',
       'image':
           'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80',
+      'propertyId': 'trend_004',
+      'description': 'Tech-enabled smart homes with automation',
+      'location': 'Hitech City, Hyderabad',
+      'price': '3.2 Cr - 5.0 Cr',
+      'rating': '4.7',
     },
     {
       'title': 'Eco Residences',
       'image':
           'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80',
+      'propertyId': 'trend_005',
+      'description': 'Environment-friendly sustainable homes',
+      'location': 'Nanakramguda, Hyderabad',
+      'price': '2.8 Cr - 4.5 Cr',
+      'rating': '4.6',
     },
   ];
 
@@ -186,6 +227,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _tabController.index != _tabController.previousIndex) {
       setState(() {
         selectedIndex = _tabController.index;
+        _currentSpecialOfferPage = 0; // Reset to first page when tab changes
       });
       _moveBumpTo(_tabController.index);
       _scrollToIndex(_tabController.index);
@@ -269,8 +311,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _startSpecialOffersAutoPlay() {
     Timer.periodic(Duration(seconds: 3), (timer) {
       if (mounted) {
+        // Get current special offers based on selected tab
+        final offers = _getSpecialOffersForTab(selectedIndex);
+        if (offers.isEmpty) return;
+
         final nextPage = _currentSpecialOfferPage + 1;
-        if (nextPage < PropertyData.specialOffers.length) {
+        if (nextPage < offers.length) {
           setState(() {
             _currentSpecialOfferPage = nextPage;
           });
@@ -489,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
           if (bottomNavIndex == 0)
             Positioned(
-              bottom: 0, // 👈 NO GAP
+              bottom: 0,
               left: 0,
               right: 0,
               child: Center(child: StickyMapButton()),
@@ -509,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildBody() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height * 0.60;
+    final screenHeight = MediaQuery.of(context).size.height * 0.55;
     final isSmallScreen = screenWidth < 360;
 
     // Calculate wave opacity - fade out as user scrolls down
@@ -537,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             opacity: waveOpacity,
             child: Container(
               child: CustomPaint(
-                size: Size(screenWidth, 280),
+                size: Size(screenWidth, screenHeight),
                 painter: TopGradientWavePainter(
                   selectedIndex == 0 ? null : tabColors[selectedIndex],
                   startColor: selectedIndex == 0 ? allTabStartColor : null,
@@ -608,6 +654,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             _tabController.animateTo(i);
                             setState(() {
                               selectedIndex = i;
+                              _currentSpecialOfferPage =
+                                  0; // Reset to first page when tab changes
                             });
                             _moveBumpTo(i);
                             _scrollToIndex(i);
@@ -764,9 +812,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _currentSpecialOfferPage = index;
                 });
               },
+              selectedTabIndex: selectedIndex, // Pass selected tab index
             ),
           ),
-          const SizedBox(height: 20),
           if (selectedIndex == 0)
             _buildAllTabContent()
           else
@@ -798,11 +846,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       children: [
         _buildFilterChipsSection(),
         PropertyDeckSection(),
-        MustVisitSection(trendingApartments: _trendingApartments),
+        MustVisitSection(
+          trendingApartments: _trendingApartments,
+        ), // Same as before
         const SizedBox(height: 20),
         const FeaturedSitesSection(),
       ],
     );
+  }
+
+  // Helper function to get special offers for current tab
+  List<Map<String, String>> _getSpecialOffersForTab(int tabIndex) {
+    final Map<int, String> tabMap = {
+      0: 'all',
+      1: 'apartment',
+      2: 'villas',
+      3: 'farmlands',
+      4: 'open_plots',
+      5: 'commercial',
+      6: 'independent',
+    };
+
+    final category = tabMap[tabIndex] ?? 'all';
+    return PropertyData.categorySpecialOffers[category] ??
+        PropertyData.categorySpecialOffers['all']!;
   }
 
   Widget _buildFilterChipsSection() {
@@ -868,7 +935,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _buildFilterChip(Icons.filter_list_alt, 'Filter ▼'),
+                _buildFilterChip(
+                  Icons.filter,
+                  'Filter',
+                  onTap: () => _showFilterDialog(context),
+                ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   Icons.percent_rounded,
@@ -895,43 +966,574 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     IconData? icon,
     String label, {
     Color color = Colors.black,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        // ignore: deprecated_member_use
-        border: Border.all(color: Colors.grey.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (icon != null)
-            Icon(
-              icon,
-              size: 16,
-              color: color == Colors.black ? Colors.black87 : color,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          if (icon != null) const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: color == Colors.black ? Colors.black87 : color,
-              fontWeight: FontWeight.w500,
-              fontSize: 13,
+          ],
+        ),
+        child: Row(
+          children: [
+            if (icon != null)
+              Icon(
+                icon,
+                size: 16,
+                color: color == Colors.black ? Colors.black87 : color,
+              ),
+            if (icon != null) const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: color == Colors.black ? Colors.black87 : color,
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void _showFilterDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Filters',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                // Clear all filters
+                                setState(() {
+                                  _selectedPropertyTypes.clear();
+                                  _selectedPriceRanges.clear();
+                                  _selectedBedrooms.clear();
+                                  _selectedAmenities.clear();
+                                  _priceRange = const RangeValues(0, 10000000);
+                                  _areaRange = const RangeValues(0, 5000);
+                                  _minRating = 0.0;
+                                  _isReadyToMove = false;
+                                  _isNewlyLaunched = false;
+                                  _hasOffers = false;
+                                  _minRated = 0.0;
+                                });
+                              },
+                              child: Text(
+                                'Clear All',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Property Type Section
+                          _buildFilterSection(
+                            title: 'Property Type',
+                            filters: [
+                              'House',
+                              'Apartment',
+                              'Villa',
+                              'Commercial',
+                              'Plot',
+                            ],
+                            selectedFilters: _selectedPropertyTypes,
+                            onChanged: (value) {
+                              setState(() {
+                                if (_selectedPropertyTypes.contains(value)) {
+                                  _selectedPropertyTypes.remove(value);
+                                } else {
+                                  _selectedPropertyTypes.add(value);
+                                }
+                              });
+                            },
+                          ),
+
+                          SizedBox(height: 10),
+
+                          // Price Range Section
+                          _buildPriceRangeSection(setState),
+
+                          SizedBox(height: 10),
+
+                          // BHK/Bedrooms Section
+                          _buildFilterSection(
+                            title: 'Bedrooms',
+                            filters: [
+                              '1 BHK',
+                              '2 BHK',
+                              '3 BHK',
+                              '4 BHK',
+                              '4+ BHK',
+                            ],
+                            selectedFilters: _selectedBedrooms,
+                            onChanged: (value) {
+                              setState(() {
+                                if (_selectedBedrooms.contains(value)) {
+                                  _selectedBedrooms.remove(value);
+                                } else {
+                                  _selectedBedrooms.add(value);
+                                }
+                              });
+                            },
+                          ),
+
+                          SizedBox(height: 10),
+
+                          // Area Range Section
+                          _buildAreaRangeSection(setState),
+
+                          SizedBox(height: 10),
+
+                          // Quick Filters Section
+                          _buildQuickFiltersSection(setState),
+
+                          SizedBox(height: 10),
+
+                          // Amenities Section
+                          _buildAmenitiesSection(setState),
+
+                          SizedBox(height: 30), // Bottom padding
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Apply Button
+                  Container(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Apply filters and close dialog
+                          _applyFilters();
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.beeYellow,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Apply Filters',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterSection({
+    required String title,
+    required List<String> filters,
+    required Set<String> selectedFilters,
+    required Function(String) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: filters.map((filter) {
+            final isSelected = selectedFilters.contains(filter);
+            return ChoiceChip(
+              label: Text(filter),
+              selected: isSelected,
+              onSelected: (selected) => onChanged(filter),
+              selectedColor: Colors.blue.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.beeYellow : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isSelected
+                      ? AppColors.beeYellow
+                      : Colors.grey.shade300,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceRangeSection(StateSetter setState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Price Range',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        RangeSlider(
+          values: _priceRange,
+          min: 0,
+          max: 10000000,
+          divisions: 10,
+          labels: RangeLabels(
+            '\₹${_priceRange.start.round().toString()}',
+            '\₹${_priceRange.end.round().toString()}',
+          ),
+          onChanged: (RangeValues values) {
+            setState(() {
+              _priceRange = values;
+            });
+          },
+          activeColor: AppColors.beeYellow,
+          inactiveColor: Colors.grey.shade300,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '\₹${_priceRange.start.round().toString()}',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            Text(
+              '\₹${_priceRange.end.round().toString()}',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAreaRangeSection(StateSetter setState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Area (sq.ft.)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        RangeSlider(
+          values: _areaRange,
+          min: 0,
+          max: 5000,
+          divisions: 10,
+          labels: RangeLabels(
+            '${_areaRange.start.round().toString()} sq.ft.',
+            '${_areaRange.end.round().toString()} sq.ft.',
+          ),
+          onChanged: (RangeValues values) {
+            setState(() {
+              _areaRange = values;
+            });
+          },
+          activeColor: AppColors.beeYellow,
+          inactiveColor: Colors.grey.shade300,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${_areaRange.start.round().toString()} sq.ft.',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            Text(
+              '${_areaRange.end.round().toString()} sq.ft.',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickFiltersSection(StateSetter setState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Filters',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            FilterChip(
+              label: Text('Ready to Move'),
+              selected: _isReadyToMove,
+              onSelected: (selected) {
+                setState(() {
+                  _isReadyToMove = selected;
+                });
+              },
+              selectedColor: Colors.green.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: _isReadyToMove ? Colors.green.shade800 : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            FilterChip(
+              label: Text('Newly Launched'),
+              selected: _isNewlyLaunched,
+              onSelected: (selected) {
+                setState(() {
+                  _isNewlyLaunched = selected;
+                });
+              },
+              selectedColor: Colors.orange.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: _isNewlyLaunched
+                    ? Colors.orange.shade800
+                    : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            FilterChip(
+              label: Text('Has Offers'),
+              selected: _hasOffers,
+              onSelected: (selected) {
+                setState(() {
+                  _hasOffers = selected;
+                });
+              },
+              selectedColor: Colors.red.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: _hasOffers ? Colors.red.shade800 : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            FilterChip(
+              label: Text('Rating 4.5+'),
+              selected: _minRated >= 4.5,
+              onSelected: (selected) {
+                setState(() {
+                  _minRated = selected ? 4.5 : 0.0;
+                });
+              },
+              selectedColor: Colors.yellow.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: _minRated >= 4.5
+                    ? Colors.amber.shade800
+                    : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            FilterChip(
+              label: Text('Near & Top Rated'),
+              selected: _minRating >= 4.0,
+              onSelected: (selected) {
+                setState(() {
+                  _minRating = selected ? 4.0 : 0.0;
+                });
+              },
+              selectedColor: Colors.purple.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: _minRating >= 4.0
+                    ? Colors.purple.shade800
+                    : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Minimum Rating: ${_minRating.toStringAsFixed(1)}+',
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            Slider(
+              value: _minRating,
+              min: 0,
+              max: 5,
+              divisions: 10,
+              onChanged: (value) {
+                setState(() {
+                  _minRating = value;
+                });
+              },
+              activeColor: AppColors.beeYellow,
+              inactiveColor: Colors.grey.shade300,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAmenitiesSection(StateSetter setState) {
+    final amenities = [
+      'Swimming Pool',
+      'Parking',
+      'Gym',
+      'Security',
+      'Garden',
+      'Club House',
+      'Power Backup',
+      'Lift',
+      'Pet Friendly',
+      'Kids Play Area',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Amenities',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        SizedBox(height: 12),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: amenities.map((amenity) {
+            final isSelected = _selectedAmenities.contains(amenity);
+            return ChoiceChip(
+              label: Text(amenity),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (isSelected) {
+                    _selectedAmenities.remove(amenity);
+                  } else {
+                    _selectedAmenities.add(amenity);
+                  }
+                });
+              },
+              selectedColor: Colors.teal.shade100,
+              backgroundColor: Colors.grey.shade100,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.teal.shade800 : Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isSelected ? Colors.teal : Colors.grey.shade300,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  void _applyFilters() {
+    // Here you would apply the filters to your property list
+    print('Applied Filters:');
+    print('Property Types: $_selectedPropertyTypes');
+    print('Price Range: ${_priceRange.start} - ${_priceRange.end}');
+    print('Bedrooms: $_selectedBedrooms');
+    print('Area Range: ${_areaRange.start} - ${_areaRange.end}');
+    print('Amenities: $_selectedAmenities');
+    print('Min Rating: $_minRating');
+    print('Ready to Move: $_isReadyToMove');
+    print('Newly Launched: $_isNewlyLaunched');
+    print('Has Offers: $_hasOffers');
+    print('Min Rated: $_minRated');
+
+    // You can trigger a refresh of your property list here
+    // For example: _refreshPropertyList();
   }
 
   Widget _buildRealisticContentShimmer() {
@@ -1271,7 +1873,6 @@ class TopGradientWavePainter extends CustomPainter {
     final gradient = LinearGradient(
       colors: startColor != null && endColor != null
           ? [startColor!, endColor!]
-          // ignore: deprecated_member_use
           : [Color(0xFFE8ECFC), color!.withOpacity(0.8)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,

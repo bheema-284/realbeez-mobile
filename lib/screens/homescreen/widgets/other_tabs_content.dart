@@ -42,31 +42,30 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
           onBuilderCardTap: widget.onBuilderCardTap,
         ),
         const SizedBox(height: 10),
-        
+
         RecommendedSitesSection(
           currentRecommendedPage: widget.currentRecommendedPage,
           recommendedSites: widget.recommendedSites,
           onPageChanged: widget.onRecommendedPageChanged,
         ),
         const SizedBox(height: 6),
-        
+
         const ExploreSection(),
         const SizedBox(height: 6),
-        
+
         const BankOffersSection(),
         const SizedBox(height: 2),
-        
+
         MustVisitSection(trendingApartments: widget.trendingApartments),
         const SizedBox(height: 6),
-        
+
         _buildPopularBuildersButtonSection(),
         const SizedBox(height: 2),
-        
+
         _buildFilterChipsSection(),
         const SizedBox(height: 6),
-        
+
         const FeaturedSitesSection(),
-      
       ],
     );
   }
@@ -86,8 +85,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 24, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             ),
             icon: const Icon(Icons.arrow_forward, size: 16),
             label: const Text(
@@ -96,7 +94,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
             ),
           ),
           const SizedBox(height: 8),
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
@@ -140,7 +138,7 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
             ],
           ),
           const SizedBox(height: 10),
-          
+
           SizedBox(
             height: 100,
             child: ListView.separated(
@@ -211,51 +209,49 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              
               Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: isSmallScreen ? 48 : 52,
-                height: isSmallScreen ? 48 : 52,
-                child: Image.asset(
-                  'assets/icons/design.png',
-                  fit: BoxFit.contain,
-                  color: AppColors.beeYellow,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.architecture,
-                    color: AppColors.beeYellow,
-                    size: isSmallScreen ? 42 : 46,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: isSmallScreen ? 48 : 52,
+                    height: isSmallScreen ? 48 : 52,
+                    child: Image.asset(
+                      'assets/icons/design.png',
+                      fit: BoxFit.contain,
+                      color: AppColors.beeYellow,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.architecture,
+                        color: AppColors.beeYellow,
+                        size: isSmallScreen ? 42 : 46,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(width: isSmallScreen ? 10 : 14),
-              Text(
-                'Popular Around you',
-                style: TextStyle(
-                  fontSize: isSmallScreen ? 16 : 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              SizedBox(width: isSmallScreen ? 10 : 14),
-              SizedBox(
-                width: isSmallScreen ? 48 : 52,
-                height: isSmallScreen ? 48 : 52,
-                child: Image.asset(
-                  'assets/icons/design.png',
-                  fit: BoxFit.contain,
-                  color: AppColors.beeYellow,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.construction,
-                    color: AppColors.beeYellow,
-                    size: isSmallScreen ? 42 : 46,
+                  SizedBox(width: isSmallScreen ? 10 : 14),
+                  Text(
+                    'Popular Around you',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
+                  SizedBox(width: isSmallScreen ? 10 : 14),
+                  SizedBox(
+                    width: isSmallScreen ? 48 : 52,
+                    height: isSmallScreen ? 48 : 52,
+                    child: Image.asset(
+                      'assets/icons/design.png',
+                      fit: BoxFit.contain,
+                      color: AppColors.beeYellow,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.construction,
+                        color: AppColors.beeYellow,
+                        size: isSmallScreen ? 42 : 46,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-              
             ],
           ),
           const SizedBox(height: 14),
@@ -267,7 +263,11 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
               children: [
                 _buildFilterChip(Icons.filter_list_alt, 'Filter ▼'),
                 const SizedBox(width: 8),
-                _buildFilterChip(Icons.percent_rounded, 'Offers', color: Colors.redAccent),
+                _buildFilterChip(
+                  Icons.percent_rounded,
+                  'Offers',
+                  color: Colors.redAccent,
+                ),
                 const SizedBox(width: 8),
                 _buildFilterChip(null, 'Near & Top Rated'),
                 const SizedBox(width: 8),
@@ -284,7 +284,11 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
     );
   }
 
-  Widget _buildFilterChip(IconData? icon, String label, {Color color = Colors.black}) {
+  Widget _buildFilterChip(
+    IconData? icon,
+    String label, {
+    Color color = Colors.black,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -304,7 +308,11 @@ class _OtherTabsContentState extends State<OtherTabsContent> {
       child: Row(
         children: [
           if (icon != null)
-            Icon(icon, size: 16, color: color == Colors.black ? Colors.black87 : color),
+            Icon(
+              icon,
+              size: 16,
+              color: color == Colors.black ? Colors.black87 : color,
+            ),
           if (icon != null) const SizedBox(width: 4),
           Text(
             label,

@@ -38,8 +38,9 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) =>
-          const Center(child: CircularProgressIndicator(color: AppColors.beeYellow)),
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: AppColors.beeYellow),
+      ),
     );
 
     // 🔥 Call common login API (backend treats Aadhaar as "mobile")
@@ -53,7 +54,6 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response["message"] ?? "Login successful")),
       );
-
     } else {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,15 +82,21 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
             Text(
               "LOGIN WITH YOUR",
               textAlign: TextAlign.center,
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
             SizedBox(height: 4),
             Text(
               "AADHAAR CARD",
               textAlign: TextAlign.center,
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
           ],
         ),
@@ -131,7 +137,10 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
                     borderSide: BorderSide(color: AppColors.beeYellow),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.beeYellow, width: 2),
+                    borderSide: BorderSide(
+                      color: AppColors.beeYellow,
+                      width: 2,
+                    ),
                   ),
                 ),
                 onChanged: (_) => setState(() {}),
@@ -144,15 +153,17 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        _aadhaarController.text.length == 12 ? AppColors.beeYellow : Colors.grey,
+                    backgroundColor: _aadhaarController.text.length == 12
+                        ? AppColors.beeYellow
+                        : Colors.grey,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12 ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed:
-                      _aadhaarController.text.length == 12 ? _handleAadhaarLogin : null,
+                  onPressed: _aadhaarController.text.length == 12
+                      ? _handleAadhaarLogin
+                      : null,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -162,12 +173,17 @@ class _AadhaarLoginScreenState extends State<AadhaarLoginScreen> {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        decoration:
-                            const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
                         padding: const EdgeInsets.all(4),
-                        child: const Icon(Icons.arrow_forward,
-                            color: Colors.black, size: 18),
-                      )
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.black,
+                          size: 18,
+                        ),
+                      ),
                     ],
                   ),
                 ),

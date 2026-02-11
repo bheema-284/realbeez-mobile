@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:real_beez/screens/homescreen/property_details_screen.dart';
 import 'package:real_beez/screens/homescreen/widgets/property.dart';
- 
 
 class FeaturedSitesSection extends StatelessWidget {
   const FeaturedSitesSection({super.key});
@@ -25,14 +24,13 @@ class FeaturedSitesSection extends StatelessWidget {
           const SizedBox(height: 14),
           Column(
             children: [
-             
               PropertyCard(
                 propertyId: 'prop_001',
                 mediaItems: [
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-luxury-house-31415-480.mp4'
-                  }
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-luxury-house-31415-480.mp4',
+                  },
                 ],
                 title: 'Sky View Villas',
                 location: 'Jubilee Hills, Hyderabad',
@@ -46,7 +44,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_001'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_001'),
                     ),
                   );
                 },
@@ -59,15 +58,15 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-modern-city-1152-480.mp4'
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-modern-city-1152-480.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=80',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Urban Sky Apartments',
@@ -82,7 +81,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_002'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_002'),
                     ),
                   );
                 },
@@ -95,11 +95,11 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'video':
-                        'https://cdn.pixabay.com/video/2023/04/12/161902-819765011_large.mp4'
+                        'https://cdn.pixabay.com/video/2023/04/12/161902-819765011_large.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Prestige High Fields',
@@ -114,7 +114,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_003'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_003'),
                     ),
                   );
                 },
@@ -127,15 +128,15 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&w=900&q=80',
                   },
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-residential-neighborhood-1314-480.mp4'
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-residential-neighborhood-1314-480.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Green Valley Community',
@@ -150,7 +151,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_004'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_004'),
                     ),
                   );
                 },
@@ -163,11 +165,11 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-modern-building-31414-480.mp4'
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-modern-building-31414-480.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Elite Penthouse Residences',
@@ -182,7 +184,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_005'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_005'),
                     ),
                   );
                 },
@@ -195,15 +198,15 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=900&q=80',
                   },
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-residential-area-31413-480.mp4'
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-residential-area-31413-480.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Royal Garden Estates',
@@ -218,7 +221,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_006'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_006'),
                     ),
                   );
                 },
@@ -231,11 +235,11 @@ class FeaturedSitesSection extends StatelessWidget {
                 mediaItems: [
                   {
                     'video':
-                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-commercial-building-31416-480.mp4'
+                        'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-commercial-building-31416-480.mp4',
                   },
                   {
                     'image':
-                        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80'
+                        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80',
                   },
                 ],
                 title: 'Tech Park Commercial',
@@ -250,7 +254,8 @@ class FeaturedSitesSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PropertyDetailScreen(propertyId: 'prop_007'),
+                      builder: (context) =>
+                          PropertyDetailScreen(propertyId: 'prop_007'),
                     ),
                   );
                 },

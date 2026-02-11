@@ -116,6 +116,46 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         'address': 'Raidurg, Hyderabad, Telangana, India, 500032',
         'phone': '+91 98765 43216',
       },
+      'prop_008': {
+        'title': 'My Home Avatar',
+        'location': 'Hitech City, Hyderabad',
+        'priceRange': '4.8 Cr – 7.2 Cr',
+        'description':
+            'My Home Avatar offers premium residential spaces with modern architecture and smart home features. These properties feature state-of-the-art amenities including rooftop gardens, fitness centers, swimming pools, and dedicated children\'s play areas. Located in the prime Hitech City area, it provides excellent connectivity to IT hubs, schools, hospitals, and shopping centers.',
+        'reraId': 'P02200000387',
+        'address': 'Hitech City, Hyderabad, Telangana, India, 500081',
+        'phone': '+91 98765 43217',
+      },
+      'prop_009': {
+        'title': 'Ankura Villas',
+        'location': 'Gachibowli, Hyderabad',
+        'priceRange': '6.5 Cr – 9.8 Cr',
+        'description':
+            'Ankura Villas offers luxurious villa living with premium amenities and spacious layouts. These villas feature private gardens, swimming pools, modern interiors, and premium finishes. Located in the upscale Gachibowli area, they provide excellent security, privacy, and access to premium educational institutions, healthcare facilities, and entertainment hubs.',
+        'reraId': 'P02200000388',
+        'address': 'Gachibowli, Hyderabad, Telangana, India, 500032',
+        'phone': '+91 98765 43218',
+      },
+      'prop_010': {
+        'title': 'Prestige City',
+        'location': 'Madhapur, Hyderabad',
+        'priceRange': '3.2 Cr – 5.5 Cr',
+        'description':
+            'Prestige City offers modern apartment living with premium amenities and excellent location advantages. These apartments feature smart home technology, energy-efficient designs, and community living spaces. Located in the bustling Madhapur area, it provides easy access to corporate offices, shopping malls, restaurants, and entertainment options.',
+        'reraId': 'P02200000389',
+        'address': 'Madhapur, Hyderabad, Telangana, India, 500081',
+        'phone': '+91 98765 43219',
+      },
+      'prop_011': {
+        'title': 'Jumbooo City',
+        'location': 'Financial District, Hyderabad',
+        'priceRange': '5.5 Cr – 8.2 Cr',
+        'description':
+            'Jumbooo City offers premium residential complexes with extensive amenities and modern infrastructure. These properties feature clubhouses, sports facilities, landscaped gardens, and dedicated parking spaces. Located in the Financial District, it provides excellent connectivity to business centers, educational institutions, healthcare facilities, and transportation hubs.',
+        'reraId': 'P02200000390',
+        'address': 'Financial District, Hyderabad, Telangana, India, 500032',
+        'phone': '+91 98765 43220',
+      },
     };
 
     return properties[widget.propertyId] ??

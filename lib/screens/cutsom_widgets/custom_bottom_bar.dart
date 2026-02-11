@@ -28,10 +28,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(
-            color: Colors.grey.shade300,
-            width: 0.5,
-          ),
+          top: BorderSide(color: Colors.grey.shade300, width: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -95,13 +92,9 @@ class _BottomBarItemState extends State<_BottomBarItem>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.8,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.8).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   void _handleTap() {
@@ -133,10 +126,7 @@ class _BottomBarItemState extends State<_BottomBarItem>
         child: Container(
           padding: EdgeInsets.zero,
           margin: EdgeInsets.zero,
-          constraints: const BoxConstraints(
-            minWidth: 0,
-            minHeight: 0,
-          ),
+          constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +139,9 @@ class _BottomBarItemState extends State<_BottomBarItem>
                     scale: _scaleAnimation.value,
                     child: Icon(
                       widget.item.icon,
-                      color: widget.isSelected ? Color.fromARGB(255, 21, 22, 22) : Colors.grey[600],
+                      color: widget.isSelected
+                          ? Color.fromARGB(255, 21, 22, 22)
+                          : Colors.grey[600],
                       size: 28,
                     ),
                   );
@@ -159,9 +151,13 @@ class _BottomBarItemState extends State<_BottomBarItem>
               Text(
                 widget.item.label,
                 style: TextStyle(
-                  color: widget.isSelected ? Color.fromARGB(255, 21, 22, 22) : Colors.grey[600],
+                  color: widget.isSelected
+                      ? Color.fromARGB(255, 21, 22, 22)
+                      : Colors.grey[600],
                   fontSize: 12,
-                  fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: widget.isSelected
+                      ? FontWeight.w600
+                      : FontWeight.normal,
                 ),
               ),
             ],
@@ -176,8 +172,5 @@ class _NavItem {
   final IconData icon;
   final String label;
 
-  _NavItem({
-    required this.icon,
-    required this.label,
-  });
+  _NavItem({required this.icon, required this.label});
 }

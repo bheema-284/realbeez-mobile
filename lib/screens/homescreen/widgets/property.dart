@@ -62,59 +62,59 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   void _initializeVideos() async {
-  // 🟡 Load videos one by one instead of all together
-  for (int i = 0; i < widget.mediaItems.length; i++) {
-    final item = widget.mediaItems[i];
-    if (_isVideoItem(i)) {
-      final videoUrl = item['video'];
-      try {
-        debugPrint('🎥 Initializing video at index $i: $videoUrl');
-        // ignore: deprecated_member_use
-        final videoController = VideoPlayerController.network(videoUrl);
-        await videoController.initialize().timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            debugPrint('⏰ Timeout loading video index $i');
-            videoController.dispose();
-            throw TimeoutException('Video loading timed out');
-          },
-        );
-
-        if (mounted) {
-          final chewieController = ChewieController(
-            videoPlayerController: videoController,
-            autoPlay: true,
-            looping: true,
-            allowFullScreen: false,
-            showControls: false,
-            allowMuting: false,
-            allowPlaybackSpeedChanging: false,
-            aspectRatio: videoController.value.aspectRatio,
-            errorBuilder: (context, errorMessage) {
-              return _buildVideoErrorState();
+    // 🟡 Load videos one by one instead of all together
+    for (int i = 0; i < widget.mediaItems.length; i++) {
+      final item = widget.mediaItems[i];
+      if (_isVideoItem(i)) {
+        final videoUrl = item['video'];
+        try {
+          debugPrint('🎥 Initializing video at index $i: $videoUrl');
+          // ignore: deprecated_member_use
+          final videoController = VideoPlayerController.network(videoUrl);
+          await videoController.initialize().timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              debugPrint('⏰ Timeout loading video index $i');
+              videoController.dispose();
+              throw TimeoutException('Video loading timed out');
             },
           );
 
-          setState(() {
-            _videoControllers[i] = videoController;
-            _chewieControllers[i] = chewieController;
-          });
-        }
+          if (mounted) {
+            final chewieController = ChewieController(
+              videoPlayerController: videoController,
+              autoPlay: true,
+              looping: true,
+              allowFullScreen: false,
+              showControls: false,
+              allowMuting: false,
+              allowPlaybackSpeedChanging: false,
+              aspectRatio: videoController.value.aspectRatio,
+              errorBuilder: (context, errorMessage) {
+                return _buildVideoErrorState();
+              },
+            );
 
-        debugPrint('✅ Video $i initialized successfully');
-      } catch (e) {
-        // 🚨 Catch timeout, network, or invalid URL errors
-        debugPrint('❌ Video initialization error at index $i: $e');
-        if (mounted) {
-          setState(() {
-            _videoControllers[i] = null;
-            _chewieControllers[i] = null;
-          });
+            setState(() {
+              _videoControllers[i] = videoController;
+              _chewieControllers[i] = chewieController;
+            });
+          }
+
+          debugPrint('✅ Video $i initialized successfully');
+        } catch (e) {
+          // 🚨 Catch timeout, network, or invalid URL errors
+          debugPrint('❌ Video initialization error at index $i: $e');
+          if (mounted) {
+            setState(() {
+              _videoControllers[i] = null;
+              _chewieControllers[i] = null;
+            });
+          }
         }
       }
     }
   }
-}
 
   Widget _buildVideoErrorState() {
     return Container(
@@ -239,7 +239,9 @@ class _PropertyCardState extends State<PropertyCard> {
       child: Container(
         margin: EdgeInsets.only(bottom: bottomMargin),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(ScreenUtilHelper.getSafeRadius(10)),
+          borderRadius: BorderRadius.circular(
+            ScreenUtilHelper.getSafeRadius(10),
+          ),
           child: Stack(
             children: [
               SizedBox(
@@ -255,8 +257,12 @@ class _PropertyCardState extends State<PropertyCard> {
                     GestureDetector(
                       onTap: widget.onLocationTap,
                       child: Container(
-                        margin: EdgeInsets.only(right: ScreenUtilHelper.getSafeWidth(8)),
-                        padding: EdgeInsets.all(ScreenUtilHelper.getSafeWidth(4)),
+                        margin: EdgeInsets.only(
+                          right: ScreenUtilHelper.getSafeWidth(8),
+                        ),
+                        padding: EdgeInsets.all(
+                          ScreenUtilHelper.getSafeWidth(4),
+                        ),
                         decoration: const BoxDecoration(
                           color: AppColors.beeYellow,
                           shape: BoxShape.circle,
@@ -264,7 +270,7 @@ class _PropertyCardState extends State<PropertyCard> {
                         child: Icon(
                           Icons.location_on_rounded,
                           color: Colors.white,
-                          size: ScreenUtilHelper.getSafeFontSize(22), 
+                          size: ScreenUtilHelper.getSafeFontSize(22),
                         ),
                       ),
                     ),
@@ -275,17 +281,17 @@ class _PropertyCardState extends State<PropertyCard> {
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        padding: EdgeInsets.all(ScreenUtilHelper.getSafeWidth(4)),
+                        padding: EdgeInsets.all(
+                          ScreenUtilHelper.getSafeWidth(4),
+                        ),
                         decoration: const BoxDecoration(
-                          color: AppColors.beeYellow, 
+                          color: AppColors.beeYellow,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.favorite_rounded,
-                          color: _isWishlisted
-                              ? Colors.red 
-                              : Colors.white, 
-                          size: ScreenUtilHelper.getSafeFontSize(22), 
+                          color: _isWishlisted ? Colors.red : Colors.white,
+                          size: ScreenUtilHelper.getSafeFontSize(22),
                         ),
                       ),
                     ),
@@ -299,16 +305,24 @@ class _PropertyCardState extends State<PropertyCard> {
                   child: Container(
                     width: ScreenUtilHelper.getSafeWidth(220),
                     margin: EdgeInsets.symmetric(
-                        horizontal: ScreenUtilHelper.getSafeWidth(1),
-                        vertical: ScreenUtilHelper.getSafeHeight(16)),
+                      horizontal: ScreenUtilHelper.getSafeWidth(1),
+                      vertical: ScreenUtilHelper.getSafeHeight(16),
+                    ),
                     padding: EdgeInsets.symmetric(
-                        horizontal: ScreenUtilHelper.getSafeWidth(8),
-                        vertical: ScreenUtilHelper.getSafeHeight(4)),
+                      horizontal: ScreenUtilHelper.getSafeWidth(8),
+                      vertical: ScreenUtilHelper.getSafeHeight(4),
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(ScreenUtilHelper.getSafeRadius(10)),
-                        topRight: Radius.circular(ScreenUtilHelper.getSafeRadius(10)),
-                        bottomRight: Radius.circular(ScreenUtilHelper.getSafeRadius(10)),
+                        topLeft: Radius.circular(
+                          ScreenUtilHelper.getSafeRadius(10),
+                        ),
+                        topRight: Radius.circular(
+                          ScreenUtilHelper.getSafeRadius(10),
+                        ),
+                        bottomRight: Radius.circular(
+                          ScreenUtilHelper.getSafeRadius(10),
+                        ),
                       ),
                       gradient: LinearGradient(
                         begin: Alignment.centerLeft,
@@ -349,19 +363,23 @@ class _PropertyCardState extends State<PropertyCard> {
                   left: ScreenUtilHelper.getSafeWidth(10),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: ScreenUtilHelper.getSafeWidth(4),
-                        vertical: ScreenUtilHelper.getSafeHeight(4)),
+                      horizontal: ScreenUtilHelper.getSafeWidth(4),
+                      vertical: ScreenUtilHelper.getSafeHeight(4),
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                          BorderRadius.circular(ScreenUtilHelper.getSafeRadius(5)),
+                      borderRadius: BorderRadius.circular(
+                        ScreenUtilHelper.getSafeRadius(5),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified_rounded,
-                            color: Colors.green,
-                            size: ScreenUtilHelper.getSafeFontSize(16)),
+                        Icon(
+                          Icons.verified_rounded,
+                          color: Colors.green,
+                          size: ScreenUtilHelper.getSafeFontSize(16),
+                        ),
                         SizedBox(width: ScreenUtilHelper.getSafeWidth(4)),
                         Text(
                           "New",
@@ -439,7 +457,8 @@ class _PropertyCardState extends State<PropertyCard> {
       );
     }
 
-    final aspectRatio = chewieController.videoPlayerController.value.isInitialized
+    final aspectRatio =
+        chewieController.videoPlayerController.value.isInitialized
         ? chewieController.videoPlayerController.value.aspectRatio
         : 16 / 9;
 
@@ -488,11 +507,13 @@ class _PropertyCardState extends State<PropertyCard> {
       right: 0,
       child: Container(
         margin: EdgeInsets.symmetric(
-            horizontal: ScreenUtilHelper.getSafeWidth(3),
-            vertical: ScreenUtilHelper.getSafeHeight(4)),
+          horizontal: ScreenUtilHelper.getSafeWidth(3),
+          vertical: ScreenUtilHelper.getSafeHeight(4),
+        ),
         padding: EdgeInsets.symmetric(
-            horizontal: ScreenUtilHelper.getSafeWidth(8),
-            vertical: ScreenUtilHelper.getSafeHeight(6)),
+          horizontal: ScreenUtilHelper.getSafeWidth(8),
+          vertical: ScreenUtilHelper.getSafeHeight(6),
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -530,12 +551,14 @@ class _PropertyCardState extends State<PropertyCard> {
                   children: [
                     Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: ScreenUtilHelper.getSafeWidth(6),
-                          vertical: ScreenUtilHelper.getSafeHeight(4)),
+                        horizontal: ScreenUtilHelper.getSafeWidth(6),
+                        vertical: ScreenUtilHelper.getSafeHeight(4),
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.beeYellow,
                         borderRadius: BorderRadius.circular(
-                            ScreenUtilHelper.getSafeRadius(5)),
+                          ScreenUtilHelper.getSafeRadius(5),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -544,21 +567,25 @@ class _PropertyCardState extends State<PropertyCard> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.normal,
-                              fontSize:
-                                  ScreenUtilHelper.getSafeFontSize(9),
+                              fontSize: ScreenUtilHelper.getSafeFontSize(9),
                             ),
                           ),
-                          Icon(Icons.star_rounded,
-                              size: ScreenUtilHelper.getSafeFontSize(10),
-                              color: Colors.white),
+                          Icon(
+                            Icons.star_rounded,
+                            size: ScreenUtilHelper.getSafeFontSize(10),
+                            color: Colors.white,
+                          ),
                         ],
                       ),
                     ),
                     SizedBox(width: ScreenUtilHelper.getSafeWidth(4)),
-                    Text(widget.distance,
-                        style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: ScreenUtilHelper.getSafeFontSize(9))),
+                    Text(
+                      widget.distance,
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: ScreenUtilHelper.getSafeFontSize(9),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -573,17 +600,21 @@ class _PropertyCardState extends State<PropertyCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.location,
-                          style: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontSize:
-                                  ScreenUtilHelper.getSafeFontSize(9))),
+                      Text(
+                        widget.location,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: ScreenUtilHelper.getSafeFontSize(9),
+                        ),
+                      ),
                       SizedBox(height: ScreenUtilHelper.getSafeHeight(2)),
-                      Text(widget.description,
-                          style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize:
-                                  ScreenUtilHelper.getSafeFontSize(9))),
+                      Text(
+                        widget.description,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: ScreenUtilHelper.getSafeFontSize(9),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -592,17 +623,21 @@ class _PropertyCardState extends State<PropertyCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text("Price range",
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize:
-                                  ScreenUtilHelper.getSafeFontSize(9))),
-                      Text(widget.priceRange,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  ScreenUtilHelper.getSafeFontSize(11),
-                              fontWeight: FontWeight.bold)),
+                      Text(
+                        "Price range",
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: ScreenUtilHelper.getSafeFontSize(9),
+                        ),
+                      ),
+                      Text(
+                        widget.priceRange,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: ScreenUtilHelper.getSafeFontSize(11),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),

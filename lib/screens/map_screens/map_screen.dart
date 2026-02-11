@@ -70,7 +70,6 @@ class _RealEstateHomeState extends State<RealEstateHome> {
   List<_Listing> get _listings {
     return _properties.map((property) {
       final address = property.address;
-      final tags = _getTagsFromProperty(property);
 
       return _Listing(
         id: property.id.toString(),
@@ -80,45 +79,12 @@ class _RealEstateHomeState extends State<RealEstateHome> {
         isNew:
             property.status == 'pre_launch' ||
             property.status == 'under_construction',
-        tags: tags,
-        property: property, // Store the property for details
+        property: property,
+        price: property.price.toDouble(),
+        type: property.type,
       );
     }).toList();
   }
-
-  // Helper method to create tags from Property
-  Set<String> _getTagsFromProperty(Property property) {
-    final Set<String> tags = <String>{};
-
-    // Add type as tag
-    if (property.type == 'villa') {
-      tags.add('Villas');
-    } else if (property.type == 'apartment') {
-      tags.add('Apartments');
-    }
-
-    // Add status-based tags
-    if (property.status == 'pre_launch' ||
-        property.status == 'under_construction') {
-      tags.add('Newly');
-    }
-
-    // Add trending based on some criteria
-    if (property.price > 8000000) {
-      tags.add('Trending');
-    }
-
-    // Add amenity-based tags
-    if (property.amenities.contains('swimming_pool') ||
-        property.amenities.contains('clubhouse')) {
-      tags.add('Premium');
-    }
-
-    return tags;
-  }
-
-  // Active filters
-  final Set<String> _activeFilters = <String>{};
 
   // Calculate distance between two coordinates in km
   double _calculateDistance(LatLng pos1, LatLng pos2) {
@@ -141,31 +107,11 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     return earthRadius * c;
   }
 
-  // Get listings filtered by tags AND proximity to selected pin
+  // Get listings filtered by proximity to selected pin
   List<_Listing> get _filteredListings {
-    // First filter by tags
-    List<_Listing> tagFiltered = _listings.where((listing) {
-      if (_activeFilters.isEmpty) return true;
-
-      // Check if "Newly" filter is active and listing is new
-      if (_activeFilters.contains('Newly') && !listing.isNew) return false;
-
-      // Get all other filters (excluding 'Newly' and 'Filter')
-      final Set<String> tagFilters = _activeFilters.difference({
-        'Filter',
-        'Newly',
-      });
-
-      // If no tag filters, only check "Newly" filter
-      if (tagFilters.isEmpty) return true;
-
-      // Check if listing has any of the selected tags
-      return listing.tags.intersection(tagFilters).isNotEmpty;
-    }).toList();
-
-    // If a pin is selected, show only nearby properties (within 2km radius)
+    // If a pin is selected, filter by proximity only
     if (_selectedPinLocation != null) {
-      return tagFiltered.where((listing) {
+      return _listings.where((listing) {
         double distance = _calculateDistance(
           _selectedPinLocation!,
           listing.position,
@@ -174,24 +120,10 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       }).toList();
     }
 
-    // If no pin selected, show all properties
-    return tagFiltered;
+    // If no pin selected, show all
+    return _listings;
   }
 
-  void _toggleFilter(String label) {
-    setState(() {
-      if (_activeFilters.contains(label)) {
-        _activeFilters.remove(label);
-      } else {
-        _activeFilters.add(label);
-      }
-      if (_filteredListings.isNotEmpty) {
-        _pageController.jumpToPage(0);
-      }
-    });
-  }
-
-  // Add this method to handle navigation
   void _navigateToHomeScreen(_Listing listing) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -242,20 +174,16 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     });
 
     try {
-      // For demo, we'll use a fixed location (Madhapur)
       _currentLocation = LatLng(17.4474, 78.3919);
-
-      // Reverse geocode to get address
       final address = await _reverseGeocode(_currentLocation!);
 
       setState(() {
         _currentAddress = address;
       });
 
-      // Move map to current location
       _mapController.move(
         latlong.LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
-        12, // Zoom out to see all 9 properties
+        12,
       );
     } catch (e) {
       print('Error getting location: $e');
@@ -278,7 +206,6 @@ class _RealEstateHomeState extends State<RealEstateHome> {
         final data = json.decode(response.body);
         final address = data['address'] ?? {};
 
-        // Extract city/town for better display
         final String? city =
             address['city'] ??
             address['town'] ??
@@ -307,7 +234,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     }
 
     setState(() {
-      _isSearching = true;
+      _isLoading = true;
     });
 
     try {
@@ -337,7 +264,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       });
     } finally {
       setState(() {
-        _isSearching = false;
+        _isLoading = false;
       });
     }
   }
@@ -348,15 +275,12 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       _isSearching = false;
       _searchController.clear();
       _searchResults.clear();
-      _selectedPinLocation =
-          null; // Clear selected pin when searching new location
+      _selectedPinLocation = null;
     });
 
-    // Move map to selected location
     final selectedLatLng = latlong.LatLng(result.lat, result.lon);
     _mapController.move(selectedLatLng, 12);
 
-    // Show snackbar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Location updated to: ${result.displayName}'),
@@ -376,10 +300,8 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       listing.position.longitude,
     );
 
-    // Smooth zoom to property
     _mapController.move(latLng, 15);
 
-    // Reset carousel to first page
     if (_filteredListings.isNotEmpty) {
       _pageController.jumpToPage(0);
       setState(() {
@@ -387,11 +309,10 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       });
     }
 
-    // Show info about how many properties nearby
     final nearbyCount = _filteredListings.length;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$nearbyCount properties near ${listing.title}'),
+        content: Text('Showing $nearbyCount properties near ${listing.title}'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -403,8 +324,23 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       _selectedPinTitle = null;
     });
 
-    // Zoom back out to show all properties
-    _mapController.move(latlong.LatLng(17.4474, 78.3919), 12);
+    if (_currentLocation != null) {
+      _mapController.move(
+        latlong.LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
+        12,
+      );
+    }
+  }
+
+  String _getDistanceText(_Listing listing) {
+    if (_selectedPinLocation != null) {
+      double distance = _calculateDistance(
+        _selectedPinLocation!,
+        listing.position,
+      );
+      return '${distance.toStringAsFixed(1)} km away';
+    }
+    return 'View on map';
   }
 
   Widget _buildTopBar() {
@@ -412,18 +348,56 @@ class _RealEstateHomeState extends State<RealEstateHome> {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         children: [
-          // Search Bar
           Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
               children: [
-                const SizedBox(width: 10),
+                const SizedBox(width: 16),
+                const Icon(Icons.search, color: Colors.black54, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Search for location or property...',
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    onChanged: _searchLocation,
+                    onTap: () {
+                      setState(() {
+                        _isSearching = true;
+                      });
+                    },
+                  ),
+                ),
                 if (!_isSearching)
                   GestureDetector(
                     onTap: _getCurrentLocation,
                     child: Container(
                       width: 44,
-                      height: 30,
-
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFD98B),
+                        shape: BoxShape.circle,
+                      ),
                       child: _isLoadingLocation
                           ? const Padding(
                               padding: EdgeInsets.all(6.0),
@@ -441,11 +415,11 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                             ),
                     ),
                   ),
+                const SizedBox(width: 10),
               ],
             ),
           ),
           const SizedBox(height: 10),
-          // Current location display
           if (!_isSearching)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -456,7 +430,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.06),
+                    color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -469,26 +443,19 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                       const SizedBox(width: 6),
                       Text(
                         _selectedPinTitle != null
-                            ? 'Showing properties near $_selectedPinTitle'
+                            ? 'Near $_selectedPinTitle'
                             : _currentAddress,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.white.withOpacity(0.8),
-                        size: 16,
-                      ),
                     ],
                   ),
                 ),
-                // Clear selection button
                 if (_selectedPinLocation != null)
                   GestureDetector(
                     onTap: _clearPinSelection,
@@ -498,53 +465,23 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B6B),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.clear, color: Colors.white, size: 14),
+                          Icon(Icons.close, color: Colors.white, size: 14),
                           SizedBox(width: 4),
                           Text(
                             'Clear',
                             style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               fontSize: 13,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                // Filter count indicator
-                if (_selectedPinLocation == null && _activeFilters.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFD98B),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.filter_list,
-                          color: Colors.black,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${_activeFilters.length}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
               ],
@@ -577,7 +514,6 @@ class _RealEstateHomeState extends State<RealEstateHome> {
         ),
         child: Column(
           children: [
-            // Search header
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -614,8 +550,7 @@ class _RealEstateHomeState extends State<RealEstateHome> {
                 ],
               ),
             ),
-            // Results list
-            if (_isSearching && _searchResults.isEmpty)
+            if (_isLoading && _searchResults.isEmpty)
               Container(
                 padding: const EdgeInsets.all(20),
                 child: const Column(
@@ -721,171 +656,59 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     }
   }
 
-  Widget _buildFilterRow() {
-    if (_isSearching) return const SizedBox();
-
-    final filters = [
-      {'label': 'Newly', 'icon': null},
-      {'label': 'Trending', 'icon': null},
-      {'label': 'Apartments', 'icon': null},
-      {'label': 'Villas', 'icon': null},
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: filters.map((f) {
-          final String label = f['label']!.toString();
-          final bool selected = _activeFilters.contains(label);
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-            child: _FilterChipButton(
-              label: label,
-              selected: selected,
-              onPressed: () => _toggleFilter(label),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? const Color(0xFFFFD98B)
-                      : Colors.white.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: selected
-                        ? const Color(0xFFFFD98B)
-                        : Colors.white.withOpacity(0.12),
-                  ),
-                ),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: selected ? Colors.black87 : Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+  Widget _buildMapBackground() {
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        center: _currentLocation != null
+            ? latlong.LatLng(
+                _currentLocation!.latitude,
+                _currentLocation!.longitude,
+              )
+            : latlong.LatLng(17.4474, 78.3919),
+        zoom: _currentZoom,
+        maxZoom: 18,
+        minZoom: 10,
+        interactiveFlags:
+            InteractiveFlag.pinchZoom |
+            InteractiveFlag.drag |
+            InteractiveFlag.doubleTapZoom,
+        onPositionChanged: (position, hasGesture) {
+          if (hasGesture) {
+            setState(() {
+              _currentZoom = position.zoom!;
+            });
+          }
+        },
       ),
-    );
-  }
-
-  Widget _buildMapArea(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              center: _currentLocation != null
-                  ? latlong.LatLng(
-                      _currentLocation!.latitude,
-                      _currentLocation!.longitude,
-                    )
-                  : latlong.LatLng(17.4474, 78.3919),
-              zoom: _currentZoom,
-              maxZoom: 18,
-              minZoom: 10,
-              onPositionChanged: (position, hasGesture) {
-                if (hasGesture) {
-                  setState(() {
-                    _currentZoom = position.zoom!;
-                  });
-                }
-              },
-            ),
-            children: [
-              // OpenStreetMap Tile Layer
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.real_beez',
-                subdomains: const ['a', 'b', 'c'],
-              ),
-
-              // Add markers for ALL properties (all 9)
-              MarkerLayer(markers: _buildMapMarkers()),
-            ],
-          ),
-
-          // Search results overlay
-          _buildSearchResults(),
-
-          // Status info
-          Positioned(
-            top: 22,
-            left: 16,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                _selectedPinLocation != null
-                    ? '${_filteredListings.length} properties nearby'
-                    : '${_listings.length} properties total',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-
-          // Instructions
-          if (_selectedPinLocation == null)
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    'Tap any pin to see nearby properties',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
+      children: [
+        TileLayer(
+          urlTemplate:
+              'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+          userAgentPackageName: 'com.example.real_beez',
+          subdomains: const ['a', 'b', 'c'],
+        ),
+        MarkerLayer(markers: _buildMapMarkers()),
+      ],
     );
   }
 
   List<Marker> _buildMapMarkers() {
     final markers = <Marker>[];
 
-    // Add ALL property markers (all 9 properties)
     for (final listing in _listings) {
-      Color markerColor;
       bool isSelected =
           _selectedPinLocation != null &&
           listing.position.latitude == _selectedPinLocation!.latitude &&
           listing.position.longitude == _selectedPinLocation!.longitude;
 
-      // Determine marker color based on property type
+      Color markerColor;
       if (listing.property?.type == 'villa') {
-        markerColor = isSelected ? Colors.red : Colors.green;
+        markerColor = isSelected ? Colors.yellow : Colors.green;
       } else if (listing.property?.type == 'apartment') {
-        markerColor = isSelected ? Colors.red : Colors.blue;
+        markerColor = isSelected ? Colors.yellow : Colors.blue;
       } else {
-        markerColor = isSelected ? Colors.red : Colors.orange;
+        markerColor = isSelected ? Colors.yellow : Colors.orange;
       }
 
       markers.add(
@@ -894,55 +717,42 @@ class _RealEstateHomeState extends State<RealEstateHome> {
             listing.position.latitude,
             listing.position.longitude,
           ),
-          width: isSelected ? 60 : 50,
-          height: isSelected ? 60 : 50,
+          width: isSelected ? 50 : 35,
+          height: isSelected ? 50 : 35,
           child: GestureDetector(
             onTap: () => _onPinSelected(listing),
-            child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (isSelected)
                   Container(
-                    padding: EdgeInsets.all(isSelected ? 8 : 6),
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: isSelected ? 8 : 4,
-                          offset: Offset(0, isSelected ? 4 : 2),
-                        ),
-                      ],
-                      border: isSelected
-                          ? Border.all(color: Colors.yellow, width: 2)
-                          : null,
-                    ),
-                    child: Icon(
-                      isSelected ? Icons.location_on : Icons.location_pin,
-                      color: markerColor,
-                      size: isSelected ? 24 : 20,
+                      color: Colors.yellow.withOpacity(0.2),
                     ),
                   ),
-                  SizedBox(height: 2),
-                  if (isSelected)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: markerColor,
-                        borderRadius: BorderRadius.circular(10),
+                Container(
+                  padding: EdgeInsets.all(isSelected ? 6 : 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: isSelected ? 8 : 4,
+                        offset: Offset(0, isSelected ? 4 : 2),
                       ),
-                      child: Text(
-                        'SELECTED',
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                  child: Icon(
+                    isSelected ? Icons.location_on : Icons.location_pin,
+                    color: markerColor,
+                    size: isSelected ? 22 : 16,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -955,14 +765,11 @@ class _RealEstateHomeState extends State<RealEstateHome> {
   Widget _buildListingCard(int index, bool active) {
     final listing = _filteredListings[index];
 
-    // Format price with proper formatting
-    final priceInLakhs = listing.property?.price != null
-        ? (listing.property!.price / 100000).toStringAsFixed(1)
-        : '80';
-    final priceInCrores =
-        listing.property?.price != null && listing.property!.price >= 10000000
-        ? (listing.property!.price / 10000000).toStringAsFixed(1)
-        : '1';
+    // Format price
+    final priceInLakhs = (listing.price / 100000).toStringAsFixed(1);
+    final priceInCrores = listing.price >= 10000000
+        ? (listing.price / 10000000).toStringAsFixed(1)
+        : '0.8'; // Default value
 
     return GestureDetector(
       onTap: () => _navigateToHomeScreen(listing),
@@ -970,118 +777,225 @@ class _RealEstateHomeState extends State<RealEstateHome> {
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: active ? 5 : 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 18,
-              offset: Offset(0, 10),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
-          border: active ? Border.all(color: Colors.blue, width: 2) : null,
+          border: active
+              ? Border.all(color: const Color(0xFFFFD98B), width: 2)
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: title + actions
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // Image section - Fixed height
+            Container(
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                image: DecorationImage(
+                  image: _getPropertyImage(listing),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
                 children: [
-                  // Title block
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          listing.title,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                  // Discount badge
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF6B6B),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.local_offer_outlined,
+                            color: Colors.white,
+                            size: 10,
                           ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          listing.subtitle,
-                          style: TextStyle(fontSize: 13, color: Colors.black54),
-                        ),
-                      ],
+                          SizedBox(width: 4),
+                          Text(
+                            '10% OFF',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  _goldCircleIcon(Icons.favorite_border),
-                ],
-              ),
-            ),
-
-            // Price row + 'New' badge
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-              child: Row(
-                children: [
-                  if (listing.isNew)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  // Property type badge
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFD98B),
-                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        'New',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
+                        listing.type.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                  if (listing.isNew) SizedBox(width: 6),
-                  Text(
-                    'Price Range start from:',
-                    style: TextStyle(fontSize: 11, color: Colors.black54),
                   ),
                 ],
               ),
             ),
 
-            // Price value
+            // Details section - Fixed height with padding
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 4),
-              child: Text(
-                '${priceInLakhs} Lakhs - ${priceInCrores} Crs',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(14),
-                  bottomRight: Radius.circular(14),
-                ),
-                child: _buildPropertyImage(listing),
-              ),
-            ),
-
-            // Distance indicator
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Row(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.location_on, size: 14, color: Colors.blue),
-                  SizedBox(width: 4),
+                  // Title and distance
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          listing.title,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 10,
+                              color: Colors.green[700],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _getDistanceText(listing),
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  // Address
                   Text(
-                    _selectedPinLocation != null
-                        ? 'Near selected location'
-                        : 'Tap to view details',
-                    style: TextStyle(
+                    listing.subtitle,
+                    style: const TextStyle(
                       fontSize: 11,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Price and button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Price Range',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '₹$priceInLakhs L - ₹$priceInCrores Cr',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD98B), Color(0xFFFFB74D)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFFD98B).withOpacity(0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'View',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1092,104 +1006,170 @@ class _RealEstateHomeState extends State<RealEstateHome> {
     );
   }
 
-  Widget _buildPropertyImage(_Listing listing) {
+  ImageProvider _getPropertyImage(_Listing listing) {
+    // Try to get the first image from property
     if (listing.property?.images != null &&
         listing.property!.images.isNotEmpty) {
-      final firstImage = listing.property!.images.first.toString();
-      return Image.asset(
-        firstImage,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-      );
+      final firstImageUrl = listing.property!.images.first.url;
+      // Check if it's a network URL or local asset
+      if (firstImageUrl.startsWith('http')) {
+        return NetworkImage(firstImageUrl);
+      } else if (firstImageUrl.startsWith('assets/')) {
+        return AssetImage(firstImageUrl);
+      } else {
+        // Try to load as asset with proper path
+        return AssetImage('assets/$firstImageUrl');
+      }
     }
 
-    return Image.asset(
-      'assets/images/farmland1.png',
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-    );
-  }
-
-  Widget _goldCircleIcon(IconData icon) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: Color(0xFFFFD98B),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, size: 18, color: Colors.black87),
-    );
+    // Return a placeholder
+    return AssetImage('assets/images/property_placeholder.png');
   }
 
   @override
   Widget build(BuildContext context) {
     final statusBarPadding = MediaQuery.of(context).padding.top;
-    final bottomCardHeight = MediaQuery.of(context).size.height * 0.30;
+    final bottomCardHeight = MediaQuery.of(context).size.height * 0.3;
 
     return Scaffold(
-      backgroundColor: Color(0xFF061021),
+      backgroundColor: const Color(0xFF061021),
       body: SafeArea(
         child: _isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFD98B)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFFFFD98B),
+                  ),
                 ),
               )
-            : Column(
+            : Stack(
                 children: [
-                  SizedBox(height: statusBarPadding),
-                  _buildTopBar(),
-                  if (_selectedPinLocation == null) _buildFilterRow(),
-                  _buildMapArea(context),
-                  if (!_isSearching)
-                    SizedBox(
-                      height: bottomCardHeight,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: _filteredListings.length,
-                        physics: BouncingScrollPhysics(),
-                        onPageChanged: (index) {
-                          setState(() {
-                            _activePage = index;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          final active = index == _activePage;
-                          return _buildListingCard(index, active);
-                        },
+                  Positioned.fill(child: _buildMapBackground()),
+                  Column(
+                    children: [
+                      SizedBox(height: statusBarPadding),
+                      _buildTopBar(),
+                      const SizedBox(height: 4),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            // Status info
+                            if (_selectedPinLocation != null)
+                              Positioned(
+                                top: 16,
+                                left: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        color: Colors.yellow,
+                                        size: 12,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '${_filteredListings.length} properties nearby',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            // Tap instruction
+                            if (_selectedPinLocation == null &&
+                                _listings.isNotEmpty)
+                              Positioned(
+                                bottom: 20,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.7),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.touch_app,
+                                          color: Colors.yellow,
+                                          size: 12,
+                                        ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Tap pin to see nearby',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  if (!_isSearching) SizedBox(height: 8),
+                      if (!_isSearching && _filteredListings.isNotEmpty)
+                        SizedBox(
+                          height: bottomCardHeight,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 4),
+                              Text(
+                                _selectedPinLocation != null
+                                    ? 'Properties near this location'
+                                    : 'All Properties',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Expanded(
+                                child: PageView.builder(
+                                  controller: _pageController,
+                                  itemCount: _filteredListings.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  onPageChanged: (index) {
+                                    setState(() {
+                                      _activePage = index;
+                                    });
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final active = index == _activePage;
+                                    return _buildListingCard(index, active);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                  _buildSearchResults(),
                 ],
               ),
-      ),
-    );
-  }
-}
-
-class _FilterChipButton extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onPressed;
-  final Widget child;
-  const _FilterChipButton({
-    required this.label,
-    required this.selected,
-    required this.onPressed,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(25),
-        onTap: onPressed,
-        child: child,
       ),
     );
   }
@@ -1201,16 +1181,19 @@ class _Listing {
   final String subtitle;
   final LatLng position;
   final bool isNew;
-  final Set<String> tags;
   final Property? property;
+  final double price;
+  final String type;
+
   const _Listing({
     required this.id,
     required this.title,
     required this.subtitle,
     required this.position,
     this.isNew = false,
-    this.tags = const {},
     this.property,
+    required this.price,
+    required this.type,
   });
 }
 

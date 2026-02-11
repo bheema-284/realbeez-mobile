@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:real_beez/screens/booking_screens/book_your_service_screen.dart';
 import 'package:real_beez/utils/app_colors.dart';
-import 'package:real_beez/screens/cutsom_widgets/custom_bottom_bar.dart';
+// import 'package:real_beez/screens/cutsom_widgets/custom_bottom_bar.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
-      home: MapScreen(),
-      debugShowCheckedModeBanner: false,
-    ),
-  );
+  runApp(MaterialApp(home: MapScreen(), debugShowCheckedModeBanner: false));
 }
 
 class MapScreen extends StatefulWidget {
@@ -26,10 +21,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Stack(
         children: [
           SizedBox.expand(
-            child: Image.asset(
-              'assets/images/map.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/map.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Padding(
@@ -38,7 +30,10 @@ class _MapScreenState extends State<MapScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(6),
@@ -86,7 +81,10 @@ class _MapScreenState extends State<MapScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.beeYellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -112,10 +110,10 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: 0,
-        onTabSelected: (int index) {},
-      ),
+      // bottomNavigationBar: CustomBottomBar(
+      //   currentIndex: 0,
+      //   onTabSelected: (int index) {},
+      // ),
     );
   }
 }

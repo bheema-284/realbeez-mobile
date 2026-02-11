@@ -1,14 +1,11 @@
-
 import 'package:flutter/material.dart';
+import 'package:real_beez/screens/homescreen/widgets/CategoryPropertiesScreen.dart'; // Import this
 import 'package:real_beez/utils/app_colors.dart';
 
 class MustVisitSection extends StatelessWidget {
   final List<Map<String, String>> trendingApartments;
 
-  const MustVisitSection({
-    super.key,
-    required this.trendingApartments,
-  });
+  const MustVisitSection({super.key, required this.trendingApartments});
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +69,24 @@ class MustVisitSection extends StatelessWidget {
               separatorBuilder: (context, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final item = trendingApartments[index];
-                return _buildTrendingCard(
-                  title: item['title']!,
-                  imageUrl: item['image']!,
+                return GestureDetector(
+                  // ADD GESTURE DETECTOR
+                  onTap: () {
+                    // Navigate to CategoryPropertiesScreen when card is tapped
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategoryPropertiesScreen(
+                          categoryName:
+                              item['title']!, // Pass the category name
+                        ),
+                      ),
+                    );
+                  },
+                  child: _buildTrendingCard(
+                    title: item['title']!,
+                    imageUrl: item['image']!,
+                  ),
                 );
               },
             ),
@@ -87,72 +99,66 @@ class MustVisitSection extends StatelessWidget {
   Widget _buildTrendingCard({
     required String title,
     required String imageUrl,
-  }) =>
-      Container(
-        width: 150,
-        height: 156,
-        decoration: BoxDecoration(
-          color: const Color(0xFFEFF1FF),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(100),
-            topRight: Radius.circular(100),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16),
+  }) => Container(
+    width: 150,
+    height: 156,
+    decoration: BoxDecoration(
+      color: const Color(0xFFEFF1FF),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(100),
+        topRight: Radius.circular(100),
+        bottomLeft: Radius.circular(16),
+        bottomRight: Radius.circular(16),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.3),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(100),
+        topRight: Radius.circular(100),
+        bottomLeft: Radius.circular(16),
+        bottomRight: Radius.circular(16),
+      ),
+      child: Stack(
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
           ),
-          boxShadow: [
-            BoxShadow(
-              // ignore: deprecated_member_use
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.center,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+              ),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(100),
-            topRight: Radius.circular(100),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16),
           ),
-          child: Stack(
-            children: [
-              Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
+          Positioned(
+            bottom: 12,
+            left: 0,
+            right: 0,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                height: 1.3,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      // ignore: deprecated_member_use
-                      Colors.black.withOpacity(0.6),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 12,
-                left: 0,
-                right: 0,
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }

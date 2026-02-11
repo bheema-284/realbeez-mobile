@@ -193,12 +193,164 @@ class PropertyData {
   ];
 
   // Special offers data
-  static List<Map<String, String>> specialOffers = [
-    {'title': 'My Home Avatar', 'image': 'assets/images/unlock1.png'},
-    {'title': 'Ankura Villas', 'image': 'assets/images/unlock2.png'},
-    {'title': 'Prestige City', 'image': 'assets/images/unlock1.png'},
-    {'title': 'Jumbooo City', 'image': 'assets/images/unlock2.png'},
-  ];
+  // In property_data.dart, update the specialOffers section:
+  // In property_data.dart, add this new map:
+  static Map<String, List<Map<String, String>>> categorySpecialOffers = {
+    'all': [
+      {
+        'title': 'My Home Avatar',
+        'image': 'assets/images/unlock1.png',
+        'propertyId': 'prop_008',
+      },
+      {
+        'title': 'Ankura Villas',
+        'image': 'assets/images/unlock2.png',
+        'propertyId': 'prop_009',
+      },
+      {
+        'title': 'Prestige City',
+        'image': 'assets/images/unlock1.png',
+        'propertyId': 'prop_010',
+      },
+      {
+        'title': 'Jumbooo City',
+        'image': 'assets/images/unlock2.png',
+        'propertyId': 'prop_011',
+      },
+    ],
+    'apartment': [
+      {
+        'title': 'Sky View Apartments',
+        'image': 'assets/images/apartment1.png',
+        'propertyId': 'prop_001',
+      },
+      {
+        'title': 'Urban Heights',
+        'image': 'assets/images/apartment2.png',
+        'propertyId': 'prop_002',
+      },
+      {
+        'title': 'Sunrise Towers',
+        'image': 'assets/images/apartment1.png',
+        'propertyId': 'prop_003',
+      },
+      {
+        'title': 'Modern Residency',
+        'image': 'assets/images/apartment2.png',
+        'propertyId': 'prop_004',
+      },
+    ],
+    'villas': [
+      {
+        'title': 'Royal Garden Villas',
+        'image': 'assets/images/villa1.png',
+        'propertyId': 'prop_005',
+      },
+      {
+        'title': 'Elite Penthouse',
+        'image': 'assets/images/villa2.png',
+        'propertyId': 'prop_006',
+      },
+      {
+        'title': 'Lake View Villas',
+        'image': 'assets/images/villa3.png',
+        'propertyId': 'prop_007',
+      },
+      {
+        'title': 'Green Valley Villas',
+        'image': 'assets/images/villa1.png',
+        'propertyId': 'prop_008',
+      },
+    ],
+    'farmlands': [
+      {
+        'title': 'Sunrise Farms',
+        'image': 'assets/images/farmland1.png',
+        'propertyId': 'prop_009',
+      },
+      {
+        'title': 'Green Acres',
+        'image': 'assets/images/farmland2.png',
+        'propertyId': 'prop_010',
+      },
+      {
+        'title': 'Harvest Fields',
+        'image': 'assets/images/farmland1.png',
+        'propertyId': 'prop_011',
+      },
+      {
+        'title': 'Golden Fields',
+        'image': 'assets/images/farmland2.png',
+        'propertyId': 'prop_001',
+      },
+    ],
+    'open_plots': [
+      {
+        'title': 'Emerald Plots',
+        'image': 'assets/images/openplot1.png',
+        'propertyId': 'prop_002',
+      },
+      {
+        'title': 'City Edge Plots',
+        'image': 'assets/images/openplot2.png',
+        'propertyId': 'prop_003',
+      },
+      {
+        'title': 'Sunset Plots',
+        'image': 'assets/images/openplot1.png',
+        'propertyId': 'prop_004',
+      },
+      {
+        'title': 'Hilltop Plots',
+        'image': 'assets/images/openplot2.png',
+        'propertyId': 'prop_005',
+      },
+    ],
+    'commercial': [
+      {
+        'title': 'Tech Park Commercial',
+        'image': 'assets/images/farmland2.png',
+        'propertyId': 'prop_006',
+      },
+      {
+        'title': 'Business Center',
+        'image': 'assets/images/farmland1.png',
+        'propertyId': 'prop_007',
+      },
+      {
+        'title': 'Office Spaces',
+        'image': 'assets/images/farmland1.png',
+        'propertyId': 'prop_008',
+      },
+      {
+        'title': 'Retail Plaza',
+        'image': 'assets/images/farmland2.png',
+        'propertyId': 'prop_009',
+      },
+    ],
+    'independent': [
+      {
+        'title': 'Heritage Villa',
+        'image': 'assets/images/villa1.png',
+        'propertyId': 'prop_010',
+      },
+      {
+        'title': 'Palm Meadows',
+        'image': 'assets/images/apartment2.png',
+        'propertyId': 'prop_011',
+      },
+      {
+        'title': 'Royal Greens',
+        'image': 'assets/images/villa2.png',
+        'propertyId': 'prop_001',
+      },
+      {
+        'title': 'Green Villa',
+        'image': 'assets/images/apartment1.png',
+        'propertyId': 'prop_002',
+      },
+    ],
+  };
 
   // Builder images data
   static List<String> builderImages = [
